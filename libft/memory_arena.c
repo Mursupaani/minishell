@@ -63,7 +63,7 @@ void	arena_reset(t_arena *arena)
 
 void	arena_free(t_arena **arena)
 {
-	t_arena *temp;
+	t_arena	*temp;
 
 	if (!*arena)
 		return ;

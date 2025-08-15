@@ -1,19 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/15 16:06:08 by anpollan         ###   ########.fr       */
+/*   Created: 2025/08/15 15:59:58 by anpollan          #+#    #+#             */
+/*   Updated: 2025/08/15 16:06:55 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	main(void)
+int	pwd(void)
 {
-	pwd();
-	return (EXIT_SUCCESS);
+	char	buf[1024];
+
+	if (!getcwd(buf, sizeof(buf)))
+		return (0);
+	printf("%s\n", buf);
+	return (1);
 }
