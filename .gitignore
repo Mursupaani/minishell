@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# Compile commands
+compile_commands.json
+
 # Object files
 *.o
 *.ko

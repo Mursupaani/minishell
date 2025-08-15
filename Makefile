@@ -3,37 +3,66 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+         #
+#    By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/06/11 13:06:22 by anpollan          #+#    #+#              #
-#    Updated: 2025/08/11 14:07:42 by anpollan         ###   ########.fr        #
+#    Created: 2025/04/24 11:49:18 by magebreh          #+#    #+#              #
+#    Updated: 2025/08/15 15:13:02 by anpollan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME		= minishell
-SRC_DIR		= ./src/
-INCL_DIR	= ./incl/
-SRC 		= ./src/main.c
-OBJS 		= $(SRC:%.c=%.o)
-HEADER		= ./incl/minishell.h
-C_FLAGS		= -Wall -Wextra -Werror -pthread -g -I$(INCL_DIR)
+NAME = minishell
+
+CC = cc
+CFLAGS = -Wall -Wextra -Werror -I$(INCL_DIR) -g
+
+LIBFT		= ./libft/libft.a
+
+RM = rm -f
+
+# Object directory
+OBJ_DIR = obj
+SRC_DIR = src
+INCL_DIR = incl
+
+# Core libft sources
+SRC = main.c
+
+# Combined sources
+OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	cc $(C_FLAGS) $(OBJS) $(MLX) $(MLXFLAGS) -o $(NAME)
+$(NAME): $(OBJ) $(LIBFT)
+	@$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -o $(NAME)
+	@echo "✅ libft.a created with integrated ft_printf and get_next_line"
 
-%.o: %.c $(HEADER)
-	cc $(C_FLAGS) -c $< -o $@
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+$(LIBFT):
+	@$(MAKE) -C libft
 
 clean:
-	rm -rf $(OBJS)
+	@$(RM) -r $(OBJ_DIR)
+	@$(MAKE) -C libft clean
+	@echo "🧹 Object files cleaned"
 
 fclean: clean
-	rm -rf $(NAME) compile_commands.json
+	@$(RM) $(NAME)
+	@$(MAKE) -C libft fclean
+	@echo "🧹 All files cleaned"
 
 re: fclean all
 
-.SECONDARY: $(OBJS)
+info:
+	@echo "📊 Library Statistics:"
+	@echo "   Library: $(NAME)"
+	@if [ -f $(NAME) ]; then \
+		echo "   Size: $$(ls -lh $(NAME) | awk '{print $$5}')"; \
+		echo "   Functions: $$(nm $(NAME) | grep -c ' T ' || echo 0)"; \
+	else \
+		echo "   Library not built yet"; \
+	fi
 
-.PHONY: all clean fclean re
+.PHONY: all bonus clean fclean re info
