@@ -43,6 +43,14 @@ typedef struct s_list
 	struct s_list	*next;
 }	t_list;
 
+typedef struct s_arena
+{
+	unsigned char	*data;
+	size_t			capacity;
+	size_t			size;
+	struct s_arena	*next;
+}	t_arena;
+
 int		ft_atoi_safe(const char *str, int *err);
 int		ft_atoi_hex(const char *str, int *err);
 void	ft_bzero(void *s, size_t n);
@@ -109,5 +117,11 @@ char	*ft_extract_line(char *s);
 char	*ft_strjoin_free(char *s1, const char *s2);
 char	*ft_read_to_buffer(int fd, char *leftovers, char *temp_buff);
 void	ft_save_leftovers(char *buffer, char *leftovers);
+
+// Memory arena functions
+t_arena	*arena_init(size_t	capacity);
+void	*arena_alloc(t_arena *arena, size_t size);
+void	arena_reset(t_arena *arena);
+void	arena_free(t_arena **arena);
 
 #endif
