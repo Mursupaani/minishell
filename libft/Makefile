@@ -6,7 +6,7 @@
 #    By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/24 11:49:18 by magebreh          #+#    #+#              #
-#    Updated: 2025/07/11 19:36:35 by magebreh         ###   ########.fr        #
+#    Updated: 2025/08/15 18:36:46 by magebreh         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -77,15 +77,5 @@ fclean: clean
 	@echo "🧹 All files cleaned"
 
 re: fclean all
-
-info:
-	@echo "📊 Library Statistics:"
-	@echo "   Library: $(NAME)"
-	@if [ -f $(NAME) ]; then \
-		echo "   Size: $$(ls -lh $(NAME) | awk '{print $$5}')"; \
-		echo "   Functions: $$(nm $(NAME) | grep -c ' T ' || echo 0)"; \
-	else \
-		echo "   Library not built yet"; \
-	fi
 
 .PHONY: all bonus clean fclean re info
