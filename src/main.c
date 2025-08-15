@@ -12,9 +12,7 @@
 
 #include "minishell.h"
 
-int	main(int ac, char *av[])
+int	main(void)
 {
-	(void)ac;
-	(void)av;
 	return (EXIT_SUCCESS);
 }

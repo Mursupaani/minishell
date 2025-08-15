@@ -1,8 +1,11 @@
-# Prerequisites
-*.d
-
 # Compile commands
 compile_commands.json
+
+# Cache
+.cache/
+
+# Prerequisites
+*.d
 
 # Object files
 *.o
