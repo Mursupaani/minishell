@@ -29,7 +29,7 @@ void setup_signals()
 	signal(SIGQUIT, SIG_IGN);
 }
 
-int	main(int argc, char **argv)
+int	main(int argc, char **argv, char **env)
 {
 	t_shell *shell;
 	char *input;
@@ -68,4 +68,16 @@ int	main(int argc, char **argv)
 		free(input);
 	}
 	return (EXIT_SUCCESS);
+	print_str_array(env);
+}
+
+static void	print_str_array(char **str_array)
+{
+	int	i;
+
+	if (!str_array)
+		return ;
+	i = 0;
+	while (str_array[i])
+		printf("%s\n", str_array[i++]);
 }

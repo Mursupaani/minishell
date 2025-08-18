@@ -33,7 +33,7 @@ OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
 all: $(NAME)
 
 $(NAME): $(OBJ) $(LIBFT)
-	@$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -lreadline -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -lreadline  -o $(NAME)
 	@echo "✅ libft.a created with integrated ft_printf and get_next_line"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
