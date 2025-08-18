@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/16 15:55:18 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/18 15:24:54 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,20 +30,13 @@
 # include <term.h>
 # include <termios.h>
 # include <unistd.h>
+# include <../libft/libft.h>
 
 // ============================================================================
-// ARENA MEMORY MANAGEMENT (from libft)
+// HASH TABLE FOR ENVIRONMENT (Simple implementation)
 // ============================================================================
-typedef struct s_arena {
-    unsigned char   *data;
-    size_t          capacity;
-    size_t          size;
-    struct s_arena  *next;
-} t_arena;
+# define HASH_TABLE_SIZE 256
 
-// ============================================================================
-// HASH TABLE FOR ENVIRONMENT
-// ============================================================================
 typedef struct s_env_entry {
     char                *key;
     char                *value;
@@ -51,12 +44,45 @@ typedef struct s_env_entry {
 } t_env_entry;
 
 typedef struct s_hash_table {
-    t_env_entry **buckets;
-    size_t      size;
+    t_env_entry *buckets[HASH_TABLE_SIZE];
 } t_hash_table;
 
 // ============================================================================
-// COMMAND CLASSIFICATION
+// SIMPLIFIED TOKENIZER (2-pass system for mandatory)
+// ============================================================================
+typedef enum e_token_type {
+    TOKEN_WORD,          // command, argument, filename
+    TOKEN_PIPE,          // |
+    TOKEN_REDIR_IN,      // 
+    TOKEN_REDIR_OUT,     // >
+    TOKEN_REDIR_APPEND,  // >>
+    TOKEN_HEREDOC,       // 
+    TOKEN_EOF
+} t_token_type;
+
+typedef struct s_token {
+    t_token_type    type;
+    char            *value;
+    int             quoted;       // 1=single, 2=double, 0=none
+    int             expandable;   // Should $VAR expand?
+    struct s_token  *next;
+} t_token;
+
+// ============================================================================
+// SIMPLE PARSER STATE (no AST for mandatory)
+// ============================================================================
+typedef struct s_parser {
+    t_token     *tokens;          // Token list head
+    t_token     *current;         // Current position
+    t_command   *cmd_head;        // First command in pipeline
+    t_command   *cmd_current;     // Current command being built
+    char        **current_argv;   // Building argv array
+    int         arg_num;          // number of arguments
+    int         argv_capacity;    // Space allocated for argv
+} t_parser;
+
+// ============================================================================
+// COMMAND STRUCTURES (same as before)
 // ============================================================================
 typedef enum e_cmd_type {
     CMD_BUILTIN_PARENT,    // cd, export, unset, exit (run in shell process)
@@ -66,18 +92,15 @@ typedef enum e_cmd_type {
 
 typedef enum e_builtin_type {
     BUILTIN_NONE = -1,
-    BUILTIN_ECHO,      // Child process
-    BUILTIN_CD,        // Parent only
-    BUILTIN_PWD,       // Child process  
-    BUILTIN_EXPORT,    // Parent only
-    BUILTIN_UNSET,     // Parent only
-    BUILTIN_ENV,       // Child process
-    BUILTIN_EXIT       // Parent only
+    BUILTIN_ECHO,
+    BUILTIN_CD,
+    BUILTIN_PWD,
+    BUILTIN_EXPORT,
+    BUILTIN_UNSET,
+    BUILTIN_ENV,
+    BUILTIN_EXIT
 } t_builtin_type;
 
-// ============================================================================
-// REDIRECTION SYSTEM
-// ============================================================================
 typedef enum e_redir_type {
     REDIR_INPUT,           // 
     REDIR_OUTPUT,          // >
@@ -93,9 +116,6 @@ typedef struct s_redir {
     struct s_redir  *next;
 } t_redir;
 
-// ============================================================================
-// COMMAND STRUCTURE (execution-ready)
-// ============================================================================
 typedef struct s_command {
     char        **argv;
     t_cmd_type  cmd_type;
@@ -108,15 +128,6 @@ typedef struct s_command {
     
     struct s_command *next;
 } t_command;
-
-// ============================================================================
-// PIPELINE STRUCTURE
-// ============================================================================
-typedef struct s_pipeline {
-    t_command           *commands;      // First command in pipeline
-    int                 exit_status;    // Pipeline's exit status
-    struct s_pipeline   *next;          // For && || operators (bonus)
-} t_pipeline;
 
 // ============================================================================
 // SHELL SESSION STATE
@@ -158,6 +169,5 @@ typedef struct s_shell {
 // GLOBAL VARIABLE (ONLY ONE ALLOWED BY PDF)
 // ============================================================================
 extern volatile sig_atomic_t g_signal_received;
-
 
 #endif
