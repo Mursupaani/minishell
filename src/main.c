@@ -3,44 +3,70 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/15 16:06:08 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/08/18 23:40:47 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	print_str_array(char **str_array);
+volatile sig_atomic_t g_signal_received = 0;
 
-static volatile sig_atomic_t	signal_received = false;
-
-void signal_handler(int signal)
+void sigint_handler(int sig)
 {
-	if (signal == SIGINT)
-		signal_received = true;
+	g_signal_received = sig;
+	write(STDOUT_FILENO, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
 }
 
-int	main(int ac, char **av, char **env)
+void setup_signals()
 {
-	char	*input;
+	signal(SIGINT, sigint_handler);
+	signal(SIGQUIT, SIG_IGN);
+}
 
-	if (ac != 1)
+int	main(int argc, char **argv, char **env)
+{
+	t_shell *shell;
+	char *input;
+
+	(void)argv;
+	shell = malloc(sizeof(t_shell));
+	if (!shell)
 		return (EXIT_FAILURE);
-	signal(SIGINT, &signal_handler);
-	while (true)
+	if(argc != 1)
 	{
-		printf("signal_received: %d\n", signal_received);
-		input = readline("Please input: \n");
-		printf("signal_received: %d\n", signal_received);
-		if (signal_received)
-			return (EXIT_SUCCESS);
-		if (!input)
-			return (EXIT_FAILURE);
-		printf("%s\n", input);
+		write(STDERR_FILENO, "Usage: ./minishell\n", 20);
+		return (EXIT_FAILURE);
 	}
-	(void)av;
+	setup_signals();
+	while (1)
+	{
+		g_signal_received = 0;
+		input = readline("minishell$ ");
+		if(!input)
+		{
+			write(STDOUT_FILENO, "exit\n", 5);
+			break;
+		}
+		if(g_signal_received == SIGINT)
+		{
+			if(input)
+				free(input);
+			continue;
+		}
+		if(input[0] == '\0')
+		{
+			free(input);
+			continue;
+		}
+		add_history(input);
+		free(input);
+	}
 	return (EXIT_SUCCESS);
 	print_str_array(env);
 }
