@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/18 15:24:54 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/18 17:59:04 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,19 +69,6 @@ typedef struct s_token {
 } t_token;
 
 // ============================================================================
-// SIMPLE PARSER STATE (no AST for mandatory)
-// ============================================================================
-typedef struct s_parser {
-    t_token     *tokens;          // Token list head
-    t_token     *current;         // Current position
-    t_command   *cmd_head;        // First command in pipeline
-    t_command   *cmd_current;     // Current command being built
-    char        **current_argv;   // Building argv array
-    int         arg_num;          // number of arguments
-    int         argv_capacity;    // Space allocated for argv
-} t_parser;
-
-// ============================================================================
 // COMMAND STRUCTURES (same as before)
 // ============================================================================
 typedef enum e_cmd_type {
@@ -128,6 +115,19 @@ typedef struct s_command {
     
     struct s_command *next;
 } t_command;
+
+// ============================================================================
+// SIMPLE PARSER STATE (no AST for mandatory)
+// ============================================================================
+typedef struct s_parser {
+    t_token     *tokens;          // Token list head
+    t_token     *current;         // Current position
+    t_command   *cmd_head;        // First command in pipeline
+    t_command   *cmd_current;     // Current command being built
+    char        **current_argv;   // Building argv array
+    int         arg_num;          // number of arguments
+    int         argv_capacity;    // Space allocated for argv
+} t_parser;
 
 // ============================================================================
 // SHELL SESSION STATE
