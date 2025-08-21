@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/18 17:59:04 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/20 12:17:16 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,11 @@ typedef struct s_shell {
 // ============================================================================
 // GLOBAL VARIABLE (ONLY ONE ALLOWED BY PDF)
 // ============================================================================
+
+// FIXME: EXTERN IS NOT ALLOWED
 extern volatile sig_atomic_t g_signal_received;
+
+int	change_directory(const char *path);
+int	print_working_directory(void);
 
 #endif

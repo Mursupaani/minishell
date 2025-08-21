@@ -6,13 +6,15 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/18 23:40:47 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/20 12:18:02 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 volatile sig_atomic_t g_signal_received = 0;
+
+static void	print_str_array(char **str_array);
 
 void sigint_handler(int sig)
 {
@@ -64,6 +66,8 @@ int	main(int argc, char **argv, char **env)
 			free(input);
 			continue;
 		}
+		change_directory(input);
+		print_working_directory();
 		add_history(input);
 		free(input);
 	}
