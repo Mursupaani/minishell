@@ -25,7 +25,7 @@ SRC_DIR = src
 INCL_DIR = incl
 
 # Core libft sources
-SRC = main.c pwd.c
+SRC = main.c print_working_directory.c change_directory.c
 
 # Combined sources
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
