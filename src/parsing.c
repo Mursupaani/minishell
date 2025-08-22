@@ -1,34 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   execute_args.c                                     :+:      :+:    :+:   */
+/*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/21 17:38:03 by anpollan         ###   ########.fr       */
+/*   Created: 2025/08/22 11:45:53 by anpollan          #+#    #+#             */
+/*   Updated: 2025/08/22 11:46:27 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	execute_args(char ** args, char **envp)
+t_command	*parse_args(char *input, char **envp)
 {
-	pid_t	pid;
-	int		status;
-	int		error;
+	t_command	*cmd;
+	char		**argv;
 
-	pid = fork();
-	if (pid == 0)
-	{
-		if (execve(args[0], args, envp) == -1)
-		{
-			error = errno;
-			perror(strerror(error));
-		}
-	}
-	// How do the parameters work? Need to check child status?
-	if (waitpid(pid, &status, 0))
-		printf("Test\n");
-	return (status);
+	cmd = (t_command *)ft_calloc(1, sizeof(t_command));
+	// error handling
+	argv = ft_split(input, ' ');
+	cmd->argv = argv;
+	cmd->envp = envp;
+	return (cmd);
 }

@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/21 17:56:45 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/08/22 10:55:10 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 volatile sig_atomic_t g_signal_received = 0;
 
-void sigint_handler(int sig)
+void	sigint_handler(int sig)
 {
 	g_signal_received = sig;
 	write(STDOUT_FILENO, "\n", 1);
@@ -23,7 +23,7 @@ void sigint_handler(int sig)
 	rl_redisplay();
 }
 
-void setup_signals()
+void	setup_signals()
 {
 	signal(SIGINT, sigint_handler);
 	signal(SIGQUIT, SIG_IGN);
@@ -39,7 +39,7 @@ int	main(int argc, char **argv, char **envp)
 	// }
 	setup_signals();
 	if (isatty(STDIN_FILENO))
-		interactive_shell(envp, argv, envp);
+		interactive_shell(argc, argv, envp);
 	else
 		non_interactve_shell(argc, argv, envp);
 }
