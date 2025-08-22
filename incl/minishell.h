@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/21 17:57:07 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:05:51 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,6 +178,21 @@ typedef struct s_shell {
 // FIXME: EXTERN IS NOT ALLOWED
 extern volatile sig_atomic_t g_signal_received;
 
+// ============================================================================
+// FUNCTION PROTOTYPES
+// ============================================================================
+
+// Signal handling (signals.c)
+void			sigint_handler(int sig);
+void			setup_signals(void);
+
+// Shell initialization and management (shell.c)
+t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
+t_shell			*shell_init(char **env);
+
+// Utility functions (utils.c)
+void			print_str_array(char **str_array);
+
 //WARN: No needed anywhere?
 void	print_str_array(char **str_array);
 
@@ -194,5 +209,16 @@ int	print_working_directory(void);
 
 // Parsing
 t_command	*parse_args(char *input, char **penv);
+
+// Signal handling (signals.c)
+void			sigint_handler(int sig);
+void			setup_signals(void);
+
+// Shell initialization and management (shell.c)
+t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
+t_shell			*shell_init(char **env);
+
+// Utility functions (utils.c)
+void			print_str_array(char **str_array);
 
 #endif
