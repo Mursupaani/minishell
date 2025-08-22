@@ -1,21 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   change_directory.c                                 :+:      :+:    :+:   */
+/*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/20 12:06:30 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/22 10:44:06 by anpollan         ###   ########.fr       */
+/*   Created: 2025/08/22 11:45:53 by anpollan          #+#    #+#             */
+/*   Updated: 2025/08/22 11:46:27 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	change_directory(const char *path)
+t_command	*parse_args(char *input, char **envp)
 {
-	if (chdir(path) == -1)
-		return (0);
-	return (1);
+	t_command	*cmd;
+	char		**argv;
 
+	cmd = (t_command *)ft_calloc(1, sizeof(t_command));
+	// error handling
+	argv = ft_split(input, ' ');
+	cmd->argv = argv;
+	cmd->envp = envp;
+	return (cmd);
 }
