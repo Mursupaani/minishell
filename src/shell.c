@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:40:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/08/22 15:51:20 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:52:46 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,12 @@ void	cleanup_shell_partial(t_shell *shell, int level)
 
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena)
 {
+	// TODO: Implement hash table population from environment variables
+	// 1. Create hash function for environment variable keys
+	// 2. Parse each envp entry (split on '=' character)
+	// 3. Allocate t_env_entry structs using arena_alloc
+	// 4. Store key/value pairs in hash table buckets
+	// 5. Handle collision chaining with ->next pointers
 	(void)envp;
 	(void)arena;
 	return (NULL);

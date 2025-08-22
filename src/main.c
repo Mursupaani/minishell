@@ -14,22 +14,6 @@
 
 volatile sig_atomic_t g_signal_received = 0;
 
-void	sigint_handler(int sig)
-{
-	g_signal_received = sig;
-	write(STDOUT_FILENO, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-}
-
-void	setup_signals()
-{
-	signal(SIGINT, sigint_handler);
-	signal(SIGQUIT, SIG_IGN);
-}
-volatile sig_atomic_t	g_signal_received = 0;
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	*shell;
@@ -48,7 +32,10 @@ int	main(int argc, char **argv, char **envp)
 	if (isatty(STDIN_FILENO))
 		interactive_shell(argc, argv, envp);
 	else
-		non_interactive_shell(argc, argv, envp);
+		non_interactve_shell(argc, argv, envp);
+	// TODO: Initialize shell once before main loop, not inside it
+	// shell = shell_init(envp);
+	
 	while (1)
 	{
 		g_signal_received = 0;
@@ -70,9 +57,16 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		}
 		add_history(input);
-		shell = shell_init(envp);
+		
+		// TODO: Connect parsing and execution
+		// t_command *cmd = parse_args(input, envp);
+		// if (cmd)
+		//     execute_command(*cmd, envp);
+		
 		free(input);
 	}
+	// TODO: Add proper cleanup - free shell and its allocated memory
+	// cleanup_shell_partial(shell, 3);
 	print_str_array(envp);
 	return (EXIT_SUCCESS);
 }

@@ -193,9 +193,6 @@ t_shell			*shell_init(char **env);
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
 
-//WARN: No needed anywhere?
-void	print_str_array(char **str_array);
-
 // Shell modes
 int	interactive_shell(int argc, char **argv, char **envp);
 int	non_interactve_shell(int argc, char **argv, char **envp);
