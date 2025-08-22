@@ -6,15 +6,13 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/20 12:18:02 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/08/21 17:56:45 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 volatile sig_atomic_t g_signal_received = 0;
-
-static void	print_str_array(char **str_array);
 
 void sigint_handler(int sig)
 {
@@ -31,51 +29,22 @@ void setup_signals()
 	signal(SIGQUIT, SIG_IGN);
 }
 
-int	main(int argc, char **argv, char **env)
+int	main(int argc, char **argv, char **envp)
 {
-	t_shell *shell;
-	char *input;
-
-	(void)argv;
-	shell = malloc(sizeof(t_shell));
-	if (!shell)
-		return (EXIT_FAILURE);
-	if(argc != 1)
-	{
-		write(STDERR_FILENO, "Usage: ./minishell\n", 20);
-		return (EXIT_FAILURE);
-	}
+	// No need for this because of non-interactive shell?
+	// if(argc != 1)
+	// {
+	// 	write(STDERR_FILENO, "Usage: ./minishell\n", 20);
+	// 	return (EXIT_FAILURE);
+	// }
 	setup_signals();
-	while (1)
-	{
-		g_signal_received = 0;
-		input = readline("minishell$ ");
-		if(!input)
-		{
-			write(STDOUT_FILENO, "exit\n", 5);
-			break;
-		}
-		if(g_signal_received == SIGINT)
-		{
-			if(input)
-				free(input);
-			continue;
-		}
-		if(input[0] == '\0')
-		{
-			free(input);
-			continue;
-		}
-		change_directory(input);
-		print_working_directory();
-		add_history(input);
-		free(input);
-	}
-	return (EXIT_SUCCESS);
-	print_str_array(env);
+	if (isatty(STDIN_FILENO))
+		interactive_shell(envp, argv, envp);
+	else
+		non_interactve_shell(argc, argv, envp);
 }
 
-static void	print_str_array(char **str_array)
+void	print_str_array(char **str_array)
 {
 	int	i;
 

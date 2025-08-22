@@ -6,13 +6,14 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/20 12:17:16 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/08/21 17:57:07 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include <errno.h>
 # include <curses.h>
 # include <dirent.h>
 # include <fcntl.h>
@@ -172,6 +173,17 @@ typedef struct s_shell {
 // FIXME: EXTERN IS NOT ALLOWED
 extern volatile sig_atomic_t g_signal_received;
 
+//WARN: No needed anywhere?
+void	print_str_array(char **str_array);
+
+// Shell modes
+int	interactive_shell(int argc, char **argv, char **envp);
+int	non_interactve_shell(int argc, char **argv, char **envp);
+
+// Execution
+int	execute_args(char ** args, char **envp);
+
+// Built-in commands
 int	change_directory(const char *path);
 int	print_working_directory(void);
 
