@@ -16,13 +16,13 @@ volatile sig_atomic_t g_signal_received = 0;
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_shell	*shell;
+	// t_shell	*shell;
 	char	*input;
 
 	(void)argv;
-	shell = malloc(sizeof(t_shell));
-	if (!shell)
-		return (EXIT_FAILURE);
+	// shell = malloc(sizeof(t_shell));
+	// if (!shell)
+	// 	return (EXIT_FAILURE);
 	if (argc != 1)
 	{
 		write(STDERR_FILENO, "Usage: ./minishell\n", 20);
@@ -67,6 +67,6 @@ int	main(int argc, char **argv, char **envp)
 	}
 	// TODO: Add proper cleanup - free shell and its allocated memory
 	// cleanup_shell_partial(shell, 3);
-	print_str_array(envp);
+	// print_str_array(envp);
 	return (EXIT_SUCCESS);
 }

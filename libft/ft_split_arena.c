@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 11:08:01 by magebreh          #+#    #+#             */
-/*   Updated: 2025/08/23 10:51:43 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/08/23 12:12:47 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	count_words(const char *s, char c)
 	return (word);
 }
 
-int	fill_words(char **result, const char *s, char c)
+int	fill_words_arena(char **result, const char *s, char c, t_arena *arena)
 {
 	int	i;
 	int	w;
@@ -73,7 +73,7 @@ int	fill_words(char **result, const char *s, char c)
 		if (s[i])
 		{
 			len = word_length(&s[i], c);
-			result[w] = ft_substr(s, i, len);
+			result[w] = ft_substr_arena(s, i, len, arena);
 			if (!result[w])
 			{
 				free_split(result, w);
@@ -97,7 +97,7 @@ char	**ft_split_arena(char const *s, char c, t_arena *arena)
 	result = arena_alloc(arena, sizeof(char *) * (word_count + 1));
 	if (!result)
 		return (NULL);
-	if (!fill_words(result, s, c))
+	if (!fill_words_arena(result, s, c, arena))
 		return (NULL);
 	result[word_count] = NULL;
 	return (result);
