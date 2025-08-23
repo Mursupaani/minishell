@@ -21,17 +21,15 @@ int	execute_command(t_command *cmd)
 		if (execve(cmd->argv[0], cmd->argv, cmd->envp) == -1)
 		{
 		// Replace this with similar to bash?
-			cmd->error = errno;
-			perror(strerror(cmd->error));
+			perror(strerror(errno));
+			return (errno);
 		}
 	}
 	// How does the last parameter work?
 	if (waitpid(cmd->pid, &cmd->status, 0))
 	{
 		// Replace this with proper error handling
-		cmd->error = errno;
-		perror(strerror(cmd->error));
-
+		perror(strerror(errno));
 	}
 	return (cmd->status);
 }
