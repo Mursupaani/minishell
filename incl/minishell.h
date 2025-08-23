@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/22 16:05:51 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/23 20:39:02 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,6 +208,7 @@ int	execute_command(t_command *cmd);
 // Built-in commands
 int	change_directory(t_command *cmd);
 int	print_working_directory(t_command *cmd);
+int	ft_echo(t_command *cmd);
 
 // Parsing
 t_command	*parse_args(char *input, char **envp, t_arena *arena);

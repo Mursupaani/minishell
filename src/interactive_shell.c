@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 17:40:17 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/22 11:44:26 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/08/23 20:47:39 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,9 @@ int	interactive_shell(int argc, char **argv, char **envp)
 	(void)argv;
 	while (1)
 	{
+		g_signal_received = 0;
 		if (!shell->command_arena)
 			shell->command_arena = arena_init(COMMAND_ARENA_SIZE);
-		g_signal_received = 0;
 		shell->input = readline("minishell$ ");
 		if(!shell->input)
 		{
@@ -54,9 +54,11 @@ int	interactive_shell(int argc, char **argv, char **envp)
 			shell->last_exit_status = change_directory(cmd);
 		else if (ft_strncmp(cmd->argv[0], "pwd", ft_strlen(cmd->argv[0])) == 0)
 			shell->last_exit_status = print_working_directory(cmd);
+		else if (ft_strncmp(cmd->argv[0], "echo", ft_strlen(cmd->argv[0])) == 0)
+			shell->last_exit_status = ft_echo(cmd);
 		else
 			shell->last_exit_status = execute_command(cmd);
-		printf("Exit status: %d\n", shell->last_exit_status);
+		// printf("Exit status: %d\n", shell->last_exit_status);
 		add_history(shell->input);
 		arena_free(&shell->command_arena);
 		free(shell->input);
