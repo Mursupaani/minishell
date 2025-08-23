@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 14:33:26 by magebreh          #+#    #+#             */
-/*   Updated: 2025/08/04 21:06:24 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/23 10:50:52 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,5 +123,6 @@ t_arena	*arena_init(size_t	capacity);
 void	*arena_alloc(t_arena *arena, size_t size);
 void	arena_reset(t_arena *arena);
 void	arena_free(t_arena **arena);
+char	**ft_split_arena(char const *s, char c, t_arena *arena);
 
 #endif

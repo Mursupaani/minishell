@@ -33,6 +33,9 @@
 # include <unistd.h>
 # include <../libft/libft.h>
 
+#define COMMAND_ARENA_SIZE 1024
+#define SESSION_ARENA_SIZE 1024
+
 // ============================================================================
 // HASH TABLE FOR ENVIRONMENT (Simple implementation)
 // ============================================================================
@@ -145,6 +148,9 @@ typedef enum e_shell_mode {
 } t_shell_mode;
 
 typedef struct s_shell {
+	// User input
+	char			*input;
+
     // Environment subsystem
     t_hash_table    *env_table;        // Hash table for environment
     char            **env_array;       // Built from env_table before fork
@@ -198,14 +204,14 @@ int	interactive_shell(int argc, char **argv, char **envp);
 int	non_interactve_shell(int argc, char **argv, char **envp);
 
 // Execution
-int	execute_command(t_command command, char **envp);
+int	execute_command(t_command *cmd);
 
 // Built-in commands
 int	change_directory(const char *path);
 int	print_working_directory(void);
 
 // Parsing
-t_command	*parse_args(char *input, char **penv);
+t_command	*parse_args(char *input, char **envp, t_arena *arena);
 
 // Signal handling (signals.c)
 void			sigint_handler(int sig);
