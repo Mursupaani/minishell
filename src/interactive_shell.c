@@ -19,7 +19,6 @@ int	interactive_shell(int argc, char **argv, char **envp)
 {
 	t_shell		*shell;
 	t_command	*cmd;
-	int			status;
 
 	shell = initialize_shell();
 	if (!shell)
@@ -51,10 +50,13 @@ int	interactive_shell(int argc, char **argv, char **envp)
 			continue;
 		}
 		cmd = parse_args(shell->input, envp, shell->command_arena);
-		status = execute_command(cmd);
-		printf("Exit status: %d\n", status);
-		// change_directory(input);
-		// print_working_directory();
+		if (ft_strncmp(cmd->argv[0], "cd", ft_strlen(cmd->argv[0])) == 0)
+			shell->last_exit_status = change_directory(cmd);
+		else if (ft_strncmp(cmd->argv[0], "pwd", ft_strlen(cmd->argv[0])) == 0)
+			shell->last_exit_status = print_working_directory(cmd);
+		else
+			shell->last_exit_status = execute_command(cmd);
+		printf("Exit status: %d\n", shell->last_exit_status);
 		add_history(shell->input);
 		arena_free(&shell->command_arena);
 		free(shell->input);

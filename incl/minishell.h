@@ -121,7 +121,6 @@ typedef struct s_command {
     
 	// Child process status and error
 	int			status;
-	int			error;
     struct s_command *next;
 } t_command;
 
@@ -207,8 +206,8 @@ int	non_interactve_shell(int argc, char **argv, char **envp);
 int	execute_command(t_command *cmd);
 
 // Built-in commands
-int	change_directory(const char *path);
-int	print_working_directory(void);
+int	change_directory(t_command *cmd);
+int	print_working_directory(t_command *cmd);
 
 // Parsing
 t_command	*parse_args(char *input, char **envp, t_arena *arena);
