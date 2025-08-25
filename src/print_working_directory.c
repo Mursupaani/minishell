@@ -22,9 +22,7 @@ int	print_working_directory(t_command *cmd)
 		return (1);
 	}
 	if (!getcwd(buf, sizeof(buf)))
-	{
 		perror(strerror(errno));
-	}
 	printf("%s\n", buf);
 	return (0);
 }

@@ -76,8 +76,7 @@ typedef struct s_token {
 // COMMAND STRUCTURES (same as before)
 // ============================================================================
 typedef enum e_cmd_type {
-    CMD_BUILTIN_PARENT,    // cd, export, unset, exit (run in shell process)
-    CMD_BUILTIN_CHILD,     // echo, pwd, env (run in child)
+    CMD_BUILTIN,           // cd, export, unset, exit echo, pwd, env (run in shell process)
     CMD_EXTERNAL           // everything else
 } t_cmd_type;
 
@@ -112,6 +111,7 @@ typedef struct s_command {
 	// Do we need this inside t_command?
 	char		**envp;
     t_cmd_type	cmd_type;
+	t_builtin_type	built_in_type;
     t_redir		*redirections;  // ordered list of redirections
     
     // Pipe management
@@ -203,7 +203,9 @@ int	interactive_shell(int argc, char **argv, char **envp);
 int	non_interactve_shell(int argc, char **argv, char **envp);
 
 // Execution
-int	execute_command(t_command *cmd);
+int	choose_execution_type(t_command *cmd);
+int	execute_external_command(t_command *cmd);
+int	execute_builtin_command(t_command *cmd);
 
 // Built-in commands
 int	change_directory(t_command *cmd);

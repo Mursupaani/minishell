@@ -14,6 +14,7 @@
 
 int	ft_echo(t_command *cmd)
 {
+	// TODO: Add support for envp. Check if can be made more tidy.
 	if (!cmd->argv[1])
 		printf("\n");
 	else if (strncmp(cmd->argv[1], "-n", ft_strlen(cmd->argv[1])) == 0)
