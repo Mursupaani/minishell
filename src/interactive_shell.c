@@ -14,6 +14,7 @@
 
 static t_shell	*initialize_shell(void);
 static void	free_memory(t_shell *shell);
+static int	choose_command_execution(t_shell *shell, t_command *cmd);
 
 int	interactive_shell(int argc, char **argv, char **envp)
 {
@@ -50,14 +51,7 @@ int	interactive_shell(int argc, char **argv, char **envp)
 			continue;
 		}
 		cmd = parse_args(shell->input, envp, shell->command_arena);
-		if (ft_strncmp(cmd->argv[0], "cd", ft_strlen(cmd->argv[0])) == 0)
-			shell->last_exit_status = change_directory(cmd);
-		else if (ft_strncmp(cmd->argv[0], "pwd", ft_strlen(cmd->argv[0])) == 0)
-			shell->last_exit_status = print_working_directory(cmd);
-		else if (ft_strncmp(cmd->argv[0], "echo", ft_strlen(cmd->argv[0])) == 0)
-			shell->last_exit_status = ft_echo(cmd);
-		else
-			shell->last_exit_status = execute_command(cmd);
+		choose_command_execution(shell, cmd);
 		// printf("Exit status: %d\n", shell->last_exit_status);
 		add_history(shell->input);
 		arena_free(&shell->command_arena);
@@ -100,4 +94,17 @@ static void	free_memory(t_shell *shell)
 	if (shell->session_arena)
 		arena_free(&shell->session_arena);
 	free(shell);
+}
+
+static int	choose_command_execution(t_shell *shell, t_command *cmd)
+{
+	if (ft_strncmp(cmd->argv[0], "cd", ft_strlen(cmd->argv[0])) == 0)
+		shell->last_exit_status = change_directory(cmd);
+	else if (ft_strncmp(cmd->argv[0], "pwd", ft_strlen(cmd->argv[0])) == 0)
+		shell->last_exit_status = print_working_directory(cmd);
+	else if (ft_strncmp(cmd->argv[0], "echo", ft_strlen(cmd->argv[0])) == 0)
+		shell->last_exit_status = ft_echo(cmd);
+	else
+		shell->last_exit_status = execute_command(cmd);
+	return (shell->last_exit_status);
 }

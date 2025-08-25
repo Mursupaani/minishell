@@ -23,11 +23,12 @@ int	main(int argc, char **argv, char **envp)
 	// shell = malloc(sizeof(t_shell));
 	// if (!shell)
 	// 	return (EXIT_FAILURE);
-	if (argc != 1)
-	{
-		write(STDERR_FILENO, "Usage: ./minishell\n", 20);
-		return (EXIT_FAILURE);
-	}
+	//FIXME: Can't have this. Shell has to be able to run non-interactive
+	// if (argc != 1)
+	// {
+	// 	write(STDERR_FILENO, "Usage: ./minishell\n", 20);
+	// 	return (EXIT_FAILURE);
+	// }
 	setup_signals();
 	if (isatty(STDIN_FILENO))
 		interactive_shell(argc, argv, envp);

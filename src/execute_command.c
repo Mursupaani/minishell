@@ -26,7 +26,7 @@ int	execute_command(t_command *cmd)
 		}
 	}
 	// How does the last parameter work?
-	if (waitpid(cmd->pid, &cmd->status, 0))
+	if (waitpid(cmd->pid, &cmd->status, 0) == -1)
 	{
 		// Replace this with proper error handling
 		perror(strerror(errno));
