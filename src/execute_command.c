@@ -12,6 +12,7 @@
 
 #include "minishell.h"
 
+
 int	choose_execution_type(t_command *cmd)
 {
 	if (cmd->cmd_type == CMD_BUILTIN)

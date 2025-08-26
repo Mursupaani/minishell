@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/23 20:39:02 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/08/24 14:00:18 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,6 +194,8 @@ void			setup_signals(void);
 // Shell initialization and management (shell.c)
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
 t_shell			*shell_init(char **env);
+void			debug_print_env_table(t_hash_table *table);
+void			test_env_lookup(t_hash_table *table);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
@@ -225,5 +227,7 @@ t_shell			*shell_init(char **env);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
+void	        cleanup_shell_partial(t_shell *shell, int level);
+
 
 #endif
