@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/22 21:26:53 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/26 15:55:53 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ volatile sig_atomic_t g_signal_received = 0;
 
 int	main(int argc, char **argv, char **envp)
 {
-	// t_shell	*shell;
+	t_shell	*shell;
 	char	*input;
 
 	(void)argv;
@@ -25,7 +25,6 @@ int	main(int argc, char **argv, char **envp)
 		write(STDERR_FILENO, "Usage: ./minishell\n", 20);
 		return (EXIT_FAILURE);
 	}
-	
 	// Initialize shell first
 	shell = shell_init(envp);
 	if (!shell)

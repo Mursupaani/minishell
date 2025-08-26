@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:40:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/08/25 18:01:49 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/26 16:01:29 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,8 @@ void hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena)
 
     if (!table || !key || !value)
         return;
-    
     index = hash_function(key);
     current = table->buckets[index];
-    // Step 1: Search existing entries in this bucket
     while (current)
     {
         if(ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
@@ -64,7 +62,6 @@ void hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena)
         }
         current = current->next;
     }
-    // Step 2: Key not found, create new entry
     entry = arena_alloc(arena, sizeof(t_env_entry));
     if (!entry)
         return;

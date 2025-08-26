@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:40:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/08/25 13:15:59 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/26 16:22:09 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,13 @@ char *arena_strdup(const char *s, t_arena *arena)
 		return (NULL);
 	ft_strlcpy(copy, s, ft_strlen(s) + 1);
 	return (copy);
+}
+
+char *skip_whitespace(char *pos)
+{
+    if(!pos)
+        return (NULL);
+    while (*pos && ((*pos >= 9 && *pos <= 13) || *pos == 32))
+		pos++;
+    return (pos);
 }
