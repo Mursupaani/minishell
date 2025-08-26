@@ -123,5 +123,6 @@ t_arena	*arena_init(size_t	capacity);
 void	*arena_alloc(t_arena *arena, size_t size);
 void	arena_reset(t_arena *arena);
 void	arena_free(t_arena **arena);
+char	*arena_strdup(const char *src, t_arena *arena);
 
 #endif

@@ -12,26 +12,28 @@
 
 #include "minishell.h"
 
-// include char **envp inside cmd?
 int	execute_command(t_command cmd, char **envp)
 {
+	if (!cmd.argv || !cmd.argv[0])
+		return (0);
+	
+	if (ft_strncmp(cmd.argv[0], "exit", 4) == 0 && ft_strlen(cmd.argv[0]) == 4)
+		exit(0);
+	
 	cmd.pid = fork();
 	if (cmd.pid == 0)
 	{
 		if (execve(cmd.argv[0], cmd.argv, envp) == -1)
 		{
-		// Replace this with similar to bash?
 			cmd.error = errno;
 			perror(strerror(cmd.error));
+			exit(127);
 		}
 	}
-	// How does the last parameter work?
-	if (waitpid(cmd.pid, &cmd.status, 0))
+	if (waitpid(cmd.pid, &cmd.status, 0) == -1)
 	{
-		// Replace this with proper error handling
 		cmd.error = errno;
 		perror(strerror(cmd.error));
-
 	}
-	return (cmd.status);
+	return (WEXITSTATUS(cmd.status));
 }
