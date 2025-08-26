@@ -41,7 +41,10 @@ void	*arena_alloc(t_arena *arena, size_t size)
 	{
 		while (arena->next)
 			arena = arena->next;
-		arena->next = arena_init(arena->capacity);
+		if (size > arena->capacity)
+			arena->next = arena_init(size);
+		else
+			arena->next = arena_init(arena->capacity);
 		if (!arena->next)
 			return (NULL);
 		arena = arena->next;

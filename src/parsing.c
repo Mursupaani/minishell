@@ -12,14 +12,18 @@
 
 #include "minishell.h"
 
-t_command	*parse_args(char *input, char **envp)
+t_command	*parse_args(char *input, char **envp, t_arena *arena)
 {
 	t_command	*cmd;
 	char		**argv;
 
-	cmd = (t_command *)ft_calloc(1, sizeof(t_command));
+	cmd = (t_command *)arena_alloc(arena, sizeof(t_command));
+	if (!cmd)
+		printf("arena fail cmd\n");
 	// error handling
-	argv = ft_split(input, ' ');
+	argv = ft_split_arena(input, ' ', arena);
+	if (!argv)
+		printf("arena fail argv\n");
 	cmd->argv = argv;
 	cmd->envp = envp;
 	return (cmd);

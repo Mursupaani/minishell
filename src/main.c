@@ -16,7 +16,7 @@ volatile sig_atomic_t g_signal_received = 0;
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_shell	*shell;
+	// t_shell	*shell;
 	char	*input;
 
 	(void)argv;
@@ -38,7 +38,6 @@ int	main(int argc, char **argv, char **envp)
 	printf("DEBUG: Printing parsed environment variables:\n");
 	debug_print_env_table(shell->env_table);
 	test_env_lookup(shell->env_table);
-	
 	setup_signals();
 	if (isatty(STDIN_FILENO))
 		interactive_shell(argc, argv, envp);
@@ -77,6 +76,5 @@ int	main(int argc, char **argv, char **envp)
 	}
 	// TODO: Add proper cleanup - free shell and its allocated memory
 	// cleanup_shell_partial(shell, 3);
-	//print_str_array(envp);
 	return (EXIT_SUCCESS);
 }

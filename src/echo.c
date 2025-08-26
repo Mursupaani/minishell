@@ -1,28 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_working_directory.c                          :+:      :+:    :+:   */
+/*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/15 15:59:58 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/20 12:17:07 by anpollan         ###   ########.fr       */
+/*   Created: 2025/08/23 20:21:55 by anpollan          #+#    #+#             */
+/*   Updated: 2025/08/23 21:04:26 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	print_working_directory(t_command *cmd)
+int	ft_echo(t_command *cmd)
 {
-	char	buf[1024];
-
-	if (cmd->argv[1] != NULL)
+	// TODO: Add support for envp. Check if can be made more tidy.
+	if (!cmd->argv[1])
+		printf("\n");
+	else if (strncmp(cmd->argv[1], "-n", ft_strlen(cmd->argv[1])) == 0)
+	{
+		if (cmd->argv[2] && cmd->argv[3])
+		{
+			ft_putstr_fd("Too many arguments\n", STDERR_FILENO);
+			return (1);
+		}
+		if (cmd->argv[2])
+			printf("%s", cmd->argv[2]);
+	}
+	else if (cmd->argv[1] && cmd->argv[2])
 	{
 		ft_putstr_fd("Too many arguments\n", STDERR_FILENO);
 		return (1);
 	}
-	if (!getcwd(buf, sizeof(buf)))
-		perror(strerror(errno));
-	printf("%s\n", buf);
+	else
+	{
+		if (cmd->argv[1])
+			printf("%s\n", cmd->argv[1]);
+	}
 	return (0);
 }

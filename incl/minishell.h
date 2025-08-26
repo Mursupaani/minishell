@@ -33,6 +33,9 @@
 # include <unistd.h>
 # include <../libft/libft.h>
 
+#define COMMAND_ARENA_SIZE 1024
+#define SESSION_ARENA_SIZE 1024
+
 // ============================================================================
 // HASH TABLE FOR ENVIRONMENT (Simple implementation)
 // ============================================================================
@@ -73,8 +76,7 @@ typedef struct s_token {
 // COMMAND STRUCTURES (same as before)
 // ============================================================================
 typedef enum e_cmd_type {
-    CMD_BUILTIN_PARENT,    // cd, export, unset, exit (run in shell process)
-    CMD_BUILTIN_CHILD,     // echo, pwd, env (run in child)
+    CMD_BUILTIN,           // cd, export, unset, exit echo, pwd, env (run in shell process)
     CMD_EXTERNAL           // everything else
 } t_cmd_type;
 
@@ -109,6 +111,7 @@ typedef struct s_command {
 	// Do we need this inside t_command?
 	char		**envp;
     t_cmd_type	cmd_type;
+	t_builtin_type	built_in_type;
     t_redir		*redirections;  // ordered list of redirections
     
     // Pipe management
@@ -118,7 +121,6 @@ typedef struct s_command {
     
 	// Child process status and error
 	int			status;
-	int			error;
     struct s_command *next;
 } t_command;
 
@@ -145,6 +147,9 @@ typedef enum e_shell_mode {
 } t_shell_mode;
 
 typedef struct s_shell {
+	// User input
+	char			*input;
+
     // Environment subsystem
     t_hash_table    *env_table;        // Hash table for environment
     char            **env_array;       // Built from env_table before fork
@@ -200,14 +205,17 @@ int	interactive_shell(int argc, char **argv, char **envp);
 int	non_interactve_shell(int argc, char **argv, char **envp);
 
 // Execution
-int	execute_command(t_command command, char **envp);
+int	choose_execution_type(t_command *cmd);
+int	execute_external_command(t_command *cmd);
+int	execute_builtin_command(t_command *cmd);
 
 // Built-in commands
-int	change_directory(const char *path);
-int	print_working_directory(void);
+int	change_directory(t_command *cmd);
+int	print_working_directory(t_command *cmd);
+int	ft_echo(t_command *cmd);
 
 // Parsing
-t_command	*parse_args(char *input, char **penv);
+t_command	*parse_args(char *input, char **envp, t_arena *arena);
 
 // Signal handling (signals.c)
 void			sigint_handler(int sig);
