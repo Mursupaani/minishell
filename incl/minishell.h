@@ -228,6 +228,7 @@ t_shell			*shell_init(char **env);
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
 void	        cleanup_shell_partial(t_shell *shell, int level);
+char *arena_strdup(const char *s, t_arena *arena);
 
 
 #endif
