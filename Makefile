@@ -27,7 +27,7 @@ INCL_DIR = incl
 # Core libft sources
 SRC = main.c print_working_directory.c change_directory.c execute_command.c \
 	  interactive_shell.c non_interactive_shell.c parsing.c signals.c shell.c \
-	  utils.c echo.c
+	  utils.c echo.c token.c
 
 # Combined sources
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)

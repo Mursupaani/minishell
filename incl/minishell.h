@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/24 14:00:18 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/27 19:45:00 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,8 +194,6 @@ void			setup_signals(void);
 // Shell initialization and management (shell.c)
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
 t_shell			*shell_init(char **env);
-void			debug_print_env_table(t_hash_table *table);
-void			test_env_lookup(t_hash_table *table);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
@@ -216,6 +214,17 @@ int	ft_echo(t_command *cmd);
 
 // Parsing
 t_command	*parse_args(char *input, char **envp, t_arena *arena);
+
+// Tokenizer functions (token.c)
+t_token		*tokenize(char *input, t_arena *arena);
+
+// Utility functions for tokenizer (utils.c)
+char		*skip_whitespace(char *pos);
+char		*arena_substr(char *src, size_t start, size_t len, t_arena *arena);
+char		*arena_strdup(const char *s, t_arena *arena);
+int			ft_is_special_char(char c);
+int			ft_isspace(char c);
+char		**ft_split_arena(char const *s, char c, t_arena *arena);
 
 // Signal handling (signals.c)
 void			sigint_handler(int sig);
