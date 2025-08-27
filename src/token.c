@@ -12,6 +12,15 @@
 
 #include "minishell.h"
 
+// Forward declarations for static functions
+static t_token *create_next_token(char **pos, t_arena *arena);
+static t_token *tokenize_pipe(char **pos, t_arena *arena);
+static t_token *tokenize_input_redirect(char **pos, t_arena *arena);
+static t_token *tokenize_output_redirect(char **pos, t_arena *arena);
+static t_token *tokenize_double_quote(char **pos, t_arena *arena);
+static t_token *tokenize_single_quote(char **pos, t_arena *arena);
+static t_token *tokenize_word(char **pos, t_arena *arena);
+
 t_token *tokenize(char *input, t_arena *arena)
 {
 	t_token *head;
@@ -138,7 +147,7 @@ static t_token *tokenize_double_quote(char **pos, t_arena *arena)
 	char *end;
 	size_t content_len;
 
-	*(pos)++;
+	(*pos)++;
 	start = *pos;
 	end = *pos;
 	while (*end && *end != '"')
@@ -167,10 +176,10 @@ static t_token *tokenize_single_quote(char **pos, t_arena *arena)
 	char *end;
 	size_t content_len;
 
-	*(pos)++;
+	(*pos)++;
 	start = *pos;
 	end = *pos;
-	while(*end && *end != "'")
+	while(*end && *end != '\'')
 		end++;
 	if(!*end)
 		return (NULL);
@@ -198,7 +207,7 @@ static t_token *tokenize_word(char **pos, t_arena *arena)
 
 	start = *pos;
 	end = *pos;
-	while(*end && !ft_is_special_char(*end) && !ft_isspace(*end));
+	while(*end && !ft_is_special_char(*end) && !ft_isspace(*end))
 		end++;
 	if(start == end)
 		return (NULL);
