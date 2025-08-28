@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:40:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/08/26 16:01:29 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/27 19:44:21 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,56 +159,4 @@ t_shell	*shell_init(char **env)
 		return (NULL);
 	}
 	return (shell);
-}
-
-void debug_print_env_table(t_hash_table *table)
-{
-	int i;
-	t_env_entry *current;
-	int total_entries;
-
-	if (!table)
-	{
-		printf("DEBUG: Environment table is NULL\n");
-		return;
-	}
-	
-	printf("=== DEBUG: Environment Hash Table ===\n");
-	total_entries = 0;
-	i = 0;
-	while (i < HASH_TABLE_SIZE)
-	{
-		current = table->buckets[i];
-		if (current)
-		{
-			printf("Bucket [%d]:\n", i);
-			while (current)
-			{
-				printf("  key: %s\n", current->key ? current->key : "(null)");
-				printf("  value: %s\n", current->value ? current->value : "(null)");
-				current = current->next;
-				total_entries++;
-			}
-		}
-		i++;
-	}
-	printf("Total entries: %d\n", total_entries);
-	printf("=====================================\n");
-}
-
-void test_env_lookup(t_hash_table *table)
-{
-	char *test_vars[] = {"PATH", "HOME", "USER", "SHELL", "PWD", NULL};
-	int i;
-	char *value;
-	
-	printf("\n=== Testing Environment Variable Lookup ===\n");
-	i = 0;
-	while (test_vars[i])
-	{
-		value = hash_table_get(table, test_vars[i]);
-		printf("%s = %s\n", test_vars[i], value ? value : "(not found)");
-		i++;
-	}
-	printf("==========================================\n");
 }
