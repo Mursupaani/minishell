@@ -13,16 +13,15 @@
 #include "minishell.h"
 
 
-int	choose_execution_type(t_command *cmd)
+void	choose_execution_type(t_command *cmd, t_shell *shell)
 {
 	if (cmd->cmd_type == CMD_BUILTIN)
-		execute_builtin_command(cmd);
+		execute_builtin_command(cmd, shell);
 	else
-		execute_external_command(cmd);
-	return (cmd->status);
+		execute_external_command(cmd, shell);
 }
 // include char **envp inside cmd?
-int	execute_external_command(t_command *cmd)
+void	execute_external_command(t_command *cmd, t_shell *shell)
 {
 	cmd->pid = fork();
 	if (cmd->pid == 0)
@@ -31,7 +30,7 @@ int	execute_external_command(t_command *cmd)
 		{
 		// Replace this with similar to bash?
 			perror(strerror(errno));
-			return (errno);
+			shell->last_exit_status = errno;
 		}
 	}
 	// How does the last parameter work?
@@ -40,16 +39,15 @@ int	execute_external_command(t_command *cmd)
 		// Replace this with proper error handling
 		perror(strerror(errno));
 	}
-	return (cmd->status);
+	shell->last_exit_status = errno;
 }
 
-int	execute_builtin_command(t_command *cmd)
+void	execute_builtin_command(t_command *cmd, t_shell *shell)
 {
 	if (ft_strncmp(cmd->argv[0], "cd", ft_strlen(cmd->argv[0])) == 0)
-		return (change_directory(cmd));
+		change_directory(cmd, shell);
 	else if (ft_strncmp(cmd->argv[0], "pwd", ft_strlen(cmd->argv[0])) == 0)
-		return (print_working_directory(cmd));
+		print_working_directory(cmd, shell);
 	else if (ft_strncmp(cmd->argv[0], "echo", ft_strlen(cmd->argv[0])) == 0)
-		return (ft_echo(cmd));
-	else return (1);
+		ft_echo(cmd, shell);
 }

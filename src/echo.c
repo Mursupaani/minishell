@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	ft_echo(t_command *cmd)
+void	ft_echo(t_command *cmd, t_shell *shell)
 {
 	// TODO: Add support for envp. Check if can be made more tidy.
 	if (!cmd->argv[1])
@@ -22,7 +22,8 @@ int	ft_echo(t_command *cmd)
 		if (cmd->argv[2] && cmd->argv[3])
 		{
 			ft_putstr_fd("Too many arguments\n", STDERR_FILENO);
-			return (1);
+			shell->last_exit_status = 1;
+			exit(1);
 		}
 		if (cmd->argv[2])
 			printf("%s", cmd->argv[2]);
@@ -30,12 +31,13 @@ int	ft_echo(t_command *cmd)
 	else if (cmd->argv[1] && cmd->argv[2])
 	{
 		ft_putstr_fd("Too many arguments\n", STDERR_FILENO);
-		return (1);
+		shell->last_exit_status = 1;
+		exit(1);
 	}
 	else
 	{
 		if (cmd->argv[1])
 			printf("%s\n", cmd->argv[1]);
 	}
-	return (0);
+	shell->last_exit_status = 0;
 }

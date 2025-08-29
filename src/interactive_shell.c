@@ -50,7 +50,7 @@ int	interactive_shell(int argc, char **argv, char **envp)
 			continue;
 		}
 		cmd = parse_args(shell->input, envp, shell->command_arena);
-		shell->last_exit_status = choose_execution_type(cmd);
+		choose_execution_type(cmd, shell);
 		add_history(shell->input);
 		arena_free(&shell->command_arena);
 		free(shell->input);

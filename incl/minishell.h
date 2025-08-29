@@ -203,14 +203,14 @@ int	interactive_shell(int argc, char **argv, char **envp);
 int	non_interactve_shell(int argc, char **argv, char **envp);
 
 // Execution
-int	choose_execution_type(t_command *cmd);
-int	execute_external_command(t_command *cmd);
-int	execute_builtin_command(t_command *cmd);
+void	choose_execution_type(t_command *cmd, t_shell *shell);
+void	execute_external_command(t_command *cmd, t_shell *shell);
+void	execute_builtin_command(t_command *cmd, t_shell *shell);
 
 // Built-in commands
-int	change_directory(t_command *cmd);
-int	print_working_directory(t_command *cmd);
-int	ft_echo(t_command *cmd);
+void	change_directory(t_command *cmd, t_shell *shell);
+void	print_working_directory(t_command *cmd, t_shell *shell);
+void	ft_echo(t_command *cmd, t_shell *shell);
 
 // Parsing
 t_command	*parse_args(char *input, char **envp, t_arena *arena);
