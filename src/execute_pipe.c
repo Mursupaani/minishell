@@ -1,30 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_working_directory.c                          :+:      :+:    :+:   */
+/*   execute_pipe.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/15 15:59:58 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/29 16:08:25 by anpollan         ###   ########.fr       */
+/*   Created: 2025/08/29 16:06:25 by anpollan          #+#    #+#             */
+/*   Updated: 2025/08/29 16:12:44 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	print_working_directory(t_command *cmd)
+void	execute_pipe(t_command *cmd, t_shell *shell)
 {
-	char	buf[1024];
-
-	if (cmd->argv[1] != NULL)
-	{
-		ft_putstr_fd("Too many arguments\n", STDERR_FILENO);
-		exit(1);
-	}
-	if (!getcwd(buf, sizeof(buf)))
-	{
-		perror(strerror(errno));
-		exit(1);
-	}
-	printf("%s\n", buf);
+	(void)cmd;
+	(void)shell;
 }

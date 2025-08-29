@@ -6,7 +6,7 @@
 #    By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/24 11:49:18 by magebreh          #+#    #+#              #
-#    Updated: 2025/08/25 20:12:30 by magebreh         ###   ########.fr        #
+#    Updated: 2025/08/29 16:09:21 by anpollan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ INCL_DIR = incl
 # Core libft sources
 SRC = main.c print_working_directory.c change_directory.c execute_command.c \
 	  interactive_shell.c non_interactive_shell.c parsing.c signals.c shell.c \
-	  utils.c echo.c token.c
+	  utils.c echo.c token.c fork_one.c execute_pipe.c
 
 # Combined sources
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)

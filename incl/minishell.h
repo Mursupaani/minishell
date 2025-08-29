@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/27 19:45:00 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/29 16:12:20 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@
 // HASH TABLE FOR ENVIRONMENT (Simple implementation)
 // ============================================================================
 # define HASH_TABLE_SIZE 256
+typedef struct s_command t_command;
 
 typedef struct s_env_entry {
     char                *key;
@@ -76,6 +77,11 @@ typedef struct s_token {
 // COMMAND STRUCTURES (same as before)
 // ============================================================================
 typedef enum e_cmd_type {
+	CMD_BACKGROUND,
+	CMD_EXEC,
+	CMD_LIST,
+	CMD_PIPE,
+	CMD_REDIR,
     CMD_BUILTIN,           // cd, export, unset, exit echo, pwd, env (run in shell process)
     CMD_EXTERNAL           // everything else
 } t_cmd_type;
@@ -100,10 +106,12 @@ typedef enum e_redir_type {
 } t_redir_type;
 
 typedef struct s_redir {
-    t_redir_type    type;
-    char            *target;    // filename or heredoc delimiter
-    int             fd;         // file descriptor when opened
-    struct s_redir  *next;
+    t_redir_type		type;
+    char				*target;    // filename or heredoc delimiter
+    int					fd;         // file descriptor when opened
+	// FIXME: We need this to redirect the command.
+	struct s_command	*cmd_to_redir;
+    struct s_redir		*next;
 } t_redir;
 
 typedef struct s_command {
@@ -121,7 +129,9 @@ typedef struct s_command {
     
 	// Child process status and error
 	int			status;
-    struct s_command *next;
+    // struct s_command *next;
+    struct s_command *left;
+    struct s_command *right;
 } t_command;
 
 // ============================================================================
@@ -204,13 +214,15 @@ int	non_interactve_shell(int argc, char **argv, char **envp);
 
 // Execution
 void	choose_execution_type(t_command *cmd, t_shell *shell);
-void	execute_external_command(t_command *cmd, t_shell *shell);
-void	execute_builtin_command(t_command *cmd, t_shell *shell);
+void	execute_builtin_command(t_command *cmd);
+void	execute_command(t_command *cmd);
+void	execute_redirection(t_command *cmd, t_shell *shell);
+void	execute_pipe(t_command *cmd, t_shell *shell);
 
 // Built-in commands
-void	change_directory(t_command *cmd, t_shell *shell);
-void	print_working_directory(t_command *cmd, t_shell *shell);
-void	ft_echo(t_command *cmd, t_shell *shell);
+void	change_directory(t_command *cmd);
+void	print_working_directory(t_command *cmd);
+void	ft_echo(t_command *cmd);
 
 // Parsing
 t_command	*parse_args(char *input, char **envp, t_arena *arena);
@@ -238,6 +250,10 @@ t_shell			*shell_init(char **env);
 void			print_str_array(char **str_array);
 void	        cleanup_shell_partial(t_shell *shell, int level);
 char *arena_strdup(const char *s, t_arena *arena);
+
+// Error handling fork wrapper
+int	fork_one(t_command *cmd);
+
 
 
 #endif
