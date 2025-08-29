@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 11:45:53 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/28 19:52:26 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/29 16:47:53 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,11 +110,34 @@ int is_redir(t_token *token)
 t_token *handle_redir(t_command *current, t_token *token, t_arena *arena)
 {
     t_redir *redir;
-
+	t_token *target;
+	t_redir	*tail;
+	
+	target = token->next;
 	redir = arena_alloc(arena, sizeof(t_redir));
 	if(!redir)
 		return (NULL);
-	
+	if(target->type != TOKEN_WORD)
+		return (NULL);
+	redir = arena_alloc(arena, sizeof(t_redir));
+	if(!redir)
+		return (NULL);
+	redir->type = token_to_redir_type(token->type);
+	redir->target = arena_strdup(target->value, arena);
+	if(!redir->target)
+		return (NULL);
+	redir->fd = -1;
+	redir->next = NULL;
+	if(!current->redirections)
+		current->redirections = redir;
+	else
+	{
+		tail  = current->redirections;
+		while (tail->next)
+			tail = tail->next;
+		tail->next = redir;
+	}
+	return(target->next);
 }
 
 t_redir_type token_to_redir_type(t_token_type token_type)
