@@ -44,7 +44,7 @@ t_command *parse_pipeline(t_token *tokens, t_shell *shell)
         if(token->type == TOKEN_PIPE)
         {
 			if(!current || !current->argv || !current->argv[0])
-				return (NULL);			
+				return (NULL);
             new_cmd = create_command(shell->command_arena);
             if(!new_cmd)
                 return (NULL);
@@ -63,8 +63,9 @@ t_command *parse_pipeline(t_token *tokens, t_shell *shell)
                 if(!head)
                     head = current;
             }
-            token = handle_redir(current, token, shell->command_arena);
-			if(!token)
+            int redir_error;
+            token = handle_redir(current, token, shell->command_arena, &redir_error);
+			if(redir_error)
 				return (NULL);
         }
         else
@@ -111,23 +112,33 @@ int is_redir(t_token *token)
            token->type == TOKEN_HEREDOC);
 }
 
-t_token *handle_redir(t_command *current, t_token *token, t_arena *arena)
+t_token *handle_redir(t_command *current, t_token *token, t_arena *arena, int *error)
 {
     t_redir *redir;
     t_token *target;
     
+    *error = 0;
     target = token->next;
     if (!target || target->type != TOKEN_WORD)
+    {
+        *error = 1;
         return (NULL);
+    }
     
     redir = arena_alloc(arena, sizeof(t_redir));
     if (!redir)
+    {
+        *error = 1;
         return (NULL);
+    }
     
     redir->type = token_to_redir_type(token->type);
     redir->target = arena_strdup(target->value, arena);
     if (!redir->target)
+    {
+        *error = 1;
         return (NULL);
+    }
     redir->fd = -1;
     redir->next = NULL;
     attach_redir(current, redir);
