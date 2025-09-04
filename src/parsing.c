@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 11:45:53 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/29 17:58:26 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/29 21:00:40 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ t_command *parse_pipeline(t_token *tokens, t_shell *shell)
     {
         if(token->type == TOKEN_PIPE)
         {
+			if(!current || !current->argv || !current->argv[0])
+				return (NULL);			
             new_cmd = create_command(shell->command_arena);
             if(!new_cmd)
                 return (NULL);
@@ -62,6 +64,8 @@ t_command *parse_pipeline(t_token *tokens, t_shell *shell)
                     head = current;
             }
             token = handle_redir(current, token, shell->command_arena);
+			if(!token)
+				return (NULL);
         }
         else
         {
@@ -111,24 +115,23 @@ t_token *handle_redir(t_command *current, t_token *token, t_arena *arena)
 {
     t_redir *redir;
     t_token *target;
-    t_redir	*tail;
     
     target = token->next;
+    if (!target || target->type != TOKEN_WORD)
+        return (NULL);
+    
     redir = arena_alloc(arena, sizeof(t_redir));
-    if(!redir)
+    if (!redir)
         return (NULL);
-    if(target->type != TOKEN_WORD)
-        return (NULL);
-    redir = arena_alloc(arena, sizeof(t_redir));
-    if(!redir)
-        return (NULL);
+    
     redir->type = token_to_redir_type(token->type);
     redir->target = arena_strdup(target->value, arena);
-    if(!redir->target)
+    if (!redir->target)
         return (NULL);
     redir->fd = -1;
     redir->next = NULL;
     attach_redir(current, redir);
+    return (target->next);
 }
 
 void add_word_cmd(t_command *cmd, t_token *word, t_arena *arena)
@@ -191,6 +194,20 @@ void attach_redir(t_command *cmd, t_redir *redir)
             tail = tail->next;
         tail->next = redir;
     }
+}
+
+int needs_realloc(int current_count)
+{
+    int capacity;
+
+    if (current_count == 0)
+        return (1);
+    
+    capacity = 8;
+    while (capacity <= current_count)
+        capacity *= 2;
+    
+    return (current_count >= capacity / 2);
 }
 
 int calculate_new_capacity(int current_count)

@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/28 19:51:41 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/08/29 20:53:59 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,46 @@ static void print_tokens(t_token *tokens)
     printf("--- End of tokens ---\n");
 }
 
+static void print_commands(t_command *commands)
+{
+    t_command *cmd = commands;
+    int cmd_num = 1;
+    
+    while (cmd)
+    {
+        printf("Command %d:\n", cmd_num++);
+        
+        // Print argv
+        if (cmd->argv)
+        {
+            printf("  argv: ");
+            for (int i = 0; cmd->argv[i]; i++)
+                printf("'%s' ", cmd->argv[i]);
+            printf("\n");
+        }
+        
+        // Print redirections
+        t_redir *redir = cmd->redirections;
+        while (redir)
+        {
+            printf("  redirection: type=%d target='%s'\n", 
+                   redir->type, redir->target);
+            redir = redir->next;
+        }
+        
+        cmd = cmd->next;
+        if (cmd)
+            printf("  | (pipe to next command)\n");
+    }
+    printf("--- End of command chain ---\n");
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	*shell;
 	char	*input;
     t_token *tokens;
+    t_command *commands;
 
 	(void)argv;
 	if (argc != 1)
@@ -73,16 +108,33 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		}
 		add_history(input);
+		
+		// Tokenize
 		tokens = tokenize(input, shell->command_arena);
-        if (tokens)
-        {
-            printf("Tokenized input:\n");
-            print_tokens(tokens);
-        }
-        else
+        if (!tokens)
         {
             printf("Tokenization failed\n");
+            arena_reset(shell->command_arena);
+            free(input);
+            continue;
         }
+
+        write(STDOUT_FILENO, "Tokenized input:\n", 18);
+        print_tokens(tokens);
+        
+        // Parse tokens into commands
+        commands = parse_pipeline(tokens, shell);
+        if (!commands)
+        {
+            write(STDERR_FILENO, "minishell: syntax error\n", 24);
+            arena_reset(shell->command_arena);
+            free(input);
+            continue;
+        }
+        
+        // Debug: Print parsed commands
+        write(STDOUT_FILENO, "Parsed commands:\n", 18);
+        print_commands(commands);
         
         arena_reset(shell->command_arena);
         free(input);

@@ -214,6 +214,15 @@ int	ft_echo(t_command *cmd);
 
 // Parsing
 t_command	*parse_args(char *input, char **envp, t_arena *arena);
+t_command	*parse_pipeline(t_token *tokens, t_shell *shell);
+t_command	*create_command(t_arena *arena);
+int			is_redir(t_token *token);
+t_token		*handle_redir(t_command *current, t_token *token, t_arena *arena);
+void		add_word_cmd(t_command *cmd, t_token *word, t_arena *arena);
+t_redir_type	token_to_redir_type(t_token_type token_type);
+void		attach_redir(t_command *cmd, t_redir *redir);
+int			needs_realloc(int current_count);
+int			calculate_new_capacity(int current_count);
 
 // Tokenizer functions (token.c)
 t_token		*tokenize(char *input, t_arena *arena);
