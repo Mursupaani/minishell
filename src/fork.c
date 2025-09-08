@@ -12,14 +12,16 @@
 
 #include <minishell.h>
 
-int	create_fork(t_command *cmd)
+int	create_fork(void)
 {
-	cmd->pid = fork();
-	if (cmd->pid == -1)
+	int	pid;
+
+	pid = fork();
+	if (pid == -1)
 	{
 		// Check this
 		perror(strerror(errno));
 		exit(1);
 	}
-	return (cmd->pid);
+	return (pid);
 }

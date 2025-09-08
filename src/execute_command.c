@@ -15,7 +15,7 @@
 void	choose_execution_type(t_command *cmd, t_shell *shell)
 {
 	//FIXME: CD must be called by parent
-	if (create_fork(cmd) == 0)
+	if (create_fork() == 0)
 	{
 		if (cmd->cmd_type == CMD_BUILTIN)
 			execute_builtin_command(cmd);

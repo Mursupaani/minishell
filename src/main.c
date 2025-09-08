@@ -135,8 +135,8 @@ int	main(int argc, char **argv, char **envp)
             continue;
         }
         
-		// print_commands(commands);
-		commands->cmd_type = CMD_EXEC;
+		print_commands(commands);
+		commands->cmd_type = CMD_PIPE;
 		choose_execution_type(commands, shell);
         // Debug: Print parsed commands
         // write(STDOUT_FILENO, "Parsed commands:\n", 18);
