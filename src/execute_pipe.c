@@ -14,6 +14,7 @@
 
 void	execute_pipe(t_command *cmd, t_shell *shell)
 {
+
 	(void)cmd;
 	(void)shell;
 }

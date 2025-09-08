@@ -261,7 +261,7 @@ void	        cleanup_shell_partial(t_shell *shell, int level);
 char *arena_strdup(const char *s, t_arena *arena);
 
 // Error handling fork wrapper
-int	fork_one(t_command *cmd);
+int				create_fork(t_command *cmd);
 
 
 

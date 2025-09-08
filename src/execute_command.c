@@ -14,7 +14,8 @@
 
 void	choose_execution_type(t_command *cmd, t_shell *shell)
 {
-	if (fork_one(cmd) == 0)
+	//FIXME: CD must be called by parent
+	if (create_fork(cmd) == 0)
 	{
 		if (cmd->cmd_type == CMD_BUILTIN)
 			execute_builtin_command(cmd);
@@ -24,7 +25,7 @@ void	choose_execution_type(t_command *cmd, t_shell *shell)
 			execute_redirection(cmd, shell);
 		else if (cmd->cmd_type == CMD_PIPE)
 			execute_pipe(cmd, shell);
-		// ft_putstr_fd("Testing\n", 2);
+		ft_putstr_fd("Testing\n", 2);
 	}
 	// if (waitpid(cmd->pid, WEXITSTATUS(cmd->status), 0) == -1)
 	if (waitpid(cmd->pid, &cmd->status, 0) == -1)

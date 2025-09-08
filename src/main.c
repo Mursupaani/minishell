@@ -53,6 +53,7 @@ static void print_commands(t_command *commands)
                    redir->type, redir->target);
             redir = redir->next;
         }
+		printf("command type: %d\n", cmd->cmd_type);
         
         cmd = cmd->next;
         if (cmd)
@@ -113,28 +114,33 @@ int	main(int argc, char **argv, char **envp)
 		tokens = tokenize(input, shell->command_arena);
         if (!tokens)
         {
-            printf("Tokenization failed\n");
+            // printf("Tokenization failed\n");
             arena_reset(shell->command_arena);
             free(input);
             continue;
         }
 
-        write(STDOUT_FILENO, "Tokenized input:\n", 18);
-        print_tokens(tokens);
+        // write(STDOUT_FILENO, "Tokenized input:\n", 18);
+        // print_tokens(tokens);
         
         // Parse tokens into commands
         commands = parse_pipeline(tokens, shell);
         if (!commands)
         {
+			print_commands(commands);
+			print_tokens(tokens);
             write(STDERR_FILENO, "minishell: syntax error\n", 24);
             arena_reset(shell->command_arena);
             free(input);
             continue;
         }
         
+		// print_commands(commands);
+		commands->cmd_type = CMD_EXEC;
+		choose_execution_type(commands, shell);
         // Debug: Print parsed commands
-        write(STDOUT_FILENO, "Parsed commands:\n", 18);
-        print_commands(commands);
+        // write(STDOUT_FILENO, "Parsed commands:\n", 18);
+        // print_commands(commands);
         
         arena_reset(shell->command_arena);
         free(input);
