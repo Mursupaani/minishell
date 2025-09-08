@@ -111,7 +111,7 @@ t_token *handle_redir(t_command *current, t_token *token, t_arena *arena)
 {
     t_redir *redir;
     t_token *target;
-    t_redir	*tail;
+    // t_redir	*tail;
     
     target = token->next;
     redir = arena_alloc(arena, sizeof(t_redir));
@@ -129,6 +129,8 @@ t_token *handle_redir(t_command *current, t_token *token, t_arena *arena)
     redir->fd = -1;
     redir->next = NULL;
     attach_redir(current, redir);
+	//FIXME:: There was no return value. Is target correct? - Antti
+	return (target);
 }
 
 void add_word_cmd(t_command *cmd, t_token *word, t_arena *arena)
