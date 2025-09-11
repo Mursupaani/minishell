@@ -67,6 +67,7 @@ static void print_commands(t_command *commands)
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	*shell;
+	// NOTE: Shell has built-in input variable
 	// char	*input;
     t_token *tokens;
     t_command *commands;
@@ -137,7 +138,7 @@ int	main(int argc, char **argv, char **envp)
         }
         
 		print_commands(commands);
-		commands->cmd_type = CMD_EXEC;
+		commands->cmd_type = CMD_BUILTIN;
 		choose_execution_type(commands, shell);
         // Debug: Print parsed commands
         // write(STDOUT_FILENO, "Parsed commands:\n", 18);
