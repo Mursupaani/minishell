@@ -13,7 +13,7 @@
 #include "minishell.h"
 
 static t_shell	*initialize_shell(void);
-static void	free_memory(t_shell *shell);
+void	free_memory_at_exit(t_shell *shell);
 
 int	interactive_shell(int argc, char **argv, char **envp)
 {
@@ -55,7 +55,7 @@ int	interactive_shell(int argc, char **argv, char **envp)
 		arena_free(&shell->command_arena);
 		free(shell->input);
 	}
-	free_memory(shell);
+	// free_memory(shell);
 	return (EXIT_SUCCESS);
 }
 
@@ -78,18 +78,4 @@ static t_shell	*initialize_shell(void)
 		return (NULL);
 	}
 	return (shell);
-}
-
-static void	free_memory(t_shell *shell)
-{
-	rl_clear_history();
-	if (!shell)
-		return ;
-	if (shell->input)
-		free(shell->input);
-	if (shell->command_arena)
-		arena_free(&shell->command_arena);
-	if (shell->session_arena)
-		arena_free(&shell->session_arena);
-	free(shell);
 }
