@@ -1,1 +1,3 @@
+#!/usr/bin/bash
+
 valgrind --leak-check=full --show-leak-kinds=all --gen-suppressions=all --suppressions=gnu_suppression.supp ./minishell

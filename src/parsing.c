@@ -116,6 +116,7 @@ t_token *handle_redir(t_command *current, t_token *token, t_arena *arena, int *e
 {
     t_redir *redir;
     t_token *target;
+    // t_redir	*tail;
     
     *error = 0;
     target = token->next;
