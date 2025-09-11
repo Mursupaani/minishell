@@ -138,7 +138,7 @@ int	main(int argc, char **argv, char **envp)
         }
         
 		print_commands(commands);
-		commands->cmd_type = CMD_BUILTIN;
+		commands->cmd_type = CMD_EXEC;
 		choose_execution_type(commands, shell);
         // Debug: Print parsed commands
         // write(STDOUT_FILENO, "Parsed commands:\n", 18);
@@ -148,7 +148,6 @@ int	main(int argc, char **argv, char **envp)
         free(shell->input);
     }
 	free_memory_at_exit(shell);
-    // shell_free(shell);
     return (EXIT_SUCCESS);
 }
 
