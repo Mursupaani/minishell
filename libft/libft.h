@@ -126,5 +126,6 @@ void	arena_free(t_arena **arena);
 char	**ft_split_arena(char const *s, char c, t_arena *arena);
 char	*ft_substr_arena(
 char const *s, unsigned int start, size_t len, t_arena *arena);
+char	*ft_strjoin_arena(char const *s1, char const *s2, t_arena *arena);
 
 #endif

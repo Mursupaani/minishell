@@ -29,7 +29,7 @@ LIBFT_SRC = ft_atoi.c ft_atoi_hex.c ft_bzero.c ft_calloc.c ft_isalnum.c ft_isalp
             ft_strchr.c ft_strdup.c ft_striteri.c ft_strjoin.c ft_strlcat.c \
             ft_strlcpy.c ft_strlen.c ft_strmapi.c ft_strncmp.c ft_strnstr.c \
             ft_strrchr.c ft_strtrim.c ft_substr.c ft_tolower.c ft_toupper.c \
-			memory_arena.c ft_split_arena.c ft_substr_arena.c
+			memory_arena.c ft_split_arena.c ft_substr_arena.c strjoin_arena.c
 
 # ft_printf sources  
 PRINTF_SRC = ft_printf/ft_printf.c ft_printf/print_char.c ft_printf/print_string.c \
