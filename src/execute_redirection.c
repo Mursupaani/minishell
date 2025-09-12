@@ -6,12 +6,11 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 10:33:51 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/10 15:56:29 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/12 14:52:27 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <unistd.h>
 
 char	*execute_input_redirection(t_redir *redirection, t_shell *shell);
 char	*execute_output_redirection(t_redir *redirection, t_shell *shell);
@@ -20,6 +19,7 @@ char	*execute_heredoc(t_redir *redirection, t_shell *shell);
 
 char	*execute_redirection(t_redir *redirection, t_shell *shell)
 {
+	//FIXME: What should the returnvalue be?
 	char	*target;
 
 	if (redirection->type == REDIR_INPUT)

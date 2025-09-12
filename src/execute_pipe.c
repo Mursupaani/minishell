@@ -17,23 +17,28 @@ void	execute_pipe(t_command *cmd, t_shell *shell)
 	if (pipe(cmd->pipe_in) == -1)
 	{
 		perror(strerror(errno));
+		// FIXME: No exit. How to approach?
 		exit(1);
 	}
-	if (create_fork() == 0)
+	while (cmd->cmd_type == CMD_PIPE)
 	{
-		close(STDOUT_FILENO);
-		dup(cmd->pipe_in[STDOUT_FILENO]);
-		close(cmd->pipe_in[STDOUT_FILENO]);
-		close(cmd->pipe_in[STDIN_FILENO]);
-		choose_execution_type(cmd->next, shell);
-	}
-	if (create_fork() == 0)
-	{
-		close(STDIN_FILENO);
-		dup(cmd->pipe_in[STDIN_FILENO]);
-		close(cmd->pipe_in[STDIN_FILENO]);
-		close(cmd->pipe_in[STDOUT_FILENO]);
-		choose_execution_type(cmd->next->next, shell);
+		if (create_fork() == 0)
+		{
+			close(STDOUT_FILENO);
+			dup(cmd->pipe_in[STDOUT_FILENO]);
+			close(cmd->pipe_in[STDOUT_FILENO]);
+			close(cmd->pipe_in[STDIN_FILENO]);
+			execute_command(cmd, shell);
+		}
+		if (create_fork() == 0)
+		{
+			close(STDIN_FILENO);
+			dup(cmd->pipe_in[STDIN_FILENO]);
+			close(cmd->pipe_in[STDIN_FILENO]);
+			close(cmd->pipe_in[STDOUT_FILENO]);
+			execute_command(cmd->next, shell);
+		}
+		cmd += 2;
 	}
 	close(cmd->pipe_in[STDIN_FILENO]);
 	close(cmd->pipe_in[STDOUT_FILENO]);
