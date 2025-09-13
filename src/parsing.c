@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 11:45:53 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/29 21:00:40 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/13 10:30:28 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,12 +159,18 @@ void add_word_cmd(t_command *cmd, t_token *word, t_arena *arena)
         while (cmd->argv[current_count])
             current_count++;
     }
-    req_capacity = calculate_new_capacity(current_count);
-    if(!cmd->argv || needs_realloc(current_count))
+    req_capacity = calculate_new_capacity(current_count + 1);
+    if(!cmd->argv || needs_realloc(current_count + 1))
     {
         new_argv = arena_alloc(arena, req_capacity*sizeof(char*));
         if(!new_argv)
             return ;
+        i = 0;
+        while (i < req_capacity)
+        {
+            new_argv[i] = NULL;
+            i++;
+        }
         i = 0;
         if(cmd->argv)
         {
