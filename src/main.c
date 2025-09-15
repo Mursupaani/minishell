@@ -14,6 +14,8 @@
 
 volatile sig_atomic_t g_signal_received = 0;
 
+static void	free_memory_at_exit(t_shell *shell);
+
 static void print_tokens(t_token *tokens)
 {
     t_token *current = tokens;
@@ -54,6 +56,7 @@ static void print_commands(t_command *commands)
                    redir->type, redir->target);
             redir = redir->next;
         }
+		printf("command type: %d\n", cmd->cmd_type);
         
         cmd = cmd->next;
         if (cmd)
@@ -65,7 +68,8 @@ static void print_commands(t_command *commands)
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	*shell;
-	char	*input;
+	// NOTE: Shell has built-in input variable
+	// char	*input;
     t_token *tokens;
     t_command *commands;
 
@@ -90,56 +94,74 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		g_signal_received = 0;
-		input = readline("minishell$ ");
+		shell->input = readline("minishell$ ");
         if (g_signal_received == SIGINT)
         {
-            if (input)
-                free(input);
+            if (shell->input)
+                free(shell->input);
             continue ;
         }
-		if (!input)
+		if (!shell->input)
 		{
 			write(STDOUT_FILENO, "exit\n", 5);
-			free(shell);
-			exit(0);
+			break ;
 		}
-		if (input[0] == '\0')
+		if (shell->input[0] == '\0')
 		{
-			free(input);
+			free(shell->input);
 			continue ;
 		}
-		add_history(input);
+		add_history(shell->input);
 		
 		// Tokenize
-		tokens = tokenize(input, shell->command_arena);
+		tokens = tokenize(shell->input, shell->command_arena);
         if (!tokens)
         {
-            printf("Tokenization failed\n");
+            // printf("Tokenization failed\n");
             arena_reset(shell->command_arena);
-            free(input);
+            free(shell->input);
             continue;
         }
 
-        write(STDOUT_FILENO, "Tokenized input:\n", 18);
-        print_tokens(tokens);
+        // write(STDOUT_FILENO, "Tokenized input:\n", 18);
+        // print_tokens(tokens);
         
         // Parse tokens into commands
         commands = parse_pipeline(tokens, shell);
         if (!commands)
         {
+			print_commands(commands);
+			print_tokens(tokens);
             write(STDERR_FILENO, "minishell: syntax error\n", 24);
             arena_reset(shell->command_arena);
-            free(input);
+            free(shell->input);
             continue;
         }
         
+		print_commands(commands);
+		commands->cmd_type = CMD_EXEC;
+		choose_execution_type(commands, shell);
         // Debug: Print parsed commands
-        write(STDOUT_FILENO, "Parsed commands:\n", 18);
-        print_commands(commands);
+        // write(STDOUT_FILENO, "Parsed commands:\n", 18);
+        // print_commands(commands);
         
         arena_reset(shell->command_arena);
-        free(input);
+        free(shell->input);
     }
-    //shell_free(shell);
+	free_memory_at_exit(shell);
     return (EXIT_SUCCESS);
+}
+
+void	free_memory_at_exit(t_shell *shell)
+{
+	rl_clear_history();
+	if (!shell)
+		return ;
+	if (shell->input)
+		free(shell->input);
+	if (shell->command_arena)
+		arena_free(&shell->command_arena);
+	if (shell->session_arena)
+		arena_free(&shell->session_arena);
+	free(shell);
 }

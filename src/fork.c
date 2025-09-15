@@ -1,30 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_working_directory.c                          :+:      :+:    :+:   */
+/*   fork_one.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/15 15:59:58 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/29 16:08:25 by anpollan         ###   ########.fr       */
+/*   Created: 2025/08/29 15:52:39 by anpollan          #+#    #+#             */
+/*   Updated: 2025/09/08 11:02:50 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include <minishell.h>
 
-void	print_working_directory(t_command *cmd)
+int	create_fork(void)
 {
-	char	buf[1024];
+	int	pid;
 
-	if (cmd->argv[1] != NULL)
+	pid = fork();
+	if (pid == -1)
 	{
-		ft_putstr_fd("Too many arguments\n", STDERR_FILENO);
-		exit(1);
-	}
-	if (!getcwd(buf, sizeof(buf)))
-	{
+		// Check this
 		perror(strerror(errno));
 		exit(1);
 	}
-	printf("%s\n", buf);
+	return (pid);
 }
