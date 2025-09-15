@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/29 20:53:59 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/15 11:42:40 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ static void print_commands(t_command *commands)
         // Print argv
         if (cmd->argv)
         {
+            printf("  cmd_type: %d\n", cmd->cmd_type);
             printf("  argv: ");
             for (int i = 0; cmd->argv[i]; i++)
                 printf("'%s' ", cmd->argv[i]);
