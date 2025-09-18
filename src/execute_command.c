@@ -22,9 +22,9 @@ void	execute_command(t_command *cmd, t_shell *shell)
 
 void	choose_execution_type(t_command *cmd, t_shell *shell)
 {
-	if (cmd->next)
-		execute_pipe(cmd, shell);
-	else if (cmd->cmd_type == CMD_BUILTIN)
+	if (cmd->cmd_type == CMD_BUILTIN_PARENT)
+		execute_builtin_command(cmd, shell);
+	if (cmd->cmd_type == CMD_BUILTIN_CHILD)
 		execute_builtin_command(cmd, shell);
 	else if (cmd->cmd_type == CMD_EXTERNAL)
 		execute_external_command(cmd, shell);
@@ -69,6 +69,7 @@ void	execute_builtin_command(t_command *cmd, t_shell *shell)
 void	execute_external_command(t_command *cmd, t_shell *shell)
 {
 	char	*executable_path;
+	// int		pid;
 
 	if (access(cmd->argv[0], F_OK) == 0)
 		executable_path = cmd->argv[0];
@@ -76,6 +77,12 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 		executable_path = find_file_from_path(cmd->argv[0], shell);
 	if (!executable_path)
 		return ;
+	// pid = fork();
+	// if (pid == 0)
+	// {
 	if (execve(executable_path, cmd->argv, cmd->envp))
-		perror(strerror(errno));
+			perror(strerror(errno));
+	// }
+	//FIXME: How to use the options?
+	// waitpid(pid, &shell->last_exit_status, WUNTRACED);
 }

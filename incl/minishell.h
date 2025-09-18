@@ -77,12 +77,8 @@ typedef struct s_token {
 // COMMAND STRUCTURES (same as before)
 // ============================================================================
 typedef enum e_cmd_type {
-	CMD_BACKGROUND,
-	CMD_EXEC,
-	CMD_LIST,
-	CMD_PIPE,
-	CMD_REDIR,
-    CMD_BUILTIN,           // cd, export, unset, exit echo, pwd, env (run in shell process)
+    CMD_BUILTIN_PARENT,           // cd, export, unset, exit echo, pwd, env (run in shell process)
+    CMD_BUILTIN_CHILD,           // cd, export, unset, exit echo, pwd, env (run in shell process)
     CMD_EXTERNAL           // everything else
 } t_cmd_type;
 

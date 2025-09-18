@@ -44,13 +44,14 @@ int	execute_pipe(t_command *cmd, t_shell *shell)
 			{
 				close(STDOUT_FILENO);
 				dup(pipe_array[i][1]);
-				printf("%d Closed stdout\n", i);
+				fprintf(stderr, "%d Closed stdout\n", i);
 			}
 			if (i != 0)
 			{
 				close(STDIN_FILENO);
-				dup(pipe_array[i][0]);
-				printf("%d Closed stdin\n", i);
+				dup(pipe_array[i - 1][0]);
+				ft_putstr_fd("Closed stdin", 2);
+				fprintf(stderr, "%d Closed stdout\n", i);
 			}
 			choose_execution_type(cmd, shell);
 		}
@@ -60,7 +61,7 @@ int	execute_pipe(t_command *cmd, t_shell *shell)
 	while (i < pipes)
 	{
 		//FIXME: Check flags!
-		waitpid(pids[i], NULL, 0);
+		waitpid(pids[i], &shell->last_exit_status, 0);
 		i++;
 	}
 	return (0);

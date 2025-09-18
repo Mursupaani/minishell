@@ -138,7 +138,7 @@ int	main(int argc, char **argv, char **envp)
         }
         
 		// print_commands(commands);
-		commands->cmd_type = CMD_BUILTIN;
+		// commands->cmd_type = CMD_EXTERNAL;
 		execute_command(commands, shell);
         // Debug: Print parsed commands
         // write(STDOUT_FILENO, "Parsed commands:\n", 18);
