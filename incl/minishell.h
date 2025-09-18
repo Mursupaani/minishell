@@ -116,7 +116,8 @@ typedef struct s_command {
     char		**argv;
 	// Do we need this inside t_command?
 	char		**envp;
-    t_cmd_type	cmd_type;
+	t_cmd_type	cmd_type;
+	bool		is_pipe;
 	t_builtin_type	built_in_type;
     t_redir		*redirections;  // ordered list of redirections
     
@@ -210,11 +211,12 @@ int	interactive_shell(int argc, char **argv, char **envp);
 int	non_interactve_shell(int argc, char **argv, char **envp);
 
 // Execution
+void	execute_command(t_command *cmd, t_shell *shell);
+int		execute_pipe(t_command *cmd, t_shell *shell);
 void	choose_execution_type(t_command *cmd, t_shell *shell);
 void	execute_builtin_command(t_command *cmd, t_shell *shell);
-void	execute_command(t_command *cmd, t_shell *shell);
+void	execute_external_command(t_command *cmd, t_shell *shell);
 char	*execute_redirection(t_redir *redirection, t_shell *shell);
-void	execute_pipe(t_command *cmd, t_shell *shell);
 
 // Built-in commands
 void	change_directory(t_command *cmd);
@@ -265,7 +267,8 @@ void			cleanup_shell_partial(t_shell *shell, int level);
 char *arena_strdup(const char *s, t_arena *arena);
 
 // Error handling fork wrapper
-int	create_fork(void);
+// FIXME: Remove?
+// int	create_fork(void);
 
 
 

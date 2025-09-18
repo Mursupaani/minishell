@@ -24,6 +24,9 @@ OBJ_DIR = obj
 SRC_DIR = src
 INCL_DIR = incl
 
+# Header
+HEADER = ./incl/minishell.h
+
 # Core libft sources
 SRC = main.c print_working_directory.c change_directory.c execute_command.c \
 	  interactive_shell.c non_interactive_shell.c parsing.c signals.c shell.c \
@@ -39,7 +42,7 @@ $(NAME): $(OBJ) $(LIBFT)
 	@$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -lreadline  -o $(NAME)
 	@echo "✅ $(NAME) created successfully"
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADER)
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) -c $< -o $@
 

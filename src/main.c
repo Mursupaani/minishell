@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/12 14:09:24 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/10 14:37:52 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,9 +137,9 @@ int	main(int argc, char **argv, char **envp)
             continue;
         }
         
-		print_commands(commands);
+		// print_commands(commands);
 		commands->cmd_type = CMD_BUILTIN;
-		choose_execution_type(commands, shell);
+		execute_command(commands, shell);
         // Debug: Print parsed commands
         // write(STDOUT_FILENO, "Parsed commands:\n", 18);
         // print_commands(commands);
@@ -148,6 +148,7 @@ int	main(int argc, char **argv, char **envp)
         free(shell->input);
     }
 	free_memory_at_exit(shell);
+    // shell_free(shell);
     return (EXIT_SUCCESS);
 }
 

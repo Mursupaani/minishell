@@ -59,7 +59,7 @@ char	*execute_output_redirection(t_redir *redirection, t_shell *shell)
 	if (redirection->type == REDIR_OUTPUT)
 		redirection->fd = open(redirection->target, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 	else if (redirection->type == REDIR_APPEND)
-		redirection->fd = open(redirection->target, O_CREAT | O_APPEND, 0644);
+		redirection->fd = open(redirection->target, O_CREAT | O_APPEND | O_RDWR, 0644);
 	if (redirection->fd == -1)
 		//FIXME:Fix error handling
 		perror(strerror(errno));

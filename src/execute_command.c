@@ -12,32 +12,44 @@
 
 #include "minishell.h"
 
+void	execute_command(t_command *cmd, t_shell *shell)
+{
+	if (cmd->next)
+		execute_pipe(cmd, shell);
+	else
+		choose_execution_type(cmd, shell);
+}
+
 void	choose_execution_type(t_command *cmd, t_shell *shell)
 {
-	if (cmd->cmd_type == CMD_BUILTIN)
-	{
-		printf("Builtin\n");
+	if (cmd->next)
+		execute_pipe(cmd, shell);
+	else if (cmd->cmd_type == CMD_BUILTIN)
 		execute_builtin_command(cmd, shell);
-	}
-	else
-	{
-		if (create_fork() == 0)
-		{
-			if (cmd->redirections)
-				execute_redirection(cmd->redirections, shell);
-			if (cmd->cmd_type == CMD_EXEC)
-				execute_command(cmd, shell);
-			// else if (cmd->cmd_type == CMD_REDIR)
-				// execute_redirection(cmd, shell);
-			else if (cmd->cmd_type == CMD_PIPE)
-				execute_pipe(cmd, shell);
-			ft_putstr_fd("Testing\n", 2);
-		}
-		// if (waitpid(cmd->pid, WEXITSTATUS(cmd->status), 0) == -1)
-		if (waitpid(cmd->pid, &cmd->status, 0) == -1)
-			perror(strerror(errno));
-		shell->last_exit_status = cmd->status;
-	}
+	else if (cmd->cmd_type == CMD_EXTERNAL)
+		execute_external_command(cmd, shell);
+
+	// if (cmd->cmd_type == CMD_BUILTIN)
+	// {
+	// 	if (cmd->redirections)
+	// 		execute_redirection(cmd->redirections, shell);
+	// 	execute_builtin_command(cmd, shell);
+	// }
+	// else
+	// {
+	// 	if (fork() == 0)
+	// 	{
+	// 		// if (cmd->is_pipe)
+	// 		// 	execute_pipe(cmd, shell);
+	// 		if (cmd->redirections)
+	// 			execute_redirection(cmd->redirections, shell);
+	// 		ft_putstr_fd("Testing\n", 2);
+	// 	}
+	// 	// if (waitpid(cmd->pid, WEXITSTATUS(cmd->status), 0) == -1)
+	// 	if (waitpid(cmd->pid, &cmd->status, 0) == -1)
+	// 		perror(strerror(errno));
+	// 	shell->last_exit_status = cmd->status;
+	// }
 }
 
 void	execute_builtin_command(t_command *cmd, t_shell *shell)
@@ -54,7 +66,7 @@ void	execute_builtin_command(t_command *cmd, t_shell *shell)
 		export_environment_variable(cmd, shell);
 }
 
-void	execute_command(t_command *cmd, t_shell *shell)
+void	execute_external_command(t_command *cmd, t_shell *shell)
 {
 	char	*executable_path;
 
