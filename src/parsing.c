@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 11:45:53 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/18 15:57:45 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/18 16:04:30 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,7 +240,7 @@ int calculate_new_capacity(int current_count)
     return capacity;
 }
 
-void classify_commands(t_command *cmd, t_shell *shell)
+void classify_commands(t_command *cmd)
 {
     t_command *current;
     int is_single;

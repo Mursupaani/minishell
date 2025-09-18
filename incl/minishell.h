@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/15 16:52:30 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/18 16:04:21 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,6 +262,9 @@ char *arena_strdup(const char *s, t_arena *arena);
 // Error handling fork wrapper
 int	create_fork(void);
 
+int is_builtin_command(char *cmd_name);
+int is_parent_only_builtin(char *cmd_name);
+void classify_commands(t_command *cmd);
 
 
 #endif
