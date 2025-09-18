@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:57:16 by magebreh          #+#    #+#             */
-/*   Updated: 2025/08/27 19:28:38 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/15 11:36:04 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ static t_token *tokenize_output_redirect(char **pos, t_arena *arena);
 static t_token *tokenize_double_quote(char **pos, t_arena *arena);
 static t_token *tokenize_single_quote(char **pos, t_arena *arena);
 static t_token *tokenize_word(char **pos, t_arena *arena);
+static char *build_assignment_token(char *start, char *end, t_arena *arena);
 
 t_token *tokenize(char *input, t_arena *arena)
 {
@@ -208,14 +209,30 @@ static t_token *tokenize_word(char **pos, t_arena *arena)
 	start = *pos;
 	end = *pos;
 	while(*end && !ft_is_special_char(*end) && !ft_isspace(*end))
+	{
+		if (*end == '=' && (*(end + 1) == '"' || *(end + 1) == '\''))
+		{
+			end++;
+			char quote_char = *end;
+			end++;
+			while (*end && *end != quote_char)
+				end++;
+			if (*end == quote_char)
+				end++;
+			break;
+		}
 		end++;
+	}
 	if(start == end)
 		return (NULL);
 	word_len = end - start;
 	token = arena_alloc(arena, sizeof(t_token));
 	if(!token)
 		return (NULL);
-	token->value = arena_substr(start, 0, word_len, arena);
+	if (*(end - 1) == '"' || *(end - 1) == '\'')
+		token->value = build_assignment_token(start, end, arena);
+	else
+		token->value = arena_substr(start, 0, word_len, arena);
 	if (!token->value)
 		return (NULL);
 	token->type = TOKEN_WORD;
@@ -224,4 +241,29 @@ static t_token *tokenize_word(char **pos, t_arena *arena)
 	token->next = NULL;
 	*pos = end;
 	return (token);
+}
+
+char *build_assignment_token(char *start, char *end, t_arena *arena)
+{
+    char *equals_pos;
+    size_t prefix_len;
+	char *content_start;
+	char *content_end;
+	size_t content_len;
+	char *result;
+
+	equals_pos = start;
+    while (*equals_pos != '=' && equals_pos < end)
+        equals_pos++;
+    prefix_len = (equals_pos - start) + 1;
+	content_start = equals_pos + 2;
+	content_end = end - 1;
+	content_len = content_end - content_start;
+	result = arena_alloc(arena, prefix_len + content_len + 1);
+    if (!result)
+        return (NULL);
+    ft_strlcpy(result, start, prefix_len + 1);
+    ft_strlcpy(result + prefix_len, content_start, content_len + 1);
+    result[prefix_len + content_len] = '\0';
+    return (result);
 }

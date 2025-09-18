@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/10 14:37:52 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/15 16:53:13 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static void print_commands(t_command *commands)
         // Print argv
         if (cmd->argv)
         {
+            printf("  cmd_type: %d\n", cmd->cmd_type);
             printf("  argv: ");
             for (int i = 0; cmd->argv[i]; i++)
                 printf("'%s' ", cmd->argv[i]);
@@ -137,9 +138,8 @@ int	main(int argc, char **argv, char **envp)
             continue;
         }
         
-		// print_commands(commands);
-		// commands->cmd_type = CMD_EXTERNAL;
-		execute_command(commands, shell);
+		print_commands(commands);
+		choose_execution_type(commands, shell);
         // Debug: Print parsed commands
         // write(STDOUT_FILENO, "Parsed commands:\n", 18);
         // print_commands(commands);
