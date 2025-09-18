@@ -139,7 +139,7 @@ int	main(int argc, char **argv, char **envp)
         }
         
 		print_commands(commands);
-		choose_execution_type(commands, shell);
+		execute_commands(commands, shell);
         // Debug: Print parsed commands
         // write(STDOUT_FILENO, "Parsed commands:\n", 18);
         // print_commands(commands);

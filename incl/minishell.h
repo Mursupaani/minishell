@@ -207,7 +207,7 @@ int	interactive_shell(int argc, char **argv, char **envp);
 int	non_interactve_shell(int argc, char **argv, char **envp);
 
 // Execution
-void	execute_command(t_command *cmd, t_shell *shell);
+void	execute_commands(t_command *cmd, t_shell *shell);
 int		execute_pipe(t_command *cmd, t_shell *shell);
 void	choose_execution_type(t_command *cmd, t_shell *shell);
 void	execute_builtin_command(t_command *cmd, t_shell *shell);

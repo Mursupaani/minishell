@@ -14,17 +14,18 @@
 
 void	print_working_directory(t_command *cmd)
 {
-	char	buf[1024];
+	//FIXME: Change to dynamic memory?
+	char	buf[2048];
 
 	if (cmd->argv[1] != NULL)
 	{
 		ft_putstr_fd("Too many arguments\n", STDERR_FILENO);
-		exit(1);
+		//FIXME: Error handling
 	}
 	if (!getcwd(buf, sizeof(buf)))
 	{
+		//FIXME: Error handling
 		perror(strerror(errno));
-		exit(1);
 	}
 	printf("%s\n", buf);
 }

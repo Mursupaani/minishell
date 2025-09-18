@@ -254,13 +254,15 @@ void classify_commands(t_command *cmd)
             current = current->next;
             continue;
         }
-        if (is_builtin_command(current->argv[0]))
+		if (is_builtin_command(current->argv[0]))
         {
             if (is_single && is_parent_only_builtin(current->argv[0]))
                 current->cmd_type = CMD_BUILTIN_PARENT;
             else
                 current->cmd_type = CMD_BUILTIN_CHILD;
         }
+		else
+			current->cmd_type = CMD_EXTERNAL;
         current = current->next;
     }
 }

@@ -34,7 +34,7 @@ int	execute_pipe(t_command *cmd, t_shell *shell)
 	if (!pids)
 		return (1);
 	i = 0;
-	while (i < pipes)
+	while (i <= pipes)
 	{
 		// FIXME: Error management?
 		pids[i] = fork();
@@ -50,11 +50,11 @@ int	execute_pipe(t_command *cmd, t_shell *shell)
 			{
 				close(STDIN_FILENO);
 				dup(pipe_array[i - 1][0]);
-				ft_putstr_fd("Closed stdin", 2);
-				fprintf(stderr, "%d Closed stdout\n", i);
+				fprintf(stderr, "%d Closed stdin\n", i);
 			}
 			choose_execution_type(cmd, shell);
 		}
+		cmd = cmd->next;
 		i++;
 	}
 	i = 0;
