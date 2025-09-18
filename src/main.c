@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/15 11:42:40 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/15 16:53:13 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,6 @@ int	main(int argc, char **argv, char **envp)
         }
         
 		print_commands(commands);
-		commands->cmd_type = CMD_EXEC;
 		choose_execution_type(commands, shell);
         // Debug: Print parsed commands
         // write(STDOUT_FILENO, "Parsed commands:\n", 18);

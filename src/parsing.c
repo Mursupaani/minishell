@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 11:45:53 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/13 10:30:28 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/18 15:57:45 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,4 +238,29 @@ int calculate_new_capacity(int current_count)
     while (capacity <= current_count)
         capacity *= 2;
     return capacity;
+}
+
+void classify_commands(t_command *cmd, t_shell *shell)
+{
+    t_command *current;
+    int is_single;
+
+    current = cmd;
+    is_single = (cmd->next == NULL);
+    while (current)
+    {
+        if (!current->argv || !current->argv[0])
+        {
+            current = current->next;
+            continue;
+        }
+        if (is_builtin_command(current->argv[0]))
+        {
+            if (is_single && is_parent_only_builtin(current->argv[0]))
+                current->cmd_type = CMD_BUILTIN_PARENT;
+            else
+                current->cmd_type = CMD_BUILTIN_CHILD;
+        }
+        current = current->next;
+    }
 }

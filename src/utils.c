@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:40:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/08/27 19:19:32 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/18 15:58:26 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,4 +157,23 @@ char **ft_split_arena(char const *s, char c, t_arena *arena)
 	}
 	result[word_idx] = NULL;
 	return (result);
+}
+
+int is_builtin_command(char *cmd_name)
+{
+    return (ft_strcmp(cmd_name, "echo") == 0 ||
+            ft_strcmp(cmd_name, "cd") == 0 ||
+            ft_strcmp(cmd_name, "pwd") == 0 ||
+            ft_strcmp(cmd_name, "export") == 0 ||
+            ft_strcmp(cmd_name, "unset") == 0 ||
+            ft_strcmp(cmd_name, "env") == 0 ||
+            ft_strcmp(cmd_name, "exit") == 0);
+}
+
+int is_parent_only_builtin(char *cmd_name)
+{
+    return (ft_strcmp(cmd_name, "cd") == 0 ||
+            ft_strcmp(cmd_name, "export") == 0 ||
+            ft_strcmp(cmd_name, "unset") == 0 ||
+            ft_strcmp(cmd_name, "exit") == 0);
 }
