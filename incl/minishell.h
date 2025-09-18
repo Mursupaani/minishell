@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/10 14:30:30 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/18 16:04:21 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,12 +77,8 @@ typedef struct s_token {
 // COMMAND STRUCTURES (same as before)
 // ============================================================================
 typedef enum e_cmd_type {
-	CMD_BACKGROUND,
-	CMD_EXEC,
-	CMD_LIST,
-	CMD_PIPE,
-	CMD_REDIR,
-    CMD_BUILTIN,           // cd, export, unset, exit echo, pwd, env (run in shell process)
+    CMD_BUILTIN_PARENT,    // cd, export, unset, exit (run in shell process)
+    CMD_BUILTIN_CHILD,     // echo, pwd, env (run in child)
     CMD_EXTERNAL           // everything else
 } t_cmd_type;
 
@@ -266,6 +262,9 @@ char *arena_strdup(const char *s, t_arena *arena);
 // Error handling fork wrapper
 int	create_fork(void);
 
+int is_builtin_command(char *cmd_name);
+int is_parent_only_builtin(char *cmd_name);
+void classify_commands(t_command *cmd);
 
 
 #endif
