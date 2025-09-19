@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void	print_working_directory(t_command *cmd)
+void	print_working_directory(t_command *cmd, t_shell *shell)
 {
 	//FIXME: Change to dynamic memory?
 	char	buf[2048];
@@ -20,12 +20,16 @@ void	print_working_directory(t_command *cmd)
 	if (cmd->argv[1] != NULL)
 	{
 		ft_putstr_fd("Too many arguments\n", STDERR_FILENO);
+		shell->last_exit_status = 1;
+		return ;
 		//FIXME: Error handling
 	}
 	if (!getcwd(buf, sizeof(buf)))
 	{
 		//FIXME: Error handling
 		perror(strerror(errno));
+		shell->last_exit_status = 1;
+		return ;
 	}
 	printf("%s\n", buf);
 }

@@ -215,9 +215,9 @@ void	execute_external_command(t_command *cmd, t_shell *shell);
 char	*execute_redirection(t_redir *redirection, t_shell *shell);
 
 // Built-in commands
-void	change_directory(t_command *cmd);
-void	print_working_directory(t_command *cmd);
-void	ft_echo(t_command *cmd);
+void	change_directory(t_command *cmd, t_shell *shell);
+void	print_working_directory(t_command *cmd, t_shell *shell);
+void	ft_echo(t_command *cmd, t_shell *shell);
 void	print_environment_variables(t_shell *shell);
 void	export_environment_variable(t_command *cmd, t_shell *shell);
 

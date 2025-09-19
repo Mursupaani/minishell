@@ -19,9 +19,10 @@ char	*execute_heredoc(t_redir *redirection, t_shell *shell);
 
 char	*execute_redirection(t_redir *redirection, t_shell *shell)
 {
-	//FIXME: What should the returnvalue be?
+	//FIXME: What should the return value be?
 	char	*target;
 
+	fprintf(stderr, "Redir type %d\n", redirection->type);
 	if (redirection->type == REDIR_INPUT)
 		target = execute_input_redirection(redirection, shell);
 	else if (redirection->type == REDIR_OUTPUT

@@ -15,16 +15,18 @@
 static int	print_argv(char **argv);
 static int	check_flags(char **argv, bool *print_new_line);
 
-void	ft_echo(t_command *cmd)
+void	ft_echo(t_command *cmd, t_shell *shell)
 {
+	//NOTE: Can echo fail? Echo fails e.g. "echo $??"
 	bool	print_new_line;
-	int		i;
+	int		offset;
 
 	print_new_line = true;
-	i = check_flags(cmd->argv, &print_new_line);
-	print_argv(&cmd->argv[i]);
+	offset = check_flags(cmd->argv, &print_new_line);
+	print_argv(&cmd->argv[offset]);
 	if (print_new_line)
 		printf("\n");
+	shell->last_exit_status = 0;
 }
 
 static int	check_flags(char **argv, bool *print_new_line)

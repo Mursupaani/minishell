@@ -18,6 +18,7 @@ void	print_environment_variables(t_shell *shell)
 		return ;
 	if (!shell->env_array)
 	{
+		//FIXME: Error handling
 		printf("Fail\n");
 		shell->last_exit_status = 1;
 		return ;

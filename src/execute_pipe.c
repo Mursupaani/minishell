@@ -15,7 +15,7 @@
 static int	count_pipes(t_command *cmd);
 static int	**arena_alloc_pipe_arr(t_command *cmd, t_shell *shell, int *pipes);
 static int	init_pipe_array(int **pipe_array, int pipes, t_shell *shell);
-// static int	close_unused_fds();
+static int	close_unused_fds(int **pipe_array, int pipes, int process_index);
 
 int	execute_pipe(t_command *cmd, t_shell *shell)
 {
@@ -30,35 +30,39 @@ int	execute_pipe(t_command *cmd, t_shell *shell)
 		return (1);
 	if (init_pipe_array(pipe_array, pipes, shell))
 		return (1);
-	pids = arena_alloc(shell->command_arena, sizeof(int) * (pipes + 1));
+	pids = arena_alloc(shell->command_arena, sizeof(int) * (pipes + 2));
+	pids[pipes + 1] = -2;
 	if (!pids)
 		return (1);
 	i = 0;
-	while (i <= pipes)
+	while (cmd)
 	{
 		// FIXME: Error management?
 		pids[i] = fork();
 		if (pids[i] == 0)
 		{
-			if (cmd->next)
+			fprintf(stderr, "Child PID %d\n", getpid());
+			if (i < pipes)
 			{
 				close(STDOUT_FILENO);
 				dup(pipe_array[i][1]);
-				fprintf(stderr, "%d Closed stdout\n", i);
+				// fprintf(stderr, "Pipe_array[%d][1] = %d [pid = %d]\n", i, pipe_array[i][1], getpid());
 			}
 			if (i != 0)
 			{
 				close(STDIN_FILENO);
 				dup(pipe_array[i - 1][0]);
-				fprintf(stderr, "%d Closed stdin\n", i);
+				// fprintf(stderr, "Pipe_array[%d][0] = %d [pid = %d]\n", i - 1, pipe_array[i][0], getpid());
 			}
+			close_unused_fds(pipe_array, pipes, i);
 			choose_execution_type(cmd, shell);
 		}
 		cmd = cmd->next;
 		i++;
 	}
+	close_unused_fds(pipe_array, pipes, -1);
 	i = 0;
-	while (i < pipes)
+	while (pids[i] != -2)
 	{
 		//FIXME: Check flags!
 		waitpid(pids[i], &shell->last_exit_status, 0);
@@ -131,36 +135,25 @@ static int	init_pipe_array(int **pipe_array, int pipes, t_shell *shell)
 	return (0);
 }
 
-// void	execute_pipe(t_command *cmd, t_shell *shell)
-// {
-// 	if (pipe(cmd->pipe_in) == -1)
-// 	{
-// 		perror(strerror(errno));
-// 		// FIXME: No exit. How to approach?
-// 		exit(1);
-// 	}
-// 	while (cmd->cmd_type == CMD_PIPE)
-// 	{
-// 		if (create_fork() == 0)
-// 		{
-// 			close(STDOUT_FILENO);
-// 			dup(cmd->pipe_in[STDOUT_FILENO]);
-// 			close(cmd->pipe_in[STDOUT_FILENO]);
-// 			close(cmd->pipe_in[STDIN_FILENO]);
-// 			execute_command(cmd, shell);
-// 		}
-// 		if (create_fork() == 0)
-// 		{
-// 			close(STDIN_FILENO);
-// 			dup(cmd->pipe_in[STDIN_FILENO]);
-// 			close(cmd->pipe_in[STDIN_FILENO]);
-// 			close(cmd->pipe_in[STDOUT_FILENO]);
-// 			execute_command(cmd->next, shell);
-// 		}
-// 		cmd += 2;
-// 	}
-// 	close(cmd->pipe_in[STDIN_FILENO]);
-// 	close(cmd->pipe_in[STDOUT_FILENO]);
-// 	waitpid(0, &shell->last_exit_status, 0);
-// 	waitpid(0, &shell->last_exit_status, 0);
-// }
+static int	close_unused_fds(int **pipe_array, int pipes, int process_index)
+{
+	if (process_index == -1)
+	{
+		while (--pipes >= 0)
+		{
+			close(pipe_array[pipes][0]);
+			close(pipe_array[pipes][1]);
+		}
+	}
+	else
+	{
+		while (--pipes >= 0)
+		{
+			if (process_index != pipes)
+				close(pipe_array[pipes][1]);
+			if (pipes - 1 != process_index)
+				close(pipe_array[pipes][0]);
+		}
+	}
+	return (0);
+}
