@@ -137,17 +137,16 @@ int	main(int argc, char **argv, char **envp)
             free(shell->input);
             continue;
         }
-        
+		//FIXME: Need to fix this in parsing!
+		shell->env_array = envp;
 		print_commands(commands);
-		choose_execution_type(commands, shell);
-        // Debug: Print parsed commands
-        // write(STDOUT_FILENO, "Parsed commands:\n", 18);
-        // print_commands(commands);
+		execute_commands(commands, shell);
         
         arena_reset(shell->command_arena);
         free(shell->input);
     }
 	free_memory_at_exit(shell);
+    // shell_free(shell);
     return (EXIT_SUCCESS);
 }
 

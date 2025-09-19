@@ -105,8 +105,6 @@ typedef struct s_redir {
     t_redir_type		type;
     char				*target;    // filename or heredoc delimiter
     int					fd;         // file descriptor when opened
-	// FIXME: We need this to redirect the command.
-	// struct s_command	*cmd_to_redir;
     struct s_redir		*next;
 } t_redir;
 
@@ -114,7 +112,8 @@ typedef struct s_command {
     char		**argv;
 	// Do we need this inside t_command?
 	char		**envp;
-    t_cmd_type	cmd_type;
+	t_cmd_type	cmd_type;
+	bool		is_pipe;
 	t_builtin_type	built_in_type;
     t_redir		*redirections;  // ordered list of redirections
     
@@ -126,8 +125,6 @@ typedef struct s_command {
 	// Child process status and error
 	int			status;
     struct s_command *next;
-    // struct s_command *left;
-    // struct s_command *right;
 } t_command;
 
 // ============================================================================
@@ -158,6 +155,7 @@ typedef struct s_shell {
 
     // Environment subsystem
     t_hash_table    *env_table;        // Hash table for environment
+	//FIXME: Env array is not populated
     char            **env_array;       // Built from env_table before fork
     char            **path_dirs;       // PATH cache
     int             path_dirty;        // Invalidation flag
@@ -198,7 +196,7 @@ void			sigint_handler(int sig);
 void			setup_signals(void);
 
 // Shell initialization and management (shell.c)
-t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
+t_hash_table	*populate_shenv_from_envp(char **envp, t_arena *arena);
 t_shell			*shell_init(char **env);
 
 // Utility functions (utils.c)
@@ -209,19 +207,24 @@ int	interactive_shell(int argc, char **argv, char **envp);
 int	non_interactve_shell(int argc, char **argv, char **envp);
 
 // Execution
+void	execute_commands(t_command *cmd, t_shell *shell);
+int		execute_pipe(t_command *cmd, t_shell *shell);
 void	choose_execution_type(t_command *cmd, t_shell *shell);
 void	execute_builtin_command(t_command *cmd, t_shell *shell);
-void	execute_command(t_command *cmd, t_shell *shell);
+void	execute_external_command(t_command *cmd, t_shell *shell);
 char	*execute_redirection(t_redir *redirection, t_shell *shell);
-void	execute_pipe(t_command *cmd, t_shell *shell);
 
 // Built-in commands
-void	change_directory(t_command *cmd);
-void	print_working_directory(t_command *cmd);
-void	ft_echo(t_command *cmd);
+void	change_directory(t_command *cmd, t_shell *shell);
+void	print_working_directory(t_command *cmd, t_shell *shell);
+void	ft_echo(t_command *cmd, t_shell *shell);
+void	print_environment_variables(t_shell *shell);
+void	export_environment_variable(t_command *cmd, t_shell *shell);
 
 // Environment
 char	*find_file_from_path(char *filename, t_shell *shell);
+char	*hash_table_get(t_hash_table *table, char *key);
+void	hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena);
 
 // Parsing
 t_command	*parse_args(char *input, char **envp, t_arena *arena);
@@ -256,11 +259,12 @@ t_shell			*shell_init(char **env);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
-void	        cleanup_shell_partial(t_shell *shell, int level);
+void			cleanup_shell_partial(t_shell *shell, int level);
 char *arena_strdup(const char *s, t_arena *arena);
 
 // Error handling fork wrapper
-int	create_fork(void);
+// FIXME: Remove?
+// int	create_fork(void);
 
 int is_builtin_command(char *cmd_name);
 int is_parent_only_builtin(char *cmd_name);
