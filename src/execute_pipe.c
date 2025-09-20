@@ -41,7 +41,6 @@ int	execute_pipe(t_command *cmd, t_shell *shell)
 		pids[i] = fork();
 		if (pids[i] == 0)
 		{
-			fprintf(stderr, "Child PID %d\n", getpid());
 			if (i < pipes)
 			{
 				// FIXME: Error management?

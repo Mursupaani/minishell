@@ -29,3 +29,11 @@
 	...
 	fun:_rl_arg_dispatch
 }
+
+{
+   ignore_cat_leaks
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   obj:/usr/bin/cat
+}
