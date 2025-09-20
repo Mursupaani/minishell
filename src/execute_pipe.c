@@ -11,55 +11,57 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <stdio.h>
 
-static int	count_pipes(t_command *cmd);
-static int	**arena_alloc_pipe_arr(t_command *cmd, t_shell *shell, int *pipes);
-static int	init_pipe_array(int **pipe_array, int pipes, t_shell *shell);
-static int	close_unused_pipe_fds(int **pipe_array, int pipes);
+static int	count_commands(t_command *cmd);
+static int	close_unused_pipe_fds(int *pipe_fd);
 
 int	execute_pipe(t_command *cmd, t_shell *shell)
 {
 	// FIXME: Error management! What to return?
-	int	**pipe_array;
 	int	*pids;
-	int	pipes;
+	int	pipe_fd[2][2];
+	int	cmd_count;
 	int	i;
 
-	pipe_array = arena_alloc_pipe_arr(cmd, shell, &pipes);
-	if (!pipe_array)
-		return (1);
-	if (init_pipe_array(pipe_array, pipes, shell))
-		return (1);
-	pids = arena_alloc(shell->command_arena, sizeof(int) * (pipes + 2));
-	pids[pipes + 1] = -2;
+	cmd_count = count_commands(cmd);
+	printf("cmd count: %d\n", cmd_count);
+	pids = arena_alloc(shell->command_arena, sizeof(int) * (cmd_count + 1));
 	if (!pids)
 		return (1);
+	pids[cmd_count] = -2;
 	i = 0;
 	while (cmd)
 	{
+		printf("i %% 2 = %d\n", (i % 2));
+		pipe(pipe_fd[i % 2]);
 		// FIXME: Error management?
 		pids[i] = fork();
 		if (pids[i] == 0)
 		{
-			if (i < pipes)
+			if (i < cmd_count - 1)
 			{
+				fprintf(stderr, "%d closing stdout\n", i);
 				// FIXME: Error management?
 				close(STDOUT_FILENO);
-				dup(pipe_array[i][1]);
+				dup(pipe_fd[i % 2][1]);
+				close(pipe_fd[i % 2][1]);
 			}
-			if (i != 0)
+			if (i % 2 != 0)
 			{
+				fprintf(stderr, "%d closing stdin\n", i);
 				// FIXME: Error management?
 				close(STDIN_FILENO);
-				dup(pipe_array[i - 1][0]);
+				dup(pipe_fd[i % 2 - 1][0]);
+				close(pipe_fd[i % 2][0]);
 			}
-			close_unused_pipe_fds(pipe_array, pipes);
+			close_unused_pipe_fds(pipe_fd[i % 2]);
 			choose_execution_type(cmd, shell);
 		}
+		close_unused_pipe_fds(pipe_fd[i % 2]);
 		cmd = cmd->next;
 		i++;
 	}
-	close_unused_pipe_fds(pipe_array, pipes);
 	i = 0;
 	while (pids[i] != -2)
 	{
@@ -70,76 +72,22 @@ int	execute_pipe(t_command *cmd, t_shell *shell)
 	return (0);
 }
 
-static int	count_pipes(t_command *cmd)
+static int	count_commands(t_command *cmd)
 {
-	int	pipes;
+	int	cmd_count;
 
-	pipes = 0;
+	cmd_count = 0;
 	while (cmd)
 	{
-		if (cmd->next)
-			pipes++;
+		cmd_count++;
 		cmd = cmd->next;
 	}
-	return (pipes);
+	return (cmd_count);
 }
 
-static int	**arena_alloc_pipe_arr(t_command *cmd, t_shell *shell, int *pipes)
+static int	close_unused_pipe_fds(int *pipe_fd)
 {
-	int	pipes_count;
-	int	**pipe_array;
-	int	i;
-
-	pipes_count = count_pipes(cmd);
-	pipe_array = arena_alloc(shell->command_arena, sizeof(int *) * pipes_count);
-	if (!pipe_array)
-		return (NULL);
-	i = 0;
-	while (i < pipes_count)
-	{
-		pipe_array[i] = arena_alloc(shell->command_arena, sizeof(int) * 2);
-		if (!pipe_array[i])
-			return (NULL);
-		i++;
-	}
-	*pipes = pipes_count;
-	return (pipe_array);
-}
-
-static int	init_pipe_array(int **pipe_array, int pipes, t_shell *shell)
-{
-	int	i;
-
-	i = 0;
-	while (i < pipes)
-	{
-		pipe_array[i] = arena_alloc(shell->command_arena, sizeof(int) * 2);
-		if (!pipe_array[i])
-		// FIXME: Error management
-			return (1);
-		if (pipe(pipe_array[i]) == -1)
-		{
-			while (--i >= 0)
-			{
-				// FIXME: Error management
-				if (close(pipe_array[i][0]) == -1)
-					perror(strerror(errno));
-				if (close(pipe_array[i][1]) == -1)
-					perror(strerror(errno));
-			}
-			return (1);
-		}
-		i++;
-	}
-	return (0);
-}
-
-static int	close_unused_pipe_fds(int **pipe_array, int pipes)
-{
-	while (--pipes >= 0)
-	{
-		close(pipe_array[pipes][0]);
-		close(pipe_array[pipes][1]);
-	}
+	close(pipe_fd[0]);
+	close(pipe_fd[1]);
 	return (0);
 }
