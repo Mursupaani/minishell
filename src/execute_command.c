@@ -11,7 +11,9 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
+
+static int	execut_builtin_redirections(t_command *cmd, t_shell *shell);
+static int	reset_std_fds(t_shell *shell);
 
 void	execute_commands(t_command *cmd, t_shell *shell)
 {
@@ -68,6 +70,8 @@ void	choose_execution_type(t_command *cmd, t_shell *shell)
 
 void	execute_builtin_command(t_command *cmd, t_shell *shell)
 {
+	if (cmd->redirections)
+		execut_builtin_redirections(cmd, shell);
 	if (ft_strncmp(cmd->argv[0], "cd", ft_strlen(cmd->argv[0])) == 0)
 		change_directory(cmd, shell);
 	else if (ft_strncmp(cmd->argv[0], "pwd", ft_strlen(cmd->argv[0])) == 0)
@@ -78,6 +82,8 @@ void	execute_builtin_command(t_command *cmd, t_shell *shell)
 		print_environment_variables(shell);
 	else if (ft_strncmp(cmd->argv[0], "export", ft_strlen(cmd->argv[0])) == 0)
 		export_environment_variable(cmd, shell);
+	if (cmd->redirections)
+		reset_std_fds(shell);
 }
 
 void	execute_external_command(t_command *cmd, t_shell *shell)
@@ -100,4 +106,26 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 		shell->last_exit_status = 1;
 		perror(strerror(errno));
 	}
+}
+
+static int	execut_builtin_redirections(t_command *cmd, t_shell *shell)
+{
+	if (!cmd || !shell)
+		return (1);
+	shell->stdin_fd = dup(STDIN_FILENO);
+	shell->stdout_fd = dup(STDOUT_FILENO);
+	shell->stderr_fd = dup(STDERR_FILENO);
+	execute_redirection(cmd->redirections, shell);
+	return (0);
+}
+
+static int	reset_std_fds(t_shell *shell)
+{
+	dup2(shell->stdin_fd, STDIN_FILENO);
+	dup2(shell->stdout_fd, STDOUT_FILENO);
+	dup2(shell->stderr_fd, STDERR_FILENO);
+	close(shell->stdin_fd);
+	close(shell->stdout_fd);
+	close(shell->stderr_fd);
+	return (0);
 }

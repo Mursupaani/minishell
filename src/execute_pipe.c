@@ -15,7 +15,7 @@
 static int	count_pipes(t_command *cmd);
 static int	**arena_alloc_pipe_arr(t_command *cmd, t_shell *shell, int *pipes);
 static int	init_pipe_array(int **pipe_array, int pipes, t_shell *shell);
-static int	close_unused_fds(int **pipe_array, int pipes, int process_index);
+static int	close_unused_pipe_fds(int **pipe_array, int pipes);
 
 int	execute_pipe(t_command *cmd, t_shell *shell)
 {
@@ -44,23 +44,23 @@ int	execute_pipe(t_command *cmd, t_shell *shell)
 			fprintf(stderr, "Child PID %d\n", getpid());
 			if (i < pipes)
 			{
+				// FIXME: Error management?
 				close(STDOUT_FILENO);
 				dup(pipe_array[i][1]);
-				// fprintf(stderr, "Pipe_array[%d][1] = %d [pid = %d]\n", i, pipe_array[i][1], getpid());
 			}
 			if (i != 0)
 			{
+				// FIXME: Error management?
 				close(STDIN_FILENO);
 				dup(pipe_array[i - 1][0]);
-				// fprintf(stderr, "Pipe_array[%d][0] = %d [pid = %d]\n", i - 1, pipe_array[i][0], getpid());
 			}
-			close_unused_fds(pipe_array, pipes, i);
+			close_unused_pipe_fds(pipe_array, pipes);
 			choose_execution_type(cmd, shell);
 		}
 		cmd = cmd->next;
 		i++;
 	}
-	close_unused_fds(pipe_array, pipes, -1);
+	close_unused_pipe_fds(pipe_array, pipes);
 	i = 0;
 	while (pids[i] != -2)
 	{
@@ -135,25 +135,12 @@ static int	init_pipe_array(int **pipe_array, int pipes, t_shell *shell)
 	return (0);
 }
 
-static int	close_unused_fds(int **pipe_array, int pipes, int process_index)
+static int	close_unused_pipe_fds(int **pipe_array, int pipes)
 {
-	if (process_index == -1)
+	while (--pipes >= 0)
 	{
-		while (--pipes >= 0)
-		{
-			close(pipe_array[pipes][0]);
-			close(pipe_array[pipes][1]);
-		}
-	}
-	else
-	{
-		while (--pipes >= 0)
-		{
-			if (process_index != pipes)
-				close(pipe_array[pipes][1]);
-			if (pipes - 1 != process_index)
-				close(pipe_array[pipes][0]);
-		}
+		close(pipe_array[pipes][0]);
+		close(pipe_array[pipes][1]);
 	}
 	return (0);
 }

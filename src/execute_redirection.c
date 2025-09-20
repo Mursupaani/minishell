@@ -43,7 +43,6 @@ char	*execute_redirection(t_redir *redirection, t_shell *shell)
 
 char	*execute_input_redirection(t_redir *redirection, t_shell *shell)
 {
-	(void)redirection;
 	(void)shell;
 	close(STDIN_FILENO);
 	if (redirection->type == REDIR_INPUT)
