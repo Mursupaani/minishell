@@ -11,10 +11,9 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
 
 static int	count_commands(t_command *cmd);
-static int	close_unused_pipe_fds(int *pipe_fd);
+static int	close_unused_pipe_fds(int pipe_fd[2][2]);
 
 int	execute_pipe(t_command *cmd, t_shell *shell)
 {
@@ -25,7 +24,6 @@ int	execute_pipe(t_command *cmd, t_shell *shell)
 	int	i;
 
 	cmd_count = count_commands(cmd);
-	printf("cmd count: %d\n", cmd_count);
 	pids = arena_alloc(shell->command_arena, sizeof(int) * (cmd_count + 1));
 	if (!pids)
 		return (1);
@@ -33,32 +31,35 @@ int	execute_pipe(t_command *cmd, t_shell *shell)
 	i = 0;
 	while (cmd)
 	{
-		printf("i %% 2 = %d\n", (i % 2));
-		pipe(pipe_fd[i % 2]);
+		if (cmd->next)
+			pipe(pipe_fd[i % 2]);
 		// FIXME: Error management?
 		pids[i] = fork();
 		if (pids[i] == 0)
 		{
 			if (i < cmd_count - 1)
 			{
-				fprintf(stderr, "%d closing stdout\n", i);
 				// FIXME: Error management?
 				close(STDOUT_FILENO);
 				dup(pipe_fd[i % 2][1]);
-				close(pipe_fd[i % 2][1]);
 			}
-			if (i % 2 != 0)
+			if (i != 0)
 			{
-				fprintf(stderr, "%d closing stdin\n", i);
 				// FIXME: Error management?
 				close(STDIN_FILENO);
-				dup(pipe_fd[i % 2 - 1][0]);
-				close(pipe_fd[i % 2][0]);
+				dup(pipe_fd[(i - 1) % 2][0]);
 			}
-			close_unused_pipe_fds(pipe_fd[i % 2]);
+			close_unused_pipe_fds(pipe_fd);
 			choose_execution_type(cmd, shell);
 		}
-		close_unused_pipe_fds(pipe_fd[i % 2]);
+		if (cmd->next)
+		{
+			close(pipe_fd[i % 2][1]);
+			if (i != 0)
+				close(pipe_fd[(i - 1 % 2)][0]);
+		}
+		else
+			close_unused_pipe_fds(pipe_fd);
 		cmd = cmd->next;
 		i++;
 	}
@@ -85,9 +86,11 @@ static int	count_commands(t_command *cmd)
 	return (cmd_count);
 }
 
-static int	close_unused_pipe_fds(int *pipe_fd)
+static int	close_unused_pipe_fds(int pipe_fd[2][2])
 {
-	close(pipe_fd[0]);
-	close(pipe_fd[1]);
+	close(pipe_fd[0][0]);
+	close(pipe_fd[0][1]);
+	close(pipe_fd[1][0]);
+	close(pipe_fd[1][1]);
 	return (0);
 }
