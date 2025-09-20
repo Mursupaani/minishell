@@ -19,7 +19,7 @@ int	create_fork(void)
 	pid = fork();
 	if (pid == -1)
 	{
-		// Check this
+		// FIXME: Check this
 		perror(strerror(errno));
 		exit(1);
 	}

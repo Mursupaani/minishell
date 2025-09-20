@@ -6,12 +6,11 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 10:33:51 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/10 15:56:29 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/12 14:52:27 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <unistd.h>
 
 char	*execute_input_redirection(t_redir *redirection, t_shell *shell);
 char	*execute_output_redirection(t_redir *redirection, t_shell *shell);
@@ -20,8 +19,10 @@ char	*execute_heredoc(t_redir *redirection, t_shell *shell);
 
 char	*execute_redirection(t_redir *redirection, t_shell *shell)
 {
+	//FIXME: What should the return value be?
 	char	*target;
 
+	fprintf(stderr, "Redir type %d\n", redirection->type);
 	if (redirection->type == REDIR_INPUT)
 		target = execute_input_redirection(redirection, shell);
 	else if (redirection->type == REDIR_OUTPUT
@@ -59,7 +60,7 @@ char	*execute_output_redirection(t_redir *redirection, t_shell *shell)
 	if (redirection->type == REDIR_OUTPUT)
 		redirection->fd = open(redirection->target, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 	else if (redirection->type == REDIR_APPEND)
-		redirection->fd = open(redirection->target, O_CREAT | O_APPEND, 0644);
+		redirection->fd = open(redirection->target, O_CREAT | O_APPEND | O_RDWR, 0644);
 	if (redirection->fd == -1)
 		//FIXME:Fix error handling
 		perror(strerror(errno));

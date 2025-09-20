@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 13:35:19 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/10 14:37:40 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/11 12:13:14 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ char	*find_file_from_path(char *filename, t_shell *shell)
 
 	if (!filename)
 		return (NULL);
-	path_dirs = ft_split_arena(getenv("PATH"), ':', shell->command_arena);
+	path_dirs = ft_split_arena(
+		hash_table_get(shell->env_table, "PATH"), ':', shell->command_arena);
 	if (!path_dirs)
 		return (NULL);
 	return (try_paths(filename, path_dirs, shell));

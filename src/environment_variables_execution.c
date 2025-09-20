@@ -1,35 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_working_directory.c                          :+:      :+:    :+:   */
+/*   environment_variables_execution.c                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/15 15:59:58 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/29 16:08:25 by anpollan         ###   ########.fr       */
+/*   Created: 2025/09/12 13:58:42 by anpollan          #+#    #+#             */
+/*   Updated: 2025/09/12 16:34:32 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	print_working_directory(t_command *cmd, t_shell *shell)
+void	print_environment_variables(t_shell *shell)
 {
-	//FIXME: Change to dynamic memory?
-	char	buf[2048];
+	if (!shell)
+		return ;
+	if (!shell->env_array)
+	{
+		//FIXME: Error handling
+		printf("Fail\n");
+		shell->last_exit_status = 1;
+		return ;
+	}
+	while (shell->env_array)
+		printf("%s\n", *shell->env_array);
+	shell->last_exit_status = 0;
+}
 
-	if (cmd->argv[1] != NULL)
-	{
-		ft_putstr_fd("Too many arguments\n", STDERR_FILENO);
-		shell->last_exit_status = 1;
+void	export_environment_variable(t_command *cmd, t_shell *shell)
+{
+	if (!shell)
 		return ;
-		//FIXME: Error handling
-	}
-	if (!getcwd(buf, sizeof(buf)))
+	if (!cmd)
 	{
-		//FIXME: Error handling
-		perror(strerror(errno));
 		shell->last_exit_status = 1;
 		return ;
 	}
-	printf("%s\n", buf);
+
 }
