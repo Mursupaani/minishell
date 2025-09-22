@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/15 16:53:13 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/22 13:06:10 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 volatile sig_atomic_t g_signal_received = 0;
 
 static void	free_memory_at_exit(t_shell *shell);
+static int	cleanup_after_execution(t_shell *shell, t_command *cmd);
 
 static void print_tokens(t_token *tokens)
 {
@@ -56,6 +57,8 @@ static void print_commands(t_command *commands)
                    redir->type, redir->target);
             redir = redir->next;
         }
+		if (cmd->heredoc_filename)
+            printf("  cmd heredoc filename: '%s'\n", cmd->heredoc_filename); 
 		printf("command type: %d\n", cmd->cmd_type);
         
         cmd = cmd->next;
@@ -68,8 +71,6 @@ static void print_commands(t_command *commands)
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	*shell;
-	// NOTE: Shell has built-in input variable
-	// char	*input;
     t_token *tokens;
     t_command *commands;
 
@@ -139,18 +140,21 @@ int	main(int argc, char **argv, char **envp)
         }
 		//FIXME: Need to fix this in parsing!
 		shell->env_array = envp;
+		// commands->redirections->heredoc_delimiter = "eof";
+		// commands->redirections->next->heredoc_delimiter = "eof";
 		print_commands(commands);
 		execute_commands(commands, shell);
+		//FIXME: Handle clean exit
+		if (cleanup_after_execution(shell, commands))
+			exit(EXIT_FAILURE);
         
-        arena_reset(shell->command_arena);
-        free(shell->input);
     }
 	free_memory_at_exit(shell);
     // shell_free(shell);
     return (EXIT_SUCCESS);
 }
 
-void	free_memory_at_exit(t_shell *shell)
+static void	free_memory_at_exit(t_shell *shell)
 {
 	rl_clear_history();
 	if (!shell)
@@ -162,4 +166,23 @@ void	free_memory_at_exit(t_shell *shell)
 	if (shell->session_arena)
 		arena_free(&shell->session_arena);
 	free(shell);
+}
+
+static int	cleanup_after_execution(t_shell *shell, t_command *cmd)
+{
+	while(cmd)
+	{
+		if (cmd->heredoc_filename != NULL)
+		{
+			if(unlink(cmd->heredoc_filename))
+			{
+				perror(strerror(errno));
+				return (1);
+			}
+		}
+		cmd = cmd->next;
+	}
+	arena_reset(shell->command_arena);
+	free(shell->input);
+	return (0);
 }
