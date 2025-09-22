@@ -11,11 +11,13 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <stdio.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
-char	*execute_input_redirection(t_redir *redirection, t_shell *shell);
-char	*execute_output_redirection(t_redir *redirection, t_shell *shell);
-char	*execute_error_redirection(t_redir *redirection, t_shell *shell);
-char	*execute_heredoc(t_redir *redirection, t_shell *shell);
+static char	*execute_input_redirection(t_redir *redirection, t_shell *shell);
+static char	*execute_output_redirection(t_redir *redirection, t_shell *shell);
+static char	*execute_heredoc(t_redir *redirection, t_shell *shell);
 
 char	*execute_redirection(t_redir *redirection, t_shell *shell)
 {
@@ -28,35 +30,33 @@ char	*execute_redirection(t_redir *redirection, t_shell *shell)
 	else if (redirection->type == REDIR_OUTPUT
 		|| redirection->type == REDIR_APPEND)
 		target = execute_output_redirection(redirection, shell);
-	else if (redirection->type == REDIR_ERROR)
-		target = execute_error_redirection(redirection, shell);
 	else if (redirection->type == REDIR_HEREDOC)
 		target = execute_heredoc(redirection, shell);
 	if (redirection->next)
-	{
-		close(redirection->fd);
 		return (execute_redirection(redirection->next, shell));
-	}
 	else
 		return (target);
 }
 
-char	*execute_input_redirection(t_redir *redirection, t_shell *shell)
+static char	*execute_input_redirection(t_redir *redirection, t_shell *shell)
 {
-	(void)redirection;
-	(void)shell;
+	if (!redirection || !shell)
+		return (NULL);
+	redirection->fd = open(redirection->target, O_RDONLY);
+	if (redirection->fd == -1)
+		//FIXME:Fix error handling
+		perror(strerror(errno));
 	close(STDIN_FILENO);
-	if (redirection->type == REDIR_INPUT)
-		redirection->fd = open(redirection->target, O_RDONLY);
+	dup(redirection->fd);
+	close(redirection->fd);
+	(void)shell;
 	return (NULL);
 }
 
-char	*execute_output_redirection(t_redir *redirection, t_shell *shell)
+static char	*execute_output_redirection(t_redir *redirection, t_shell *shell)
 {
-	(void)shell;
 	if (!redirection || !shell)
 		return (NULL);
-	close(STDOUT_FILENO);
 	if (redirection->type == REDIR_OUTPUT)
 		redirection->fd = open(redirection->target, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 	else if (redirection->type == REDIR_APPEND)
@@ -64,34 +64,28 @@ char	*execute_output_redirection(t_redir *redirection, t_shell *shell)
 	if (redirection->fd == -1)
 		//FIXME:Fix error handling
 		perror(strerror(errno));
-	return (NULL);
-}
-
-char	*execute_error_redirection(t_redir *redirection, t_shell *shell)
-{
-	close(STDERR_FILENO);
+	close(STDOUT_FILENO);
+	dup(redirection->fd);
+	close(redirection->fd);
 	(void)shell;
-	(void)redirection;
 	return (NULL);
 }
 
-char	*execute_heredoc(t_redir *redirection, t_shell *shell)
+static char	*execute_heredoc(t_redir *redirection, t_shell *shell)
 {
 	char	*input;
 
-	(void)shell;
 	if (!redirection || !shell)
 		return (NULL);
-	close(STDIN_FILENO);
+	shell->tmp_dir = ".tmp/";
 	while (true)
 	{
-		input = readline("heredoc> ");
+		input = readline("> ");
 		if (ft_strncmp(input, redirection->target, ft_strlen(input)) == 0)
 		{
 			free(input);
 			break ;
 		}
-		write (STDIN_FILENO, input, ft_strlen(input));
 		free(input);
 	}
 	return (NULL);
