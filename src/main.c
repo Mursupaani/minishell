@@ -139,7 +139,8 @@ int	main(int argc, char **argv, char **envp)
         }
 		//FIXME: Need to fix this in parsing!
 		shell->env_array = envp;
-		commands->redirections->heredoc_delimiter = "eof";
+		// commands->redirections->heredoc_delimiter = "eof";
+		// commands->redirections->next->heredoc_delimiter = "eof";
 		print_commands(commands);
 		execute_commands(commands, shell);
         
