@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/12 15:00:27 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/22 13:11:38 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 	int	pid;
 
 	classify_commands(cmd);
+	handle_heredocs(cmd);
 	if (cmd->next)
 		execute_pipe(cmd, shell);
 	else if (cmd->cmd_type == CMD_BUILTIN_PARENT)
@@ -39,7 +40,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 	}
 	else if (cmd->cmd_type == CMD_EXTERNAL)
 	{
-		fprintf(stderr, "External\n");
+		fprintf(stderr, "External this one is\n");
 		// FIXME: Error handling
 		pid = fork();
 		if (pid == 0)

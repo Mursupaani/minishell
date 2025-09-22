@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/18 16:04:21 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/22 12:52:38 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ typedef enum e_redir_type {
 
 typedef struct s_redir {
     t_redir_type		type;
+	char				*heredoc_delimiter;
     char				*target;    // filename or heredoc delimiter
     int					fd;         // file descriptor when opened
     struct s_redir		*next;
@@ -118,6 +119,7 @@ typedef struct s_command {
     t_redir		*redirections;  // ordered list of redirections
     
     // Pipe management
+	// FIXME: Change piping to use these? If so, change names
     int			pipe_in[2];
     int			pipe_out[2];
     pid_t		pid;
@@ -212,7 +214,10 @@ int		execute_pipe(t_command *cmd, t_shell *shell);
 void	choose_execution_type(t_command *cmd, t_shell *shell);
 void	execute_builtin_command(t_command *cmd, t_shell *shell);
 void	execute_external_command(t_command *cmd, t_shell *shell);
-char	*execute_redirection(t_redir *redirection, t_shell *shell);
+
+// Redirection
+int		execute_redirection(t_redir *redirection, t_shell *shell);
+int		handle_heredocs(t_command *cmd);
 
 // Built-in commands
 void	change_directory(t_command *cmd, t_shell *shell);

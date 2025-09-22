@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/15 16:53:13 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/22 13:06:10 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,7 @@ int	main(int argc, char **argv, char **envp)
         }
 		//FIXME: Need to fix this in parsing!
 		shell->env_array = envp;
+		commands->redirections->heredoc_delimiter = "eof";
 		print_commands(commands);
 		execute_commands(commands, shell);
         
