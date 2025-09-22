@@ -101,7 +101,7 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 		return ;
 	}
 	if (cmd->redirections)
-		execute_redirection(cmd->redirections, shell);
+		execute_redirection(cmd->redirections, cmd, shell);
 	if (execve(executable_path, cmd->argv, shell->env_array))
 	{
 		shell->last_exit_status = 1;
@@ -116,7 +116,7 @@ static int	execut_builtin_redirections(t_command *cmd, t_shell *shell)
 	shell->stdin_fd = dup(STDIN_FILENO);
 	shell->stdout_fd = dup(STDOUT_FILENO);
 	shell->stderr_fd = dup(STDERR_FILENO);
-	execute_redirection(cmd->redirections, shell);
+	execute_redirection(cmd->redirections, cmd, shell);
 	return (0);
 }
 

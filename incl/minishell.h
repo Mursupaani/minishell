@@ -103,7 +103,6 @@ typedef enum e_redir_type {
 
 typedef struct s_redir {
     t_redir_type		type;
-	char				*heredoc_delimiter;
     char				*target;    // filename or heredoc delimiter
     int					fd;         // file descriptor when opened
     struct s_redir		*next;
@@ -117,6 +116,7 @@ typedef struct s_command {
 	bool		is_pipe;
 	t_builtin_type	built_in_type;
     t_redir		*redirections;  // ordered list of redirections
+	char		*heredoc_filename;
     
     // Pipe management
 	// FIXME: Change piping to use these? If so, change names
@@ -216,7 +216,7 @@ void	execute_builtin_command(t_command *cmd, t_shell *shell);
 void	execute_external_command(t_command *cmd, t_shell *shell);
 
 // Redirection
-int		execute_redirection(t_redir *redirection, t_shell *shell);
+int		execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell);
 int		handle_heredocs(t_command *cmd);
 
 // Built-in commands

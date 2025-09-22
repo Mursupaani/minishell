@@ -12,6 +12,8 @@
 
 #include "minishell.h"
 
+static int	attach_heredoc_filename_to_command(t_command *cmd, t_arena *arena);
+
 t_command	*parse_args(char *input, char **envp, t_arena *arena)
 {
     t_command	*cmd;
@@ -63,6 +65,7 @@ t_command *parse_pipeline(t_token *tokens, t_shell *shell)
                 if(!head)
                     head = current;
             }
+			//FIXME:Not allowed to be here
             int redir_error;
             token = handle_redir(current, token, shell->command_arena, &redir_error);
 			if(redir_error)
@@ -93,6 +96,7 @@ t_command *create_command(t_arena *arena)
     cmd->argv = NULL;
     cmd->cmd_type = CMD_EXTERNAL;
     cmd->redirections = NULL;
+	cmd->heredoc_filename = NULL;
     cmd->pipe_in[0] = -1;
     cmd->pipe_in[1] = -1;
     cmd->pipe_out[0] = -1;
@@ -135,6 +139,8 @@ t_token *handle_redir(t_command *current, t_token *token, t_arena *arena, int *e
     
     redir->type = token_to_redir_type(token->type);
     redir->target = arena_strdup(target->value, arena);
+	if (redir->type == REDIR_HEREDOC)
+		attach_heredoc_filename_to_command(current, arena);
     if (!redir->target)
     {
         *error = 1;
@@ -265,4 +271,22 @@ void classify_commands(t_command *cmd)
 			current->cmd_type = CMD_EXTERNAL;
         current = current->next;
     }
+}
+
+static int	attach_heredoc_filename_to_command(t_command *cmd, t_arena *arena)
+{
+	static unsigned int	file_counter;
+	const char			*heredoc_name_base = ".heredoc-";
+	char				*temp;
+
+	if (cmd->heredoc_filename == NULL)
+	{
+		temp = ft_itoa(file_counter);
+		if (!temp)
+			return (1);
+		cmd->heredoc_filename = ft_strjoin_arena(heredoc_name_base, temp, arena);
+		free(temp);
+		file_counter++;
+	}
+	return (0);
 }
