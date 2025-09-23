@@ -221,10 +221,14 @@ void	ft_echo(t_command *cmd, t_shell *shell);
 void	print_environment_variables(t_shell *shell);
 void	export_environment_variable(t_command *cmd, t_shell *shell);
 
-// Environment
+// Environment & Variable expansion
 char	*find_file_from_path(char *filename, t_shell *shell);
 char	*hash_table_get(t_hash_table *table, char *key);
 void	hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena);
+void	prepare_cmd(t_command *cmd, t_shell *shell);
+void	expand_cmd(t_command *cmd, t_shell *shell);
+char	*expand_var(char *str, t_shell *shell, t_arena *arena);
+char	*process_var_expand(char *str, t_shell *shell, t_arena *arena);
 
 // Parsing
 t_command	*parse_args(char *input, char **envp, t_arena *arena);

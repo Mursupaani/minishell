@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_command.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/12 15:00:27 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/23 14:39:15 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 	int	pid;
 
 	classify_commands(cmd);
+	prepare_cmd(cmd, shell);
 	if (cmd->next)
 		execute_pipe(cmd, shell);
 	else if (cmd->cmd_type == CMD_BUILTIN_PARENT)
@@ -45,6 +46,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 		waitpid(pid, &shell->last_exit_status, 0);
 	}
 }
+
 
 void	choose_execution_type(t_command *cmd, t_shell *shell)
 {
