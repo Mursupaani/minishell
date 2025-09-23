@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/18 16:04:21 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/22 12:52:38 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,8 +116,10 @@ typedef struct s_command {
 	bool		is_pipe;
 	t_builtin_type	built_in_type;
     t_redir		*redirections;  // ordered list of redirections
+	char		*heredoc_filename;
     
     // Pipe management
+	// FIXME: Change piping to use these? If so, change names
     int			pipe_in[2];
     int			pipe_out[2];
     pid_t		pid;
@@ -212,7 +214,10 @@ int		execute_pipe(t_command *cmd, t_shell *shell);
 void	choose_execution_type(t_command *cmd, t_shell *shell);
 void	execute_builtin_command(t_command *cmd, t_shell *shell);
 void	execute_external_command(t_command *cmd, t_shell *shell);
-char	*execute_redirection(t_redir *redirection, t_shell *shell);
+
+// Redirection
+int		execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell);
+int		handle_heredocs(t_command *cmd);
 
 // Built-in commands
 void	change_directory(t_command *cmd, t_shell *shell);

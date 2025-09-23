@@ -6,12 +6,14 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/23 14:39:15 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/22 13:11:38 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
+
+static int	execut_builtin_redirections(t_command *cmd, t_shell *shell);
+static int	reset_std_fds(t_shell *shell);
 
 void	execute_commands(t_command *cmd, t_shell *shell)
 {
@@ -19,6 +21,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 
 	classify_commands(cmd);
 	prepare_cmd(cmd, shell);
+	handle_heredocs(cmd);
 	if (cmd->next)
 		execute_pipe(cmd, shell);
 	else if (cmd->cmd_type == CMD_BUILTIN_PARENT)
@@ -38,7 +41,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 	}
 	else if (cmd->cmd_type == CMD_EXTERNAL)
 	{
-		fprintf(stderr, "External\n");
+		fprintf(stderr, "External this one is\n");
 		// FIXME: Error handling
 		pid = fork();
 		if (pid == 0)
@@ -70,6 +73,8 @@ void	choose_execution_type(t_command *cmd, t_shell *shell)
 
 void	execute_builtin_command(t_command *cmd, t_shell *shell)
 {
+	if (cmd->redirections)
+		execut_builtin_redirections(cmd, shell);
 	if (ft_strncmp(cmd->argv[0], "cd", ft_strlen(cmd->argv[0])) == 0)
 		change_directory(cmd, shell);
 	else if (ft_strncmp(cmd->argv[0], "pwd", ft_strlen(cmd->argv[0])) == 0)
@@ -80,6 +85,8 @@ void	execute_builtin_command(t_command *cmd, t_shell *shell)
 		print_environment_variables(shell);
 	else if (ft_strncmp(cmd->argv[0], "export", ft_strlen(cmd->argv[0])) == 0)
 		export_environment_variable(cmd, shell);
+	if (cmd->redirections)
+		reset_std_fds(shell);
 }
 
 void	execute_external_command(t_command *cmd, t_shell *shell)
@@ -96,10 +103,32 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 		return ;
 	}
 	if (cmd->redirections)
-		execute_redirection(cmd->redirections, shell);
+		execute_redirection(cmd->redirections, cmd, shell);
 	if (execve(executable_path, cmd->argv, shell->env_array))
 	{
 		shell->last_exit_status = 1;
 		perror(strerror(errno));
 	}
+}
+
+static int	execut_builtin_redirections(t_command *cmd, t_shell *shell)
+{
+	if (!cmd || !shell)
+		return (1);
+	shell->stdin_fd = dup(STDIN_FILENO);
+	shell->stdout_fd = dup(STDOUT_FILENO);
+	shell->stderr_fd = dup(STDERR_FILENO);
+	execute_redirection(cmd->redirections, cmd, shell);
+	return (0);
+}
+
+static int	reset_std_fds(t_shell *shell)
+{
+	dup2(shell->stdin_fd, STDIN_FILENO);
+	dup2(shell->stdout_fd, STDOUT_FILENO);
+	dup2(shell->stderr_fd, STDERR_FILENO);
+	close(shell->stdin_fd);
+	close(shell->stdout_fd);
+	close(shell->stderr_fd);
+	return (0);
 }

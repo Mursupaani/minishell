@@ -6,7 +6,7 @@
 #    By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/24 11:49:18 by magebreh          #+#    #+#              #
-#    Updated: 2025/09/12 14:09:08 by anpollan         ###   ########.fr        #
+#    Updated: 2025/09/22 12:59:57 by anpollan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,8 @@ HEADER = ./incl/minishell.h
 SRC = main.c print_working_directory.c change_directory.c execute_command.c \
 	  interactive_shell.c non_interactive_shell.c parsing.c signals.c shell.c \
 	  utils.c echo.c token.c fork.c execute_pipe.c execute_redirection.c \
-	  find_file_from_path.c strjoin_arena.c environment_variables_execution.c
+	  find_file_from_path.c strjoin_arena.c environment_variables_execution.c \
+	  handle_heredocs.c
 
 # Combined sources
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
