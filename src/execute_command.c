@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   execute_command.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
 /*   Updated: 2025/09/22 13:11:38 by anpollan         ###   ########.fr       */
@@ -20,6 +20,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 	int	pid;
 
 	classify_commands(cmd);
+	prepare_cmd(cmd, shell);
 	handle_heredocs(cmd);
 	if (cmd->next)
 		execute_pipe(cmd, shell);
@@ -48,6 +49,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 		waitpid(pid, &shell->last_exit_status, 0);
 	}
 }
+
 
 void	choose_execution_type(t_command *cmd, t_shell *shell)
 {
