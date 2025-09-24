@@ -12,6 +12,8 @@
 
 #include "minishell.h"
 
+static char **populate_env_array_from_envp(char **envp, t_arena *arena);
+
 static unsigned int hash_function(const char *key)
 {
 	unsigned int hash;
@@ -153,10 +155,16 @@ t_shell	*shell_init(char **env)
 		return (NULL);
 	}
 	shell->env_table = populate_env_from_envp(env, shell->session_arena);
-	if (!shell->env_table)
+	shell->env_array = populate_env_array_from_envp(env, shell->session_arena);
+	if (!shell->env_table || !shell->env_array)
 	{
 		cleanup_shell_partial(shell, 3);
 		return (NULL);
 	}
 	return (shell);
+}
+
+static char **populate_env_array_from_envp(char **envp, t_arena *arena)
+{
+	
 }
