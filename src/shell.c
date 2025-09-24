@@ -6,13 +6,12 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:40:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/08/27 19:44:21 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/24 12:13:30 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char **populate_env_array_from_envp(char **envp, t_arena *arena);
 
 static unsigned int hash_function(const char *key)
 {
@@ -155,16 +154,16 @@ t_shell	*shell_init(char **env)
 		return (NULL);
 	}
 	shell->env_table = populate_env_from_envp(env, shell->session_arena);
-	shell->env_array = populate_env_array_from_envp(env, shell->session_arena);
-	if (!shell->env_table || !shell->env_array)
+	if (!shell->env_table)
+	{
+		cleanup_shell_partial(shell, 3);
+		return (NULL);
+	}
+	shell->env_array = env_array_from_hashtable(shell);
+	if (!shell->env_array)
 	{
 		cleanup_shell_partial(shell, 3);
 		return (NULL);
 	}
 	return (shell);
-}
-
-static char **populate_env_array_from_envp(char **envp, t_arena *arena)
-{
-	
 }
