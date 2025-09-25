@@ -62,7 +62,7 @@ void hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena)
 			if (value)
 				current->value = arena_strdup(value, arena);
 			else
-				current->value = arena_strdup("", arena);
+				current->value = NULL;
             return;
         }
         current = current->next;
@@ -72,10 +72,14 @@ void hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena)
         return;
     entry->key = arena_strdup(key, arena);
 	if (value)
+	{
 		entry->value = arena_strdup(value, arena);
+		if (!entry->value)
+			return ;
+	}
 	else
-		entry->value = arena_strdup("", arena);
-	if (!entry->key || !entry->value)
+		entry->value = NULL;
+	if (!entry->key)
 		return;
     entry->next = table->buckets[index];
     table->buckets[index] = entry;
