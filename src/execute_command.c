@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static int	execut_builtin_redirections(t_command *cmd, t_shell *shell);
+static int	execute_builtin_redirections(t_command *cmd, t_shell *shell);
 static int	reset_std_fds(t_shell *shell);
 
 void	execute_commands(t_command *cmd, t_shell *shell)
@@ -28,7 +28,6 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 		execute_builtin_command(cmd, shell);
 	else if (cmd->cmd_type == CMD_BUILTIN_CHILD)
 	{
-		// FIXME: Why pwd child command?
 		fprintf(stderr, "Builtin child\n");
 		// FIXME: Error handling
 		pid = fork();
@@ -67,7 +66,7 @@ void	choose_execution_type(t_command *cmd, t_shell *shell)
 void	execute_builtin_command(t_command *cmd, t_shell *shell)
 {
 	if (cmd->redirections)
-		execut_builtin_redirections(cmd, shell);
+		execute_builtin_redirections(cmd, shell);
 	if (ft_strncmp(cmd->argv[0], "cd", ft_strlen(cmd->argv[0])) == 0)
 		change_directory(cmd, shell);
 	else if (ft_strncmp(cmd->argv[0], "pwd", ft_strlen(cmd->argv[0])) == 0)
@@ -100,11 +99,12 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 	if (execve(executable_path, cmd->argv, shell->env_array))
 	{
 		shell->last_exit_status = 1;
-		perror(strerror(errno));
+		ft_fprintf(STDERR_FILENO,
+			 "minishell: %s: %s\n", cmd->argv[0], strerror(errno));
 	}
 }
 
-static int	execut_builtin_redirections(t_command *cmd, t_shell *shell)
+static int	execute_builtin_redirections(t_command *cmd, t_shell *shell)
 {
 	if (!cmd || !shell)
 		return (1);
