@@ -54,21 +54,14 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 void	choose_execution_type(t_command *cmd, t_shell *shell)
 {
 	if (cmd->cmd_type == CMD_BUILTIN_PARENT)
-	{
-		// fprintf(stderr, "Builtin parent\n");
 		execute_builtin_command(cmd, shell);
-	}
 	else if (cmd->cmd_type == CMD_BUILTIN_CHILD)
 	{
-		// fprintf(stderr, "Builtin child\n");
 		execute_builtin_command(cmd, shell);
 		exit(shell->last_exit_status);
 	}
 	else if (cmd->cmd_type == CMD_EXTERNAL)
-	{
-		// fprintf(stderr, "External\n");
 		execute_external_command(cmd, shell);
-	}
 }
 
 void	execute_builtin_command(t_command *cmd, t_shell *shell)

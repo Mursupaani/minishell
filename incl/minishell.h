@@ -157,7 +157,6 @@ typedef struct s_shell {
 
     // Environment subsystem
     t_hash_table    *env_table;        // Hash table for environment
-	//FIXME: Env array is not populated
     char            **env_array;       // Built from env_table before fork
     char            **path_dirs;       // PATH cache
     int             path_dirty;        // Invalidation flag
@@ -198,8 +197,7 @@ void			sigint_handler(int sig);
 void			setup_signals(void);
 
 // Shell initialization and management (shell.c)
-// FIXME: the populate function name is wrong. Is this some other function?
-t_hash_table	*populate_shenv_from_envp(char **envp, t_arena *arena);
+t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
 char			**env_array_from_hashtable(t_shell *shell);
 t_shell			*shell_init(char **env);
 
