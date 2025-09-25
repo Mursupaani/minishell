@@ -6,11 +6,12 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:40:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/08/27 19:44:21 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/24 12:13:30 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
 
 static unsigned int hash_function(const char *key)
 {
@@ -49,7 +50,8 @@ void hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena)
     t_env_entry *entry;
     t_env_entry *current;
 
-    if (!table || !key || !value)
+    if (!table || !key)
+    // if (!table || !key || !value)
         return;
     index = hash_function(key);
     current = table->buckets[index];
@@ -57,7 +59,10 @@ void hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena)
     {
         if(ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
         {
-			current->value = arena_strdup(value, arena);
+			if (value)
+				current->value = arena_strdup(value, arena);
+			else
+				current->value = arena_strdup("", arena);
             return;
         }
         current = current->next;
@@ -66,7 +71,10 @@ void hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena)
     if (!entry)
         return;
     entry->key = arena_strdup(key, arena);
-    entry->value = arena_strdup(value, arena);
+	if (value)
+		entry->value = arena_strdup(value, arena);
+	else
+		entry->value = arena_strdup("", arena);
 	if (!entry->key || !entry->value)
 		return;
     entry->next = table->buckets[index];
@@ -154,6 +162,12 @@ t_shell	*shell_init(char **env)
 	}
 	shell->env_table = populate_env_from_envp(env, shell->session_arena);
 	if (!shell->env_table)
+	{
+		cleanup_shell_partial(shell, 3);
+		return (NULL);
+	}
+	shell->env_array = env_array_from_hashtable(shell);
+	if (!shell->env_array)
 	{
 		cleanup_shell_partial(shell, 3);
 		return (NULL);

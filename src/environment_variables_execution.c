@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 13:58:42 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/12 16:34:32 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/24 17:24:19 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,6 @@ void	print_environment_variables(t_shell *shell)
 	while (shell->env_array)
 		printf("%s\n", *shell->env_array);
 	shell->last_exit_status = 0;
-}
-
-void	export_environment_variable(t_command *cmd, t_shell *shell)
-{
-	if (!shell)
-		return ;
-	if (!cmd)
-	{
-		shell->last_exit_status = 1;
-		return ;
-	}
-
 }
 
 void	prepare_cmd(t_command *cmd, t_shell *shell)
@@ -90,6 +78,7 @@ static char	*expand_single_variable(char **src, t_shell *shell, char *dst)
 	(*src)++;
 	if (**src == '?')
 	{
+		//FIXME: sprintf is not allowed
 		dst += sprintf(dst, "%d", shell->last_exit_status);
 		(*src)++;
 	}
@@ -99,11 +88,13 @@ static char	*expand_single_variable(char **src, t_shell *shell, char *dst)
 		while (**src && (ft_isalnum(**src) || **src == '_'))
 			(*src)++;
 		var_len = *src - var_start;
+		//FIXME: strncpy is not allowed
 		strncpy(var_name, var_start, var_len);
 		var_name[var_len] = '\0';
 
 		value = hash_table_get(shell->env_table, var_name);
 		if (value)
+			//FIXME: sprintf is not allowed
 			dst += sprintf(dst, "%s", value);
 	}
 	return (dst);

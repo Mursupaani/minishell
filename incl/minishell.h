@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/22 12:52:38 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/24 11:34:20 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,6 @@ typedef struct s_shell {
 
     // Environment subsystem
     t_hash_table    *env_table;        // Hash table for environment
-	//FIXME: Env array is not populated
     char            **env_array;       // Built from env_table before fork
     char            **path_dirs;       // PATH cache
     int             path_dirty;        // Invalidation flag
@@ -198,7 +197,8 @@ void			sigint_handler(int sig);
 void			setup_signals(void);
 
 // Shell initialization and management (shell.c)
-t_hash_table	*populate_shenv_from_envp(char **envp, t_arena *arena);
+t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
+char			**env_array_from_hashtable(t_shell *shell);
 t_shell			*shell_init(char **env);
 
 // Utility functions (utils.c)

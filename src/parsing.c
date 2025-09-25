@@ -37,6 +37,7 @@ t_command *parse_pipeline(t_token *tokens, t_shell *shell)
     t_command	*current;
     t_command	*new_cmd;
     t_token		*token;
+	int redir_error;
 
     head = NULL;
     current = NULL;
@@ -65,8 +66,6 @@ t_command *parse_pipeline(t_token *tokens, t_shell *shell)
                 if(!head)
                     head = current;
             }
-			//FIXME:Not allowed to be here
-            int redir_error;
             token = handle_redir(current, token, shell->command_arena, &redir_error);
 			if(redir_error)
 				return (NULL);
