@@ -106,16 +106,22 @@ static char	*get_entry_from_table(t_env_entry *entry, t_shell *shell)
 	char		*temp1;
 	char		*temp2;
 
-	temp1 = ft_strjoin(entry->key, "=");
+	if (entry->value)
+		temp1 = ft_strjoin(entry->key, "=");
+	else
+		temp1 = ft_strdup(entry->key);
 	if (!temp1)
 		return (NULL);
-	temp2 = ft_strjoin(temp1, entry->value);
-	free(temp1);
-	if (!temp2)
-		return (NULL);
-	temp1 = arena_strdup(temp2, shell->session_arena);
-	free(temp2);
-	if (!temp1)
-		return (NULL);
+	if (entry->value)
+	{
+		temp2 = ft_strjoin(temp1, entry->value);
+		free(temp1);
+		if (!temp2)
+			return (NULL);
+		temp1 = arena_strdup(temp2, shell->session_arena);
+		free(temp2);
+		if (!temp1)
+			return (NULL);
+	}
 	return (temp1);
 }
