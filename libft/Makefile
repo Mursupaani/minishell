@@ -36,11 +36,15 @@ PRINTF_SRC = ft_printf/ft_printf.c ft_printf/print_char.c ft_printf/print_string
              ft_printf/print_int.c ft_printf/print_unsigned.c ft_printf/print_hex.c \
              ft_printf/print_pointer.c
 
+FPRINTF_SRC = ft_fprintf/ft_fprintf.c ft_fprintf/fprint_char.c ft_fprintf/fprint_string.c \
+             ft_fprintf/fprint_int.c ft_fprintf/fprint_unsigned.c ft_fprintf/fprint_hex.c \
+             ft_fprintf/fprint_pointer.c
+
 # get_next_line sources
 GNL_SRC = get_next_line/get_next_line.c get_next_line/get_next_line_utils.c
 
 # Combined sources
-SRC = $(LIBFT_SRC) $(PRINTF_SRC) $(GNL_SRC)
+SRC = $(LIBFT_SRC) $(PRINTF_SRC) $(FPRINTF_SRC) $(GNL_SRC)
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
 
 # Bonus sources

@@ -261,7 +261,9 @@ void classify_commands(t_command *cmd)
         }
 		if (is_builtin_command(current->argv[0]))
         {
-            if (is_single && is_parent_only_builtin(current->argv[0]))
+            if (is_single)
+			// FIXME: No need for the is_parent_only_builtin(current->argv[0]))?
+            // if (is_single && is_parent_only_builtin(current->argv[0]))
                 current->cmd_type = CMD_BUILTIN_PARENT;
             else
                 current->cmd_type = CMD_BUILTIN_CHILD;

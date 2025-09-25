@@ -17,7 +17,7 @@ static int	check_flags(char **argv, bool *print_new_line);
 
 void	ft_echo(t_command *cmd, t_shell *shell)
 {
-	//NOTE: Can echo fail? Echo fails e.g. "echo $??"
+	//NOTE: Can echo fail?
 	bool	print_new_line;
 	int		offset;
 

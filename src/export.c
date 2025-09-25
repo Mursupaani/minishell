@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <stdio.h>
+#include <unistd.h>
 
 static void	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell);
 static char	*get_entry_key(char *entry, t_arena *arena);
@@ -42,7 +44,9 @@ static void	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell)
 		key = get_entry_key(cmd->argv[i], shell->command_arena);
 		if (!key)
 		{
-			perror("Failed to export variable\n");
+			ft_fprintf(STDERR_FILENO,
+				"minishell: export: `%s': not a valid identifier\n",
+				cmd->argv[i]);
 			shell->last_exit_status = 1;
 			return ;
 		}
