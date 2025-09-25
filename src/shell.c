@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:40:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/09/24 12:13:30 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/25 15:53:58 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,32 @@ void hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena)
 		return;
     entry->next = table->buckets[index];
     table->buckets[index] = entry;
+}
+
+void hash_table_delete(t_hash_table *table, char *key)
+{
+	unsigned int index;
+	t_env_entry *current;
+	t_env_entry *prev;
+
+	if (!table || !key)
+		return;
+	index = hash_function(key);
+	current = table->buckets[index];
+	prev = NULL;
+	while (current)
+	{
+		if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
+		{
+			if (prev)
+				prev->next = current->next;
+			else
+				table->buckets[index] = current->next;
+			return;
+		}
+		prev = current;
+		current = current->next;
+	}
 }
 
 char *hash_table_get(t_hash_table *table, char *key)
