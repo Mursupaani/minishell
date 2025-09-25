@@ -50,7 +50,8 @@ void hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena)
     t_env_entry *entry;
     t_env_entry *current;
 
-    if (!table || !key || !value)
+    if (!table || !key)
+    // if (!table || !key || !value)
         return;
     index = hash_function(key);
     current = table->buckets[index];
@@ -58,7 +59,10 @@ void hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena)
     {
         if(ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
         {
-			current->value = arena_strdup(value, arena);
+			if (value)
+				current->value = arena_strdup(value, arena);
+			else
+				current->value = arena_strdup("", arena);
             return;
         }
         current = current->next;
@@ -67,7 +71,10 @@ void hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena)
     if (!entry)
         return;
     entry->key = arena_strdup(key, arena);
-    entry->value = arena_strdup(value, arena);
+	if (value)
+		entry->value = arena_strdup(value, arena);
+	else
+		entry->value = arena_strdup("", arena);
 	if (!entry->key || !entry->value)
 		return;
     entry->next = table->buckets[index];

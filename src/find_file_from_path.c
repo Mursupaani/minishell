@@ -16,15 +16,13 @@ static char	*try_paths(char *filename, char **path_dirs, t_shell *shell);
 
 char	*find_file_from_path(char *filename, t_shell *shell)
 {
-	char	**path_dirs;
-
 	if (!filename)
 		return (NULL);
-	path_dirs = ft_split_arena(
+	shell->path_dirs = ft_split_arena(
 		hash_table_get(shell->env_table, "PATH"), ':', shell->command_arena);
-	if (!path_dirs)
+	if (!shell->path_dirs)
 		return (NULL);
-	return (try_paths(filename, path_dirs, shell));
+	return (try_paths(filename, shell->path_dirs, shell));
 }
 
 static char	*try_paths(char *filename, char **path_dirs, t_shell *shell)
