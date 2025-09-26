@@ -6,13 +6,11 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 17:23:17 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/24 17:30:36 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/26 08:55:28 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
-#include <unistd.h>
 
 static void	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell);
 static char	*get_entry_key(char *entry, t_arena *arena);

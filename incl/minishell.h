@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/25 15:54:53 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/26 09:00:58 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,6 +225,7 @@ void	print_working_directory(t_command *cmd, t_shell *shell);
 void	ft_echo(t_command *cmd, t_shell *shell);
 void	print_environment_variables(t_shell *shell);
 void	export_environment_variable(t_command *cmd, t_shell *shell);
+void	unset_environment_variable(t_command *cmd, t_shell *shell);
 
 // Environment & Variable expansion
 char	*find_file_from_path(char *filename, t_shell *shell);
