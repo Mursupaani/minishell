@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/24 12:13:07 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:01:39 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 volatile sig_atomic_t g_signal_received = 0;
 
-static void	free_memory_at_exit(t_shell *shell);
+void	free_memory_at_exit(t_shell *shell);
 static int	cleanup_after_execution(t_shell *shell, t_command *cmd);
 
 static void print_tokens(t_token *tokens)
@@ -138,7 +138,7 @@ int	main(int argc, char **argv, char **envp)
             free(shell->input);
             continue;
         }
-		print_commands(commands);
+		// print_commands(commands);
 		execute_commands(commands, shell);
 		//FIXME: Handle clean exit
 		if (cleanup_after_execution(shell, commands))
@@ -150,7 +150,7 @@ int	main(int argc, char **argv, char **envp)
     return (EXIT_SUCCESS);
 }
 
-static void	free_memory_at_exit(t_shell *shell)
+void	free_memory_at_exit(t_shell *shell)
 {
 	rl_clear_history();
 	if (!shell)

@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 16:06:25 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/29 16:12:44 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:09:01 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,4 +124,17 @@ static int	close_unused_pipe_fds(int pipe_fd[2][2], int i, int cmd_count)
 	// close(pipe_fd[1][0]);
 	// close(pipe_fd[1][1]);
 	return (0);
+}
+
+void	choose_execution_type(t_command *cmd, t_shell *shell)
+{
+	if (cmd->cmd_type == CMD_BUILTIN_PARENT)
+		execute_builtin_command(cmd, shell);
+	else if (cmd->cmd_type == CMD_BUILTIN_CHILD)
+	{
+		execute_builtin_command(cmd, shell);
+		exit(shell->last_exit_status);
+	}
+	else if (cmd->cmd_type == CMD_EXTERNAL)
+		execute_external_command(cmd, shell);
 }

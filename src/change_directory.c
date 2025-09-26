@@ -12,18 +12,20 @@
 
 #include "minishell.h"
 
+// NOTE: OK!
 void	change_directory(t_command *cmd, t_shell *shell)
 {
 	if (cmd->argv[2] != NULL)
 	{
-		ft_putstr_fd("Too many arguments\n", STDERR_FILENO);
-		//FIXME: Error handling
+		ft_fprintf(STDERR_FILENO,
+			"minishell: cd: too many arguments\n");
 		shell->last_exit_status = 1;
 		return ;
 	}
 	if (chdir(cmd->argv[1]) == -1)
 	{
-		perror(strerror(errno));
+		ft_fprintf(STDERR_FILENO, "minishell: cd: %s: %s\n",
+			cmd->argv[1], strerror(errno));
 		shell->last_exit_status = 1;
 		return ;
 	}

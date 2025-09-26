@@ -12,22 +12,6 @@
 
 #include "minishell.h"
 
-void	print_environment_variables(t_shell *shell)
-{
-	if (!shell)
-		return ;
-	if (!shell->env_array)
-	{
-		//FIXME: Error handling
-		printf("Fail\n");
-		shell->last_exit_status = 1;
-		return ;
-	}
-	while (shell->env_array)
-		printf("%s\n", *shell->env_array);
-	shell->last_exit_status = 0;
-}
-
 void	prepare_cmd(t_command *cmd, t_shell *shell)
 {
 	t_command *current = cmd;

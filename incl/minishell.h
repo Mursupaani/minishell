@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/26 09:00:58 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:30:01 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ typedef struct s_shell {
     struct termios  original_termios;
     int             stdin_fd;
     int             stdout_fd;
-    int             stderr_fd;
+	int				child_pid;
     
     // Heredoc management
     char            *tmp_dir;
@@ -201,6 +201,8 @@ t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
 char			**env_array_from_hashtable(t_shell *shell);
 t_shell			*shell_init(char **env);
 t_arena			*update_env_table_and_arr(t_shell *shell);
+void			free_memory_at_exit(t_shell *shell);
+int				error_exit_and_free_memory(t_shell *shell);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
@@ -269,11 +271,10 @@ void			setup_signals(void);
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
 void			cleanup_shell_partial(t_shell *shell, int level);
-char *arena_strdup(const char *s, t_arena *arena);
+char			*arena_strdup(const char *s, t_arena *arena);
 
 // Error handling fork wrapper
-// FIXME: Remove?
-// int	create_fork(void);
+int				create_fork(t_shell *shell);
 
 int is_builtin_command(char *cmd_name);
 int is_parent_only_builtin(char *cmd_name);

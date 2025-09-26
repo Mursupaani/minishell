@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/26 09:00:35 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:33:15 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@ static int	reset_std_fds(t_shell *shell);
 
 void	execute_commands(t_command *cmd, t_shell *shell)
 {
-	int	pid;
-
 	classify_commands(cmd);
 	prepare_cmd(cmd, shell);
 	handle_heredocs(cmd);
@@ -26,41 +24,13 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 		execute_pipe(cmd, shell);
 	else if (cmd->cmd_type == CMD_BUILTIN_PARENT)
 		execute_builtin_command(cmd, shell);
-	else if (cmd->cmd_type == CMD_BUILTIN_CHILD)
-	{
-		fprintf(stderr, "Builtin child\n");
-		// FIXME: Error handling
-		pid = fork();
-		if (pid == 0)
-		{
-			execute_builtin_command(cmd, shell);
-			exit(EXIT_SUCCESS);
-		}
-		waitpid(pid, &shell->last_exit_status, 0);
-	}
 	else if (cmd->cmd_type == CMD_EXTERNAL)
 	{
-		fprintf(stderr, "External this one is\n");
-		// FIXME: Error handling
-		pid = fork();
-		if (pid == 0)
+		shell->child_pid = create_fork(shell);
+		if (shell->child_pid == 0)
 			execute_external_command(cmd, shell);
-		waitpid(pid, &shell->last_exit_status, 0);
+		waitpid(shell->child_pid, &shell->last_exit_status, 0);
 	}
-}
-
-
-void	choose_execution_type(t_command *cmd, t_shell *shell)
-{
-	if (cmd->cmd_type == CMD_BUILTIN_PARENT)
-		execute_builtin_command(cmd, shell);
-	else if (cmd->cmd_type == CMD_BUILTIN_CHILD)
-	{
-		execute_builtin_command(cmd, shell);
-		exit(shell->last_exit_status);
-	}
-	else if (cmd->cmd_type == CMD_EXTERNAL)
-		execute_external_command(cmd, shell);
 }
 
 void	execute_builtin_command(t_command *cmd, t_shell *shell)
@@ -87,6 +57,7 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 {
 	char	*executable_path;
 
+	//FIXME: Fix "./ls" execution
 	if (access(cmd->argv[0], F_OK) == 0)
 		executable_path = cmd->argv[0];
 	else
@@ -102,7 +73,7 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 	{
 		shell->last_exit_status = 1;
 		ft_fprintf(STDERR_FILENO,
-			 "minishell: %s: %s\n", cmd->argv[0], strerror(errno));
+			"minishell: %s: %s\n", cmd->argv[0], strerror(errno));
 	}
 }
 
@@ -112,7 +83,6 @@ static int	execute_builtin_redirections(t_command *cmd, t_shell *shell)
 		return (1);
 	shell->stdin_fd = dup(STDIN_FILENO);
 	shell->stdout_fd = dup(STDOUT_FILENO);
-	shell->stderr_fd = dup(STDERR_FILENO);
 	execute_redirection(cmd->redirections, cmd, shell);
 	return (0);
 }
@@ -121,9 +91,7 @@ static int	reset_std_fds(t_shell *shell)
 {
 	dup2(shell->stdin_fd, STDIN_FILENO);
 	dup2(shell->stdout_fd, STDOUT_FILENO);
-	dup2(shell->stderr_fd, STDERR_FILENO);
 	close(shell->stdin_fd);
 	close(shell->stdout_fd);
-	close(shell->stderr_fd);
 	return (0);
 }

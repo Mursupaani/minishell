@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:40:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/09/25 15:53:58 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:31:41 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,7 +185,6 @@ t_shell	*shell_init(char **env)
 	shell->heredoc_counter = 0;
 	shell->stdin_fd = STDIN_FILENO;
 	shell->stdout_fd = STDOUT_FILENO;
-	shell->stderr_fd = STDERR_FILENO;
 	shell->tmp_dir = "/tmp";
 	shell->env_table = NULL;
 	shell->env_array = NULL;
