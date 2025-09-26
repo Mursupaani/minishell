@@ -22,7 +22,18 @@ void	change_directory(t_command *cmd, t_shell *shell)
 		shell->last_exit_status = 1;
 		return ;
 	}
-	if (chdir(cmd->argv[1]) == -1)
+	if (cmd->argv[1] == NULL
+		|| ft_strncmp(cmd->argv[1], "~", ft_strlen(cmd->argv[1])) == 0)
+	{
+		if (chdir(hash_table_get(shell->env_table, "HOME")) == -1)
+		{
+			ft_fprintf(STDERR_FILENO, "minishell: cd: %s: %s\n",
+				cmd->argv[1], strerror(errno));
+			shell->last_exit_status = 1;
+			return ;
+		}
+	}
+	else if (chdir(cmd->argv[1]) == -1)
 	{
 		ft_fprintf(STDERR_FILENO, "minishell: cd: %s: %s\n",
 			cmd->argv[1], strerror(errno));

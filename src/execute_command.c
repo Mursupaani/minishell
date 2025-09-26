@@ -57,8 +57,7 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 {
 	char	*executable_path;
 
-	//FIXME: Fix "./ls" execution
-	if (access(cmd->argv[0], F_OK) == 0)
+	if (cmd->argv[0][0] == '.' || cmd->argv[0][0] == '/')
 		executable_path = cmd->argv[0];
 	else
 		executable_path = find_file_from_path(cmd->argv[0], shell);
