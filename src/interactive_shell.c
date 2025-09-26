@@ -27,6 +27,7 @@ int	interactive_shell(int argc, char **argv, char **envp)
 	// WARN: Do we need these anywhere?
 	(void)argc;
 	(void)argv;
+	(void)envp;
 	while (1)
 	{
 		g_signal_received = 0;
@@ -49,7 +50,6 @@ int	interactive_shell(int argc, char **argv, char **envp)
 			free(shell->input);
 			continue;
 		}
-		cmd = parse_args(shell->input, envp, shell->command_arena);
 		(void)cmd;
 		add_history(shell->input);
 		arena_free(&shell->command_arena);

@@ -12,10 +12,9 @@
 
 #include "minishell.h"
 
-static void	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell);
+static int	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell);
 static char	*get_entry_key(char *entry, t_arena *arena);
 static char	*get_entry_value(char *entry, t_arena *arena);
-static void	print_env_array(char **env_array);
 
 void	export_environment_variable(t_command *cmd, t_shell *shell)
 {
@@ -23,50 +22,45 @@ void	export_environment_variable(t_command *cmd, t_shell *shell)
 		return ;
 	if (!cmd->argv[1])
 	{
-		print_env_array(shell->env_array);
+		print_environment_variables(shell);
 		return ;
 	}
 	shell->last_exit_status = 0;
 	get_and_set_entries_to_hashtable(cmd, shell);
 	shell->env_array = env_array_from_hashtable(shell);
 	if (!shell->env_array)
-		//FIXME: Make a safe exit function
-		exit(1);
+	{
+		ft_fprintf(STDERR_FILENO,
+			"minishell: export: failed to update environment variables\n");
+		error_exit_and_free_memory(shell);
+	}
 	shell->session_arena = update_env_table_and_arr(shell);
 }
 
-static void	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell)
+static int	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell)
 {
-	char	*key;
-	char	*value;
-	int	i;
+	t_env_entry	t;
+	int			i;
 
-	i = 1;
-	while (cmd->argv[i])
+	i = 0;
+	while (cmd->argv[++i])
 	{
-		key = get_entry_key(cmd->argv[i], shell->command_arena);
-		if (!key)
+		t.key = get_entry_key(cmd->argv[i], shell->command_arena);
+		if (!t.key)
+			return (1);
+		t.value = ft_strchr(cmd->argv[i], '=');
+		if (t.value)
 		{
-			ft_fprintf(STDERR_FILENO,
-				"minishell: export: `%s': not a valid identifier\n",
-				cmd->argv[i]);
-			shell->last_exit_status = 1;
-			return ;
-		}
-		value = ft_strchr(cmd->argv[i], '=');
-		if (value)
-		{
-			value = get_entry_value(value + 1, shell->command_arena);
-			if (!value)
+			t.value = get_entry_value(t.value + 1, shell->command_arena);
+			if (!t.value)
 			{
-				perror("Failed to export variable\n");
-				shell->last_exit_status = 1;
-				return ;
+				ft_fprintf(STDERR_FILENO, "Failed to export variable\n");
+				return (1);
 			}
 		}
-		hash_table_set(shell->env_table, key, value, shell->session_arena);
-		i++;
+		hash_table_set(shell->env_table, t.key, t.value, shell->session_arena);
 	}
+	return (0);
 }
 
 static char	*get_entry_key(char *entry, t_arena *arena)
@@ -76,14 +70,14 @@ static char	*get_entry_key(char *entry, t_arena *arena)
 
 	if (!entry || !arena)
 		return (NULL);
-	if (entry[0] == '=')
+	if (!ft_isalpha(entry[0]) && entry[0] != '_')
 	{
-		// minishell: export: `==test': not a valid identifier
-		ft_putstr_fd("", 2);
+		ft_fprintf(STDERR_FILENO,
+			"minishell: export: `%s': not a valid identifier\n", entry);
 		return (NULL);
 	}
 	i = 0;
-	while (entry [i] && entry[i] != '=')
+	while (entry[i] && entry[i] != '=')
 		i++;
 	key = arena_alloc(arena, i + 1);
 	if (!key)
@@ -116,35 +110,4 @@ static char	*get_entry_value(char *entry, t_arena *arena)
 	}
 	value[i] = '\0';
 	return (value);
-}
-
-static void	print_env_array(char **env_array)
-{
-	int		i;
-	int		j;
-	bool	no_value;
-
-	if (!env_array)
-		return ;
-	i = 0;
-	while (env_array[i])
-	{
-		j = 0;
-		no_value = false;
-		while (env_array[i][j])
-		{
-			if (env_array[i][j] == '=')
-			{
-				if (env_array[i][j + 1] == '\0')
-					no_value = true;
-				break ;
-			}
-			j++;
-		}
-		printf("%s", env_array[i]);
-		if (no_value)
-			printf("''");
-		printf("\n");
-		i++;
-	}
 }

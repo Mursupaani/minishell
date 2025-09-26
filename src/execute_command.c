@@ -19,7 +19,8 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 {
 	classify_commands(cmd);
 	prepare_cmd(cmd, shell);
-	handle_heredocs(cmd);
+	if (handle_heredocs(cmd) != 0)
+		return ;
 	if (cmd->next)
 		execute_pipe(cmd, shell);
 	else if (cmd->cmd_type == CMD_BUILTIN_PARENT)
@@ -72,7 +73,7 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 	{
 		shell->last_exit_status = 1;
 		ft_fprintf(STDERR_FILENO,
-			"minishell: %s: %s\n", cmd->argv[0], strerror(errno));
+			"minishell: %s: %s\n", strerror(errno), cmd->argv[0]);
 	}
 }
 

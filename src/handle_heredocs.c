@@ -13,8 +13,10 @@
 #include "minishell.h"
 
 static int	generate_heredoc_file(t_redir *redirection, t_command *cmd);
+static void	get_user_input_to_heredoc(t_redir *redirection, int fd);
 
-int handle_heredocs(t_command *cmd)
+//NOTE: OK!
+int	handle_heredocs(t_command *cmd)
 {
 	t_redir	*temp;
 
@@ -28,8 +30,10 @@ int handle_heredocs(t_command *cmd)
 			if (temp->type == REDIR_HEREDOC)
 			{
 				if (generate_heredoc_file(temp, cmd) != 0)
-					// FIXME: Unlink all possible heredocs
+				{
+					cmd->heredoc_filename = NULL;
 					return (1);
+				}
 			}
 			temp = temp->next;
 		}
@@ -41,25 +45,35 @@ int handle_heredocs(t_command *cmd)
 static int	generate_heredoc_file(t_redir *redirection, t_command *cmd)
 {
 	int		fd;
-	char	*input;
 
 	if (!cmd || !redirection)
 		return (1);
 	fd = open(cmd->heredoc_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 	if (fd == -1)
+	{
+		ft_fprintf(STDERR_FILENO,
+			"minishell: heredoc: failed to create input file\n");
 		return (1);
+	}
+	get_user_input_to_heredoc(redirection, fd);
+	close(fd);
+	return (0);
+}
+
+static void	get_user_input_to_heredoc(t_redir *redirection, int fd)
+{
+	char	*input;
+
 	while (true)
 	{
 		input = readline("> ");
 		if (ft_strncmp(input, redirection->target, ft_strlen(input)) == 0)
 		{
 			free(input);
-			break ;
+			return ;
 		}
 		write(fd, input, ft_strlen(input));
 		write(fd, "\n", 1);
 		free(input);
 	}
-	close(fd);
-	return (0);
 }
