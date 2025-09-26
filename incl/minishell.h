@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/25 15:54:53 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/26 09:00:58 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,6 +200,7 @@ void			setup_signals(void);
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
 char			**env_array_from_hashtable(t_shell *shell);
 t_shell			*shell_init(char **env);
+t_arena			*update_env_table_and_arr(t_shell *shell);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
@@ -225,6 +226,7 @@ void	print_working_directory(t_command *cmd, t_shell *shell);
 void	ft_echo(t_command *cmd, t_shell *shell);
 void	print_environment_variables(t_shell *shell);
 void	export_environment_variable(t_command *cmd, t_shell *shell);
+void	unset_environment_variable(t_command *cmd, t_shell *shell);
 
 // Environment & Variable expansion
 char	*find_file_from_path(char *filename, t_shell *shell);
@@ -263,10 +265,6 @@ char		**ft_split_arena(char const *s, char c, t_arena *arena);
 // Signal handling (signals.c)
 void			sigint_handler(int sig);
 void			setup_signals(void);
-
-// Shell initialization and management (shell.c)
-t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
-t_shell			*shell_init(char **env);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);

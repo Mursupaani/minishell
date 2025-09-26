@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/22 13:11:38 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/26 09:00:35 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,8 @@ void	execute_builtin_command(t_command *cmd, t_shell *shell)
 		print_environment_variables(shell);
 	else if (ft_strncmp(cmd->argv[0], "export", ft_strlen(cmd->argv[0])) == 0)
 		export_environment_variable(cmd, shell);
+	else if (ft_strncmp(cmd->argv[0], "unset", ft_strlen(cmd->argv[0])) == 0)
+		unset_environment_variable(cmd, shell);
 	if (cmd->redirections)
 		reset_std_fds(shell);
 }

@@ -12,7 +12,6 @@
 
 #include "minishell.h"
 
-
 static unsigned int hash_function(const char *key)
 {
 	unsigned int hash;
@@ -142,17 +141,30 @@ t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena)
 	while (envp[i])
 	{
 		equal_pos = ft_strchr(envp[i], '=');
-		if (!equal_pos)
+		// NOTE: Need to be able to parse env variables without "="
+		// if (!equal_pos)
+		// {
+		// 	i++;
+		// 	continue;
+		// }
+		if (equal_pos)
 		{
-			i++;
-			continue;
+			key = arena_alloc(arena, (equal_pos - envp[i]) + 1);
+			if (!key)
+				return (NULL);
+			ft_strlcpy(key, envp[i], (equal_pos - envp[i]) + 1);
+			key[equal_pos - envp[i]] = '\0';
+			value = equal_pos + 1;
 		}
-		key = arena_alloc(arena, (equal_pos - envp[i]) + 1);
-		if (!key)
-			return (NULL);
-		ft_strlcpy(key, envp[i], (equal_pos - envp[i]) + 1);
-		key[equal_pos - envp[i]] = '\0';
-		value = equal_pos + 1;
+		else
+		{
+			key = arena_alloc(arena, ft_strlen(envp[i]) + 1);
+			if (!key)
+				return (NULL);
+			ft_strlcpy(key, envp[i], ft_strlen(envp[i]) + 1);
+			key[ft_strlen(envp[i])] = '\0';
+			value = NULL;
+		}
 		hash_table_set(table, key, value, arena);
 		i++;
 	}
@@ -196,7 +208,8 @@ t_shell	*shell_init(char **env)
 		cleanup_shell_partial(shell, 3);
 		return (NULL);
 	}
-	shell->env_array = env_array_from_hashtable(shell);
+	shell->env_array =
+		env_array_from_hashtable(shell);
 	if (!shell->env_array)
 	{
 		cleanup_shell_partial(shell, 3);

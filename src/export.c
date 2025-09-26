@@ -6,13 +6,11 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 17:23:17 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/24 17:30:36 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/26 08:55:28 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
-#include <unistd.h>
 
 static void	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell);
 static char	*get_entry_key(char *entry, t_arena *arena);
@@ -28,8 +26,10 @@ void	export_environment_variable(t_command *cmd, t_shell *shell)
 		print_env_array(shell->env_array);
 		return ;
 	}
+	shell->last_exit_status = 0;
 	get_and_set_entries_to_hashtable(cmd, shell);
-	env_array_from_hashtable(shell);
+	shell->env_array = env_array_from_hashtable(shell);
+	shell->session_arena = update_env_table_and_arr(shell);
 }
 
 static void	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell)
