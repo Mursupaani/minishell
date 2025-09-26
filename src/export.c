@@ -26,8 +26,10 @@ void	export_environment_variable(t_command *cmd, t_shell *shell)
 		print_env_array(shell->env_array);
 		return ;
 	}
+	shell->last_exit_status = 0;
 	get_and_set_entries_to_hashtable(cmd, shell);
-	env_array_from_hashtable(shell);
+	shell->env_array = env_array_from_hashtable(shell->env_table, shell->session_arena);
+	shell->session_arena = update_env_table_and_arr(shell);
 }
 
 static void	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell)

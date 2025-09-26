@@ -198,8 +198,9 @@ void			setup_signals(void);
 
 // Shell initialization and management (shell.c)
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
-char			**env_array_from_hashtable(t_shell *shell);
+char			**env_array_from_hashtable(t_hash_table *table, t_arena *arena);
 t_shell			*shell_init(char **env);
+t_arena			*update_env_table_and_arr(t_shell *shell);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
@@ -264,10 +265,6 @@ char		**ft_split_arena(char const *s, char c, t_arena *arena);
 // Signal handling (signals.c)
 void			sigint_handler(int sig);
 void			setup_signals(void);
-
-// Shell initialization and management (shell.c)
-t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
-t_shell			*shell_init(char **env);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);

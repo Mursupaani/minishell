@@ -13,21 +13,24 @@
 #include "minishell.h"
 
 static int	count_env_entries(t_env_entry *entry[HASH_TABLE_SIZE]);
-static char	**allocate_env_array(t_shell *shell);
-static char	**populate_env_array(t_shell *shell);
-static char	*get_entry_from_table(t_env_entry *entry, t_shell *shell);
+static char	**alloc_env_array(char **env, t_hash_table *table, t_arena *arena);
+static char	**populate_env_arr(char **env, t_hash_table *table, t_arena *arena);
+static char	*get_entry_from_table(t_env_entry *entry, t_arena *arena);
 
-char **env_array_from_hashtable(t_shell *shell)
+char **env_array_from_hashtable(t_hash_table *table, t_arena *arena)
 {
-	if (!shell || !shell->env_table)
+	char	**env;
+
+	if (!table || !arena)
 		return (NULL);
-	shell->env_array = allocate_env_array(shell);
-	if (!shell->env_array)
+	env = NULL;
+	env = alloc_env_array(env, table, arena);
+	if (!env)
 		return (NULL);
-	shell->env_array = populate_env_array(shell);
-	if (!shell->env_array)
+	env = populate_env_arr(env, table, arena);
+	if (!env)
 		return (NULL);
-	return (shell->env_array);
+	return (env);
 }
 
 static int	count_env_entries(t_env_entry *entry[HASH_TABLE_SIZE])
@@ -57,21 +60,20 @@ static int	count_env_entries(t_env_entry *entry[HASH_TABLE_SIZE])
 	return (entry_count);
 }
 
-static char	**allocate_env_array(t_shell *shell)
+static char	**alloc_env_array(char **env, t_hash_table *table, t_arena *arena)
 {
 	int	entry_count;
 
-	entry_count = count_env_entries(shell->env_table->buckets);
+	entry_count = count_env_entries(table->buckets);
 	if (entry_count == -1)
 		return (NULL);
-	shell->env_array =
-		arena_alloc(shell->session_arena, (entry_count + 1) * sizeof(char *));
-	if (!shell->env_array)
+	env = arena_alloc(arena, (entry_count + 1) * sizeof(char *));
+	if (!env)
 		return (NULL);
-	return (shell->env_array);
+	return (env);
 }
 
-static char	**populate_env_array(t_shell *shell)
+static char	**populate_env_arr(char **env, t_hash_table *table, t_arena *arena)
 {
 	int			i;
 	int			j;
@@ -81,27 +83,27 @@ static char	**populate_env_array(t_shell *shell)
 	j = 0;
 	while (i < HASH_TABLE_SIZE)
 	{
-		if (shell->env_table->buckets[i] != NULL)
+		if (table->buckets[i] != NULL)
 		{
-			shell->env_array[j] =
-				get_entry_from_table(shell->env_table->buckets[i], shell);
-			if (!shell->env_array[j++])
+			env[j] =
+				get_entry_from_table(table->buckets[i], arena);
+			if (!env[j++])
 				return (NULL);
-			temp_entry = shell->env_table->buckets[i]->next;
+			temp_entry = table->buckets[i]->next;
 			while (temp_entry)
 			{
-				shell->env_array[j] = get_entry_from_table(temp_entry, shell);
-				if (!shell->env_array[j++])
+				env[j] = get_entry_from_table(temp_entry, arena);
+				if (!env[j++])
 					return (NULL);
 				temp_entry = temp_entry->next;
 			}
 		}
 		i++;
 	}
-	return (shell->env_array);
+	return (env);
 }
 
-static char	*get_entry_from_table(t_env_entry *entry, t_shell *shell)
+static char	*get_entry_from_table(t_env_entry *entry, t_arena *arena)
 {
 	char		*temp1;
 	char		*temp2;
@@ -118,7 +120,7 @@ static char	*get_entry_from_table(t_env_entry *entry, t_shell *shell)
 		free(temp1);
 		if (!temp2)
 			return (NULL);
-		temp1 = arena_strdup(temp2, shell->session_arena);
+		temp1 = arena_strdup(temp2, arena);
 		free(temp2);
 		if (!temp1)
 			return (NULL);
