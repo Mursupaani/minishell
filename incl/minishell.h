@@ -213,13 +213,12 @@ int	non_interactve_shell(int argc, char **argv, char **envp);
 
 // Execution
 void	execute_commands(t_command *cmd, t_shell *shell);
-int		execute_pipe(t_command *cmd, t_shell *shell);
-void	choose_execution_type(t_command *cmd, t_shell *shell);
+void	execute_pipe(t_command *cmd, t_shell *shell);
 void	execute_builtin_command(t_command *cmd, t_shell *shell);
 void	execute_external_command(t_command *cmd, t_shell *shell);
 
 // Redirection
-int		execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell);
+void		execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell);
 int		handle_heredocs(t_command *cmd);
 
 // Built-in commands
@@ -242,7 +241,6 @@ char	*process_var_expand(char *str, t_shell *shell, t_arena *arena);
 void	hash_table_delete(t_hash_table *table, char *key);
 
 // Parsing
-t_command	*parse_args(char *input, char **envp, t_arena *arena);
 t_command	*parse_pipeline(t_token *tokens, t_shell *shell);
 t_command	*create_command(t_arena *arena);
 int			is_redir(t_token *token);

@@ -40,6 +40,6 @@ static char	*try_paths(char *filename, char **path_dirs, t_shell *shell)
 			return (full_path);
 		path_dirs++;
 	}
-	ft_fprintf(STDERR_FILENO, "minishell: %s: %s\n", filename, strerror(errno));
+	ft_fprintf(STDERR_FILENO, "minishell: command not found: %s\n", filename);
 	return (NULL);
 }

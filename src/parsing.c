@@ -14,23 +14,6 @@
 
 static int	attach_heredoc_filename_to_command(t_command *cmd, t_arena *arena);
 
-t_command	*parse_args(char *input, char **envp, t_arena *arena)
-{
-    t_command	*cmd;
-    char		**argv;
-
-    cmd = (t_command *)arena_alloc(arena, sizeof(t_command));
-    if (!cmd)
-        printf("arena fail cmd\n");
-    // error handling
-    argv = ft_split_arena(input, ' ', arena);
-    if (!argv)
-        printf("arena fail argv\n");
-    cmd->argv = argv;
-    cmd->envp = envp;
-    return (cmd);
-}
-
 t_command *parse_pipeline(t_token *tokens, t_shell *shell)
 {
     t_command	*head;
@@ -139,7 +122,10 @@ t_token *handle_redir(t_command *current, t_token *token, t_arena *arena, int *e
     redir->type = token_to_redir_type(token->type);
     redir->target = arena_strdup(target->value, arena);
 	if (redir->type == REDIR_HEREDOC)
-		attach_heredoc_filename_to_command(current, arena);
+	{
+		if (attach_heredoc_filename_to_command(current, arena) != 0)
+			return (NULL);
+	}
     if (!redir->target)
     {
         *error = 1;
@@ -262,8 +248,6 @@ void classify_commands(t_command *cmd)
 		if (is_builtin_command(current->argv[0]))
         {
             if (is_single)
-			// FIXME: No need for the is_parent_only_builtin(current->argv[0]))?
-            // if (is_single && is_parent_only_builtin(current->argv[0]))
                 current->cmd_type = CMD_BUILTIN_PARENT;
             else
                 current->cmd_type = CMD_BUILTIN_CHILD;
