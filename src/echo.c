@@ -15,9 +15,9 @@
 static int	print_argv(char **argv);
 static int	check_flags(char **argv, bool *print_new_line);
 
+// NOTE: OK!
 void	ft_echo(t_command *cmd, t_shell *shell)
 {
-	//NOTE: Can echo fail?
 	bool	print_new_line;
 	int		offset;
 
@@ -58,4 +58,3 @@ static int	print_argv(char **argv)
 	}
 	return (0);
 }
-

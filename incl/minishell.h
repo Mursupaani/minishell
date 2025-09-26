@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/26 09:00:58 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:55:58 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,24 +109,24 @@ typedef struct s_redir {
 } t_redir;
 
 typedef struct s_command {
-    char		**argv;
+    char				**argv;
 	// Do we need this inside t_command?
-	char		**envp;
-	t_cmd_type	cmd_type;
-	bool		is_pipe;
-	t_builtin_type	built_in_type;
-    t_redir		*redirections;  // ordered list of redirections
-	char		*heredoc_filename;
-    
+	char				**envp;
+	t_cmd_type			cmd_type;
+	bool				is_pipe;
+	t_builtin_type		built_in_type;
+    t_redir				*redirections;  // ordered list of redirections
+	char				*heredoc_filename;
+
     // Pipe management
 	// FIXME: Change piping to use these? If so, change names
-    int			pipe_in[2];
-    int			pipe_out[2];
-    pid_t		pid;
+    int					pipe_in[2];
+    int					pipe_out[2];
+    pid_t				pid;
     
 	// Child process status and error
-	int			status;
-    struct s_command *next;
+	int					status;
+    struct s_command	*next;
 } t_command;
 
 // ============================================================================
@@ -170,7 +170,7 @@ typedef struct s_shell {
     struct termios  original_termios;
     int             stdin_fd;
     int             stdout_fd;
-    int             stderr_fd;
+	int				child_pid;
     
     // Heredoc management
     char            *tmp_dir;
@@ -201,6 +201,8 @@ t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
 char			**env_array_from_hashtable(t_shell *shell);
 t_shell			*shell_init(char **env);
 t_arena			*update_env_table_and_arr(t_shell *shell);
+void			free_memory_at_exit(t_shell *shell);
+int				error_exit_and_free_memory(t_shell *shell);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
@@ -269,11 +271,10 @@ void			setup_signals(void);
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
 void			cleanup_shell_partial(t_shell *shell, int level);
-char *arena_strdup(const char *s, t_arena *arena);
+char			*arena_strdup(const char *s, t_arena *arena);
 
 // Error handling fork wrapper
-// FIXME: Remove?
-// int	create_fork(void);
+int				create_fork(t_shell *shell);
 
 int is_builtin_command(char *cmd_name);
 int is_parent_only_builtin(char *cmd_name);

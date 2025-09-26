@@ -14,6 +14,19 @@
 
 static char	**copy_env_array(t_shell *shell);
 
+//NOTE: OK!
+void	print_environment_variables(t_shell *shell)
+{
+	int	i;
+
+	if (!shell || !shell->env_array)
+		return ;
+	i = 0;
+	while (shell->env_array[i])
+		printf("%s\n", shell->env_array[i++]);
+	shell->last_exit_status = 0;
+}
+
 t_arena	*update_env_table_and_arr(t_shell *shell)
 {
 	char	**temp_env_arr;
@@ -21,11 +34,19 @@ t_arena	*update_env_table_and_arr(t_shell *shell)
 	if (!shell)
 		return (NULL);
 	temp_env_arr = copy_env_array(shell);
+	if (!temp_env_arr)
+		return (NULL);
 	arena_reset(shell->session_arena);
-	shell->env_table =
-		populate_env_from_envp(temp_env_arr, shell->session_arena);
-	shell->env_array =
-		env_array_from_hashtable(shell);
+	shell->env_table = populate_env_from_envp(
+			temp_env_arr, shell->session_arena);
+	if (!shell->env_table)
+		return (NULL);
+	shell->env_array = env_array_from_hashtable(shell);
+	if (!shell->env_array)
+	{
+		cleanup_shell_partial(shell, 2);
+		return (NULL);
+	}
 	return (shell->session_arena);
 }
 
@@ -45,7 +66,8 @@ static char	**copy_env_array(t_shell *shell)
 	i = 0;
 	while (shell->env_array[i])
 	{
-		temp_env_arr[i] = arena_strdup(shell->env_array[i], shell->command_arena);
+		temp_env_arr[i] = arena_strdup(
+				shell->env_array[i], shell->command_arena);
 		if (!temp_env_arr[i])
 			return (NULL);
 		i++;
