@@ -197,7 +197,7 @@ t_shell	*shell_init(char **env)
 		return (NULL);
 	}
 	shell->env_array =
-		env_array_from_hashtable(shell->env_table, shell->session_arena);
+		env_array_from_hashtable(shell);
 	if (!shell->env_array)
 	{
 		cleanup_shell_partial(shell, 3);

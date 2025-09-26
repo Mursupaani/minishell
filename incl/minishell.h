@@ -198,7 +198,7 @@ void			setup_signals(void);
 
 // Shell initialization and management (shell.c)
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
-char			**env_array_from_hashtable(t_hash_table *table, t_arena *arena);
+char			**env_array_from_hashtable(t_shell *shell);
 t_shell			*shell_init(char **env);
 t_arena			*update_env_table_and_arr(t_shell *shell);
 

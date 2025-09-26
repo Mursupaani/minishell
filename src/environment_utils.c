@@ -25,7 +25,7 @@ t_arena	*update_env_table_and_arr(t_shell *shell)
 	shell->env_table =
 		populate_env_from_envp(temp_env_arr, shell->session_arena);
 	shell->env_array =
-		env_array_from_hashtable(shell->env_table, shell->session_arena);
+		env_array_from_hashtable(shell);
 	return (shell->session_arena);
 }
 
