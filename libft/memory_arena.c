@@ -35,7 +35,7 @@ void	*arena_alloc(t_arena *arena, size_t size)
 {
 	void	*ptr;
 
-	if (!arena || !size || size > arena->capacity)
+	if (!arena || !size)
 		return (NULL);
 	if (arena->size + size > arena->capacity)
 	{
