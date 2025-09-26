@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/26 17:30:01 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:55:58 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,24 +109,24 @@ typedef struct s_redir {
 } t_redir;
 
 typedef struct s_command {
-    char		**argv;
+    char				**argv;
 	// Do we need this inside t_command?
-	char		**envp;
-	t_cmd_type	cmd_type;
-	bool		is_pipe;
-	t_builtin_type	built_in_type;
-    t_redir		*redirections;  // ordered list of redirections
-	char		*heredoc_filename;
-    
+	char				**envp;
+	t_cmd_type			cmd_type;
+	bool				is_pipe;
+	t_builtin_type		built_in_type;
+    t_redir				*redirections;  // ordered list of redirections
+	char				*heredoc_filename;
+
     // Pipe management
 	// FIXME: Change piping to use these? If so, change names
-    int			pipe_in[2];
-    int			pipe_out[2];
-    pid_t		pid;
+    int					pipe_in[2];
+    int					pipe_out[2];
+    pid_t				pid;
     
 	// Child process status and error
-	int			status;
-    struct s_command *next;
+	int					status;
+    struct s_command	*next;
 } t_command;
 
 // ============================================================================

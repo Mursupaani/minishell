@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 11:31:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/26 09:02:55 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:57:52 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ static char	*get_entry_from_table(t_env_entry *entry, t_shell *shell)
 	if (entry->value)
 		temp1 = ft_strjoin(entry->key, "=");
 	else
-		temp1 = ft_strdup(entry->key);
+		temp1 = arena_strdup(entry->key, shell->session_arena);
 	if (!temp1)
 		return (NULL);
 	if (entry->value)

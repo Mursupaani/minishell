@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 17:40:17 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/23 20:47:39 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:52:48 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	interactive_shell(int argc, char **argv, char **envp)
 			continue;
 		}
 		cmd = parse_args(shell->input, envp, shell->command_arena);
-		choose_execution_type(cmd, shell);
+		(void)cmd;
 		add_history(shell->input);
 		arena_free(&shell->command_arena);
 		free(shell->input);
