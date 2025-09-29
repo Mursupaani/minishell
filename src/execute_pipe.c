@@ -77,6 +77,8 @@ void	execute_pipe(t_command *cmd, t_shell *shell)
 	while (i < cmd_count)
 	{
 		waitpid(pids[i], &shell->last_exit_status, 0);
+		if (WIFEXITED(shell->last_exit_status))
+			shell->last_exit_status = WEXITSTATUS(shell->last_exit_status);
 		i++;
 	}
 }
