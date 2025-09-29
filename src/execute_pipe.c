@@ -76,7 +76,19 @@ void	execute_pipe(t_command *cmd, t_shell *shell)
 	i = 0;
 	while (i < cmd_count)
 	{
-		waitpid(pids[i], &shell->last_exit_status, 0);
+		int wait_status;
+		waitpid(pids[i], &wait_status, 0);
+
+		// Only set exit status from the last command (rightmost in pipeline)
+		if (i == cmd_count - 1)
+		{
+			if (WIFEXITED(wait_status))
+				shell->last_exit_status = WEXITSTATUS(wait_status);
+			else if (WIFSIGNALED(wait_status))
+				shell->last_exit_status = 128 + WTERMSIG(wait_status);
+			else
+				shell->last_exit_status = 1;
+		}
 		i++;
 	}
 }

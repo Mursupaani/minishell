@@ -32,7 +32,7 @@ void	expand_cmd(t_command *cmd, t_shell *shell)
 		return ;
 	while (cmd->argv[i])
 	{
-		if(ft_strchr(cmd->argv[i], '$'))
+		if(cmd->argv_expandable && cmd->argv_expandable[i] && ft_strchr(cmd->argv[i], '$'))
 		{
 			expanded = expand_var(cmd->argv[i], shell, shell->command_arena);
 			if(expanded)
@@ -72,14 +72,22 @@ static char	*expand_single_variable(char **src, t_shell *shell, char *dst)
 		while (**src && (ft_isalnum(**src) || **src == '_'))
 			(*src)++;
 		var_len = *src - var_start;
-		//FIXME: strncpy is not allowed
-		strncpy(var_name, var_start, var_len);
-		var_name[var_len] = '\0';
 
-		value = hash_table_get(shell->env_table, var_name);
-		if (value)
-			//FIXME: sprintf is not allowed
-			dst += sprintf(dst, "%s", value);
+		if (var_len == 0)
+		{
+			*dst++ = '$';
+		}
+		else
+		{
+			//FIXME: strncpy is not allowed
+			strncpy(var_name, var_start, var_len);
+			var_name[var_len] = '\0';
+
+			value = hash_table_get(shell->env_table, var_name);
+			if (value)
+				//FIXME: sprintf is not allowed
+				dst += sprintf(dst, "%s", value);
+		}
 	}
 	return (dst);
 }

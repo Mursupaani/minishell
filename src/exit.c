@@ -25,7 +25,7 @@ void	exit_builtin(t_command *cmd, t_shell *shell)
 	if (cmd && cmd->argv[1])
 	{
 		exit_status = get_exit_status_from_args(cmd, shell);
-		if (exit_status == -1)
+		if (exit_status == -1000)  // Use sentinel value that can't be a valid exit code
 			return ;
 	}
 	else
@@ -72,7 +72,7 @@ static int	get_exit_status_from_args(t_command *cmd, t_shell *shell)
 	{
 		ft_fprintf(STDERR_FILENO, "minishell: exit: too many arguments\n");
 		shell->last_exit_status = 1;
-		return (-1);
+		return (-1000);  // Use sentinel value
 	}
 	return (exit_status);
 }
