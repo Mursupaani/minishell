@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/29 11:40:56 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/29 17:10:51 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,29 +56,6 @@ void	execute_builtin_command(t_command *cmd, t_shell *shell)
 		exit_builtin(cmd, shell);
 	if (cmd->redirections)
 		reset_std_fds(shell);
-}
-
-void	execute_external_command(t_command *cmd, t_shell *shell)
-{
-	char	*executable_path;
-
-	if (cmd->argv[0][0] == '.' || cmd->argv[0][0] == '/')
-		executable_path = cmd->argv[0];
-	else
-		executable_path = find_file_from_path(cmd->argv[0], shell);
-	if (!executable_path)
-	{
-		shell->last_exit_status = 127;
-		return ;
-	}
-	if (cmd->redirections)
-		execute_redirection(cmd->redirections, cmd, shell);
-	if (execve(executable_path, cmd->argv, shell->env_array))
-	{
-		shell->last_exit_status = 1;
-		ft_fprintf(STDERR_FILENO,
-			"minishell: %s: %s\n", strerror(errno), cmd->argv[0]);
-	}
 }
 
 static int	execute_builtin_redirections(t_command *cmd, t_shell *shell)
