@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/25 15:54:53 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/09/29 11:40:43 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,24 +109,24 @@ typedef struct s_redir {
 } t_redir;
 
 typedef struct s_command {
-    char		**argv;
+    char				**argv;
 	// Do we need this inside t_command?
-	char		**envp;
-	t_cmd_type	cmd_type;
-	bool		is_pipe;
-	t_builtin_type	built_in_type;
-    t_redir		*redirections;  // ordered list of redirections
-	char		*heredoc_filename;
-    
+	char				**envp;
+	t_cmd_type			cmd_type;
+	bool				is_pipe;
+	t_builtin_type		built_in_type;
+    t_redir				*redirections;  // ordered list of redirections
+	char				*heredoc_filename;
+
     // Pipe management
 	// FIXME: Change piping to use these? If so, change names
-    int			pipe_in[2];
-    int			pipe_out[2];
-    pid_t		pid;
+    int					pipe_in[2];
+    int					pipe_out[2];
+    pid_t				pid;
     
 	// Child process status and error
-	int			status;
-    struct s_command *next;
+	int					status;
+    struct s_command	*next;
 } t_command;
 
 // ============================================================================
@@ -163,6 +163,7 @@ typedef struct s_shell {
     
     // Status & mode
     int             last_exit_status;  // For $?
+	//FIXME: Is this needed?
     int             interactive;       // isatty result
     t_shell_mode    mode;             // Current mode
     
@@ -170,7 +171,7 @@ typedef struct s_shell {
     struct termios  original_termios;
     int             stdin_fd;
     int             stdout_fd;
-    int             stderr_fd;
+	int				child_pid;
     
     // Heredoc management
     char            *tmp_dir;
@@ -192,6 +193,10 @@ extern volatile sig_atomic_t g_signal_received;
 // FUNCTION PROTOTYPES
 // ============================================================================
 
+// FIXME: Debug. Can be deleted from final:
+void print_tokens(t_token *tokens);
+void print_commands(t_command *commands);
+
 // Signal handling (signals.c)
 void			sigint_handler(int sig);
 void			setup_signals(void);
@@ -200,31 +205,36 @@ void			setup_signals(void);
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
 char			**env_array_from_hashtable(t_shell *shell);
 t_shell			*shell_init(char **env);
+t_arena			*update_env_table_and_arr(t_shell *shell);
+void			free_memory_at_exit(t_shell *shell);
+int				error_exit_and_free_memory(t_shell *shell);
+int				cleanup_after_execution(t_shell *shell, t_command *cmd);
+void			exit_builtin(t_command *cmd, t_shell *shell);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
 
 // Shell modes
-int	interactive_shell(int argc, char **argv, char **envp);
-int	non_interactve_shell(int argc, char **argv, char **envp);
+int	interactive_shell(t_shell *shell);
+int	non_interactve_shell(t_shell *shell, char **argv);
 
 // Execution
 void	execute_commands(t_command *cmd, t_shell *shell);
-int		execute_pipe(t_command *cmd, t_shell *shell);
-void	choose_execution_type(t_command *cmd, t_shell *shell);
+void	execute_pipe(t_command *cmd, t_shell *shell);
 void	execute_builtin_command(t_command *cmd, t_shell *shell);
 void	execute_external_command(t_command *cmd, t_shell *shell);
 
 // Redirection
-int		execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell);
+void		execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell);
 int		handle_heredocs(t_command *cmd);
 
 // Built-in commands
 void	change_directory(t_command *cmd, t_shell *shell);
-void	print_working_directory(t_command *cmd, t_shell *shell);
+void	print_working_directory(t_shell *shell);
 void	ft_echo(t_command *cmd, t_shell *shell);
 void	print_environment_variables(t_shell *shell);
 void	export_environment_variable(t_command *cmd, t_shell *shell);
+void	unset_environment_variable(t_command *cmd, t_shell *shell);
 
 // Environment & Variable expansion
 char	*find_file_from_path(char *filename, t_shell *shell);
@@ -238,7 +248,6 @@ char	*process_var_expand(char *str, t_shell *shell, t_arena *arena);
 void	hash_table_delete(t_hash_table *table, char *key);
 
 // Parsing
-t_command	*parse_args(char *input, char **envp, t_arena *arena);
 t_command	*parse_pipeline(t_token *tokens, t_shell *shell);
 t_command	*create_command(t_arena *arena);
 int			is_redir(t_token *token);
@@ -264,18 +273,13 @@ char		**ft_split_arena(char const *s, char c, t_arena *arena);
 void			sigint_handler(int sig);
 void			setup_signals(void);
 
-// Shell initialization and management (shell.c)
-t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
-t_shell			*shell_init(char **env);
-
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
 void			cleanup_shell_partial(t_shell *shell, int level);
-char *arena_strdup(const char *s, t_arena *arena);
+char			*arena_strdup(const char *s, t_arena *arena);
 
 // Error handling fork wrapper
-// FIXME: Remove?
-// int	create_fork(void);
+int				create_fork(t_shell *shell);
 
 int is_builtin_command(char *cmd_name);
 int is_parent_only_builtin(char *cmd_name);

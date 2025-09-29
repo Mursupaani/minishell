@@ -172,6 +172,7 @@ int is_builtin_command(char *cmd_name)
 
 int is_parent_only_builtin(char *cmd_name)
 {
+	//FIXME: Can be removed?
     return (ft_strncmp(cmd_name, "cd", 3) == 0 ||
             ft_strncmp(cmd_name, "export", 7) == 0 ||
             ft_strncmp(cmd_name, "unset", 6) == 0 ||

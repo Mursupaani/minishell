@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 14:33:26 by magebreh          #+#    #+#             */
-/*   Updated: 2025/08/23 12:04:20 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/25 16:31:37 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <unistd.h>
 # include <stdarg.h>
 # include <stdint.h>
+# include <stdio.h>
 
 # ifndef LOWERCASE
 #  define LOWERCASE 0
@@ -36,6 +37,13 @@ typedef struct s_specifier
 	char		specifier;
 	t_handler	handler;
 }	t_specifier;
+
+typedef int	(*t_fhandler)(va_list *, int);
+typedef struct s_fspecifier
+{
+	char		specifier;
+	t_fhandler	handler;
+}	t_fspecifier;
 
 typedef struct s_list
 {
@@ -111,6 +119,16 @@ int		print_hex_upper(va_list *args);
 int		print_hex_lower(va_list *args);
 int		print_pointer(va_list *args);
 char	*ft_utoa_hex(uintptr_t n, int is_uppercase);
+
+// ft_fprintf functions
+int		ft_fprintf(int file, const char *format, ...);
+int		fprint_char(va_list *args, int file);
+int		fprint_string(va_list *args, int file);
+int		fprint_hex_lower(va_list *args, int file);
+int		fprint_hex_upper(va_list *args, int file);
+int		fprint_unsigned(va_list *args, int file);
+int		fprint_pointer(va_list *args, int file);
+int		fprint_int(va_list *args, int file);
 
 /* get_next_line functions */
 char	*get_next_line(int fd);

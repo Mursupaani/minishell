@@ -40,6 +40,6 @@ static char	*try_paths(char *filename, char **path_dirs, t_shell *shell)
 			return (full_path);
 		path_dirs++;
 	}
-	perror(strerror(errno));
+	ft_fprintf(STDERR_FILENO, "%s: command not found\n", filename);
 	return (NULL);
 }

@@ -1,27 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_working_directory.c                          :+:      :+:    :+:   */
+/*   fprint_string.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/15 15:59:58 by anpollan          #+#    #+#             */
-/*   Updated: 2025/08/29 16:08:25 by anpollan         ###   ########.fr       */
+/*   Created: 2025/05/10 12:45:24 by magebreh          #+#    #+#             */
+/*   Updated: 2025/09/25 16:26:51 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../libft.h"
 
-void	print_working_directory(t_shell *shell)
+int	fprint_string(va_list *args, int file)
 {
-	char	buf[2048];
+	int		i;
+	char	*str;
 
-	if (!getcwd(buf, sizeof(buf)))
+	i = 0;
+	str = va_arg(*args, char *);
+	if (str == NULL)
+		return (write(file, "(null)", 6));
+	while (str[i])
 	{
-		perror(strerror(errno));
-		shell->last_exit_status = 1;
-		return ;
+		write(file, &str[i], 1);
+		i++;
 	}
-	shell->last_exit_status = 0;
-	printf("%s\n", buf);
+	return (i);
 }

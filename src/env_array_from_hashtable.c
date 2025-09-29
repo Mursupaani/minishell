@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 11:31:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/24 12:12:34 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/26 17:57:52 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ static char	**allocate_env_array(t_shell *shell);
 static char	**populate_env_array(t_shell *shell);
 static char	*get_entry_from_table(t_env_entry *entry, t_shell *shell);
 
-char **env_array_from_hashtable(t_shell *shell)
+//NOTE: OK!
+char	**env_array_from_hashtable(t_shell *shell)
 {
 	if (!shell || !shell->env_table)
 		return (NULL);
@@ -64,8 +65,8 @@ static char	**allocate_env_array(t_shell *shell)
 	entry_count = count_env_entries(shell->env_table->buckets);
 	if (entry_count == -1)
 		return (NULL);
-	shell->env_array =
-		arena_alloc(shell->session_arena, (entry_count + 1) * sizeof(char *));
+	shell->env_array = arena_alloc(shell->session_arena,
+			(entry_count + 1) * sizeof(char *));
 	if (!shell->env_array)
 		return (NULL);
 	return (shell->env_array);
@@ -75,16 +76,16 @@ static char	**populate_env_array(t_shell *shell)
 {
 	int			i;
 	int			j;
-	t_env_entry *temp_entry;
+	t_env_entry	*temp_entry;
 
-	i = 0;
+	i = -1;
 	j = 0;
-	while (i < HASH_TABLE_SIZE)
+	while (++i < HASH_TABLE_SIZE)
 	{
 		if (shell->env_table->buckets[i] != NULL)
 		{
-			shell->env_array[j] =
-				get_entry_from_table(shell->env_table->buckets[i], shell);
+			shell->env_array[j] = get_entry_from_table(
+					shell->env_table->buckets[i], shell);
 			if (!shell->env_array[j++])
 				return (NULL);
 			temp_entry = shell->env_table->buckets[i]->next;
@@ -96,7 +97,6 @@ static char	**populate_env_array(t_shell *shell)
 				temp_entry = temp_entry->next;
 			}
 		}
-		i++;
 	}
 	return (shell->env_array);
 }
@@ -109,7 +109,7 @@ static char	*get_entry_from_table(t_env_entry *entry, t_shell *shell)
 	if (entry->value)
 		temp1 = ft_strjoin(entry->key, "=");
 	else
-		temp1 = ft_strdup(entry->key);
+		temp1 = arena_strdup(entry->key, shell->session_arena);
 	if (!temp1)
 		return (NULL);
 	if (entry->value)
