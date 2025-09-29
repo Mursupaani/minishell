@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/26 17:55:58 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/29 08:32:11 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,6 +163,7 @@ typedef struct s_shell {
     
     // Status & mode
     int             last_exit_status;  // For $?
+	//FIXME: Is this needed?
     int             interactive;       // isatty result
     t_shell_mode    mode;             // Current mode
     
@@ -192,6 +193,10 @@ extern volatile sig_atomic_t g_signal_received;
 // FUNCTION PROTOTYPES
 // ============================================================================
 
+// FIXME: Debug. Can be deleted from final:
+void print_tokens(t_token *tokens);
+void print_commands(t_command *commands);
+
 // Signal handling (signals.c)
 void			sigint_handler(int sig);
 void			setup_signals(void);
@@ -203,13 +208,14 @@ t_shell			*shell_init(char **env);
 t_arena			*update_env_table_and_arr(t_shell *shell);
 void			free_memory_at_exit(t_shell *shell);
 int				error_exit_and_free_memory(t_shell *shell);
+int				cleanup_after_execution(t_shell *shell, t_command *cmd);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
 
 // Shell modes
-int	interactive_shell(int argc, char **argv, char **envp);
-int	non_interactve_shell(int argc, char **argv, char **envp);
+int	interactive_shell(t_shell *shell);
+int	non_interactve_shell(t_shell *shell, char **argv);
 
 // Execution
 void	execute_commands(t_command *cmd, t_shell *shell);
