@@ -13,7 +13,7 @@
 #include "minishell.h"
 
 static int	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell);
-static char	*get_entry_key(char *entry, t_arena *arena, t_shell *shell);
+static char	*get_entry_key(char *entry, t_arena *arena);
 static char	*get_entry_value(char *entry, t_arena *arena);
 static bool	valid_format(char *key);
 
@@ -47,16 +47,18 @@ static int	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell)
 	i = 0;
 	while (cmd->argv[++i])
 	{
-		t.key = get_entry_key(cmd->argv[i], shell->command_arena, shell);
+		t.key = get_entry_key(cmd->argv[i], shell->command_arena);
 		if (!t.key)
+		{
+			shell->last_exit_status = 1;
 			return (1);
+		}
 		t.value = ft_strchr(cmd->argv[i], '=');
 		if (t.value)
 		{
 			t.value = get_entry_value(t.value + 1, shell->command_arena);
 			if (!t.value)
 			{
-				ft_fprintf(STDERR_FILENO, "Failed to export variable\n");
 				shell->last_exit_status = 1;
 				return (1);
 			}
@@ -66,19 +68,15 @@ static int	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell)
 	return (0);
 }
 
-static char	*get_entry_key(char *entry, t_arena *arena, t_shell *shell)
+static char	*get_entry_key(char *entry, t_arena *arena)
 {
 	int		i;
 	char	*key;
 
 	if (!entry || !arena)
 		return (NULL);
-	// if (!ft_isalpha(entry[0]) && entry[0] != '_')
 	if (!valid_format(entry))
 	{
-		ft_fprintf(STDERR_FILENO,
-			"minishell: export: `%s': not a valid identifier\n", entry);
-		shell->last_exit_status = 1;
 		return (NULL);
 	}
 	i = 0;
@@ -87,9 +85,12 @@ static char	*get_entry_key(char *entry, t_arena *arena, t_shell *shell)
 	key = arena_alloc(arena, i + 1);
 	if (!key)
 		return (NULL);
-	i = -1;
-	while (++i && entry[i] && entry[i] != '=')
+	i = 0;
+	while (entry[i] && entry[i] != '=')
+	{
 		key[i] = entry[i];
+		i++;
+	}
 	key[i] = '\0';
 	return (key);
 }
@@ -103,7 +104,10 @@ static char	*get_entry_value(char *entry, t_arena *arena)
 		return (NULL);
 	value = arena_alloc(arena, ft_strlen(entry) + 1);
 	if (!value)
+	{
+		ft_fprintf(STDERR_FILENO, "Failed to export variable\n");
 		return (NULL);
+	}
 	i = 0;
 	while (entry[i])
 	{
@@ -116,16 +120,26 @@ static char	*get_entry_value(char *entry, t_arena *arena)
 
 static bool	valid_format(char *key)
 {
+	int	i;
+
 	if (!key)
 		return (false);
-	if (!ft_isalpha(*key) && *key != '_')
-		return (false);
-	while (*key && *key!= '=')
+	i = 0;
+	if (!ft_isalpha(key[i]) && key[i] != '_')
 	{
-		if (!ft_isalnum(*key)
-		&& *key != '_')
+		ft_fprintf(STDERR_FILENO,
+			"minishell: export: `%s': not a valid identifier\n", key);
+		return (false);
+	}
+	while (key[i] && key[i] != '=')
+	{
+		if (!ft_isalnum(key[i]) && key[i] != '_')
+		{
+			ft_fprintf(STDERR_FILENO,
+				"minishell: export: `%s': not a valid identifier\n", key);
 			return (false);
-		key++;
+		}
+		i++;
 	}
 	return (true);
 }

@@ -31,6 +31,8 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 		if (shell->child_pid == 0)
 			execute_external_command(cmd, shell);
 		waitpid(shell->child_pid, &shell->last_exit_status, 0);
+		if (WIFEXITED(shell->last_exit_status))
+			shell->last_exit_status = WEXITSTATUS(shell->last_exit_status);
 	}
 }
 
@@ -66,7 +68,7 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 		executable_path = find_file_from_path(cmd->argv[0], shell);
 	if (!executable_path)
 	{
-		shell->last_exit_status = 1;
+		shell->last_exit_status = 127;
 		return ;
 	}
 	if (cmd->redirections)
