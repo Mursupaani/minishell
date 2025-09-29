@@ -88,7 +88,7 @@ static char	*get_entry_key(char *entry, t_arena *arena, t_shell *shell)
 	if (!key)
 		return (NULL);
 	i = -1;
-	while (entry[i] && entry[i] != '=' && i++)
+	while (++i && entry[i] && entry[i] != '=')
 		key[i] = entry[i];
 	key[i] = '\0';
 	return (key);

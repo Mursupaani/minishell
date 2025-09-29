@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <unistd.h>
 
 static void	choose_execution_type(t_command *cmd, t_shell *shell);
 static int	close_unused_pipe_fds(int pipe_fd[2][2], int i, int cmd_count);
@@ -77,6 +78,8 @@ void	execute_pipe(t_command *cmd, t_shell *shell)
 	while (i < cmd_count)
 	{
 		waitpid(pids[i], &shell->last_exit_status, 0);
+		shell->last_exit_status = shell->last_exit_status & 0xFF;
+		// ft_fprintf(STDERR_FILENO, "Exit status: %d\n", shell->last_exit_status);
 		i++;
 	}
 }
