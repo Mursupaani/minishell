@@ -12,21 +12,16 @@
 
 #include "minishell.h"
 
-void	print_working_directory(t_command *cmd, t_shell *shell)
+void	print_working_directory(t_shell *shell)
 {
 	char	buf[2048];
 
-	if (cmd->argv[1] != NULL)
-	{
-		ft_fprintf(STDERR_FILENO, "pwd: too many arguments\n");
-		shell->last_exit_status = 1;
-		return ;
-	}
 	if (!getcwd(buf, sizeof(buf)))
 	{
 		perror(strerror(errno));
 		shell->last_exit_status = 1;
 		return ;
 	}
+	shell->last_exit_status = 0;
 	printf("%s\n", buf);
 }

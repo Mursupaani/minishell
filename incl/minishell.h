@@ -230,7 +230,7 @@ int		handle_heredocs(t_command *cmd);
 
 // Built-in commands
 void	change_directory(t_command *cmd, t_shell *shell);
-void	print_working_directory(t_command *cmd, t_shell *shell);
+void	print_working_directory(t_shell *shell);
 void	ft_echo(t_command *cmd, t_shell *shell);
 void	print_environment_variables(t_shell *shell);
 void	export_environment_variable(t_command *cmd, t_shell *shell);

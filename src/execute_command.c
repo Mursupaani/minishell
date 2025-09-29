@@ -41,7 +41,7 @@ void	execute_builtin_command(t_command *cmd, t_shell *shell)
 	if (ft_strncmp(cmd->argv[0], "cd", ft_strlen(cmd->argv[0])) == 0)
 		change_directory(cmd, shell);
 	else if (ft_strncmp(cmd->argv[0], "pwd", ft_strlen(cmd->argv[0])) == 0)
-		print_working_directory(cmd, shell);
+		print_working_directory(shell);
 	else if (ft_strncmp(cmd->argv[0], "echo", ft_strlen(cmd->argv[0])) == 0)
 		ft_echo(cmd, shell);
 	else if (ft_strncmp(cmd->argv[0], "env", ft_strlen(cmd->argv[0])) == 0)
