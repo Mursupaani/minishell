@@ -13,8 +13,9 @@
 #include "minishell.h"
 
 static int	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell);
-static char	*get_entry_key(char *entry, t_arena *arena);
+static char	*get_entry_key(char *entry, t_arena *arena, t_shell *shell);
 static char	*get_entry_value(char *entry, t_arena *arena);
+static bool	valid_format(char *key);
 
 void	export_environment_variable(t_command *cmd, t_shell *shell)
 {
@@ -32,6 +33,7 @@ void	export_environment_variable(t_command *cmd, t_shell *shell)
 	{
 		ft_fprintf(STDERR_FILENO,
 			"minishell: export: failed to update environment variables\n");
+		shell->last_exit_status = 1;
 		error_exit_and_free_memory(shell);
 	}
 	shell->session_arena = update_env_table_and_arr(shell);
@@ -45,7 +47,7 @@ static int	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell)
 	i = 0;
 	while (cmd->argv[++i])
 	{
-		t.key = get_entry_key(cmd->argv[i], shell->command_arena);
+		t.key = get_entry_key(cmd->argv[i], shell->command_arena, shell);
 		if (!t.key)
 			return (1);
 		t.value = ft_strchr(cmd->argv[i], '=');
@@ -55,6 +57,7 @@ static int	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell)
 			if (!t.value)
 			{
 				ft_fprintf(STDERR_FILENO, "Failed to export variable\n");
+				shell->last_exit_status = 1;
 				return (1);
 			}
 		}
@@ -63,17 +66,19 @@ static int	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell)
 	return (0);
 }
 
-static char	*get_entry_key(char *entry, t_arena *arena)
+static char	*get_entry_key(char *entry, t_arena *arena, t_shell *shell)
 {
 	int		i;
 	char	*key;
 
 	if (!entry || !arena)
 		return (NULL);
-	if (!ft_isalpha(entry[0]) && entry[0] != '_')
+	// if (!ft_isalpha(entry[0]) && entry[0] != '_')
+	if (!valid_format(entry))
 	{
 		ft_fprintf(STDERR_FILENO,
 			"minishell: export: `%s': not a valid identifier\n", entry);
+		shell->last_exit_status = 1;
 		return (NULL);
 	}
 	i = 0;
@@ -82,12 +87,9 @@ static char	*get_entry_key(char *entry, t_arena *arena)
 	key = arena_alloc(arena, i + 1);
 	if (!key)
 		return (NULL);
-	i = 0;
-	while (entry[i] && entry[i] != '=')
-	{
+	i = -1;
+	while (entry[i] && entry[i] != '=' && i++)
 		key[i] = entry[i];
-		i++;
-	}
 	key[i] = '\0';
 	return (key);
 }
@@ -110,4 +112,20 @@ static char	*get_entry_value(char *entry, t_arena *arena)
 	}
 	value[i] = '\0';
 	return (value);
+}
+
+static bool	valid_format(char *key)
+{
+	if (!key)
+		return (false);
+	if (!ft_isalpha(*key) && *key != '_')
+		return (false);
+	while (*key && *key!= '=')
+	{
+		if (!ft_isalnum(*key)
+		&& *key != '_')
+			return (false);
+		key++;
+	}
+	return (true);
 }
