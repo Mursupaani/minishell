@@ -17,10 +17,10 @@ static t_token *create_next_token(char **pos, t_arena *arena);
 static t_token *tokenize_pipe(char **pos, t_arena *arena);
 static t_token *tokenize_input_redirect(char **pos, t_arena *arena);
 static t_token *tokenize_output_redirect(char **pos, t_arena *arena);
-static t_token *tokenize_double_quote(char **pos, t_arena *arena);
-static t_token *tokenize_single_quote(char **pos, t_arena *arena);
 static t_token *tokenize_word(char **pos, t_arena *arena);
 static char *build_assignment_token(char *start, char *end, t_arena *arena);
+static char *remove_quotes_from_word(char *start, size_t word_len, t_arena *arena);
+static char *ft_strchr_range(char *str, char c, size_t len);
 
 t_token *tokenize(char *input, t_arena *arena)
 {
@@ -57,10 +57,6 @@ static t_token *create_next_token(char **pos, t_arena *arena)
 		return (tokenize_input_redirect(pos, arena));
 	else if (**pos == '>')
 		return (tokenize_output_redirect(pos, arena));
-	else if (**pos == '"')
-		return (tokenize_double_quote(pos, arena));
-	else if (**pos == '\'')
-		return (tokenize_single_quote(pos, arena));
 	else
 		return (tokenize_word(pos, arena));
 }
@@ -141,63 +137,6 @@ static t_token *tokenize_output_redirect(char **pos, t_arena *arena)
 	return (token);
 }
 
-static t_token *tokenize_double_quote(char **pos, t_arena *arena)
-{
-	t_token *token;
-	char *start;
-	char *end;
-	size_t content_len;
-
-	(*pos)++;
-	start = *pos;
-	end = *pos;
-	while (*end && *end != '"')
-		end++;
-	if(!*end)
-		return (NULL);
-	content_len = end - start;
-	token = arena_alloc(arena, sizeof(t_token));
-	if(!token)
-		return (NULL);
-	token->value = arena_substr(start, 0, content_len, arena);
-	if (!token->value)
-		return (NULL);
-	token->type = TOKEN_WORD;
-	token->quoted = 2;
-	token->expandable = 1;
-	token->next = NULL;
-	*pos = end + 1;
-	return (token);
-}
-
-static t_token *tokenize_single_quote(char **pos, t_arena *arena)
-{
-	t_token *token;
-	char *start;
-	char *end;
-	size_t content_len;
-
-	(*pos)++;
-	start = *pos;
-	end = *pos;
-	while(*end && *end != '\'')
-		end++;
-	if(!*end)
-		return (NULL);
-	content_len = end - start;
-	token = arena_alloc(arena, sizeof(t_token));
-	if(!token)
-		return (NULL);
-	token->value = arena_substr(start, 0, content_len, arena);
-	if(!token->value)
-		return (NULL);
-	token->type = TOKEN_WORD;
-	token->quoted = 1;
-	token->expandable = 0;
-	token->next = NULL;
-	*pos = end + 1;
-	return (token);
-}
 
 static t_token *tokenize_word(char **pos, t_arena *arena)
 {
@@ -210,6 +149,18 @@ static t_token *tokenize_word(char **pos, t_arena *arena)
 	end = *pos;
 	while(*end && !ft_is_special_char(*end) && !ft_isspace(*end))
 	{
+		if (*end == '\'' || *end == '"')
+		{
+			char quote_char = *end;
+			end++;
+			while (*end && *end != quote_char)
+				end++;
+			if (*end == quote_char)
+				end++;
+			else
+				return (NULL);
+			continue;
+		}
 		if (*end == '=' && (*(end + 1) == '"' || *(end + 1) == '\''))
 		{
 			end++;
@@ -219,6 +170,8 @@ static t_token *tokenize_word(char **pos, t_arena *arena)
 				end++;
 			if (*end == quote_char)
 				end++;
+			else
+				return (NULL);
 			break;
 		}
 		end++;
@@ -229,18 +182,92 @@ static t_token *tokenize_word(char **pos, t_arena *arena)
 	token = arena_alloc(arena, sizeof(t_token));
 	if(!token)
 		return (NULL);
-	if (*(end - 1) == '"' || *(end - 1) == '\'')
-		token->value = build_assignment_token(start, end, arena);
+	if (ft_strchr_range(start, '"', word_len) || ft_strchr_range(start, '\'', word_len))
+	{
+		if (ft_strchr(start, '='))
+			token->value = build_assignment_token(start, end, arena);
+		else
+			token->value = remove_quotes_from_word(start, word_len, arena);
+
+		if (ft_strchr_range(start, '\'', word_len) && !ft_strchr_range(start, '"', word_len))
+		{
+			token->quoted = 1;
+			token->expandable = 0;
+		}
+		else if (ft_strchr_range(start, '"', word_len))
+		{
+			token->quoted = 2;
+			token->expandable = (ft_strchr(token->value, '$') != NULL);
+		}
+		else
+		{
+			token->quoted = 0;
+			token->expandable = (ft_strchr(token->value, '$') != NULL);
+		}
+	}
 	else
+	{
 		token->value = arena_substr(start, 0, word_len, arena);
+		token->quoted = 0;
+		token->expandable = (ft_strchr(token->value, '$') != NULL);
+	}
 	if (!token->value)
 		return (NULL);
 	token->type = TOKEN_WORD;
-	token->quoted = 0;
-	token->expandable = (ft_strchr(token->value, '$') != NULL);
 	token->next = NULL;
 	*pos = end;
 	return (token);
+}
+
+static char *remove_quotes_from_word(char *start, size_t word_len, t_arena *arena)
+{
+	char *result;
+	char *src;
+	char *dst;
+	char *end;
+
+	result = arena_alloc(arena, word_len + 1);
+	if (!result)
+		return (NULL);
+
+	src = start;
+	dst = result;
+	end = start + word_len;
+
+	while (src < end)
+	{
+		if (*src == '\'' || *src == '"')
+		{
+			char quote_char = *src;
+			src++;
+			while (src < end && *src != quote_char)
+			{
+				*dst++ = *src++;
+			}
+			if (src < end && *src == quote_char)
+				src++;
+		}
+		else
+		{
+			*dst++ = *src++;
+		}
+	}
+	*dst = '\0';
+	return (result);
+}
+
+static char *ft_strchr_range(char *str, char c, size_t len)
+{
+	size_t i;
+
+	i = 0;
+	while (i < len)
+	{
+		if (str[i] == c)
+			return (&str[i]);
+		i++;
+	}
+	return (NULL);
 }
 
 char *build_assignment_token(char *start, char *end, t_arena *arena)
