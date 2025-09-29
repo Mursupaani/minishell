@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/29 08:40:54 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/29 11:34:49 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,20 +36,6 @@ int	main(int argc, char **argv, char **envp)
 		non_interactve_shell(shell, argv);
 	free_memory_at_exit(shell);
     return (EXIT_SUCCESS);
-}
-
-void	free_memory_at_exit(t_shell *shell)
-{
-	rl_clear_history();
-	if (!shell)
-		return ;
-	if (shell->input)
-		free(shell->input);
-	if (shell->command_arena)
-		arena_free(&shell->command_arena);
-	if (shell->session_arena)
-		arena_free(&shell->session_arena);
-	free(shell);
 }
 
 int	cleanup_after_execution(t_shell *shell, t_command *cmd)
