@@ -73,7 +73,7 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 		executable_path = find_file_from_path(cmd->argv[0], shell);
 	if (!executable_path)
 	{
-		shell->last_exit_status = 1;
+		shell->last_exit_status = 127;
 		return ;
 	}
 	if (cmd->redirections)
