@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <unistd.h>
 
 void	unset_environment_variable(t_command *cmd, t_shell *shell)
 {
@@ -26,10 +27,13 @@ void	unset_environment_variable(t_command *cmd, t_shell *shell)
 		hash_table_delete(shell->env_table, cmd->argv[i]);
 		i++;
 	}
-	shell->last_exit_status = 0;
 	shell->env_array = env_array_from_hashtable(shell);
 	if (!shell->env_array)
-		//FIXME: Make a safe exit function
-		exit(1);
+	{
+		ft_fprintf(STDERR_FILENO,
+			"minishell: export: failed to update environment variables\n");
+		error_exit_and_free_memory(shell);
+	}
+	shell->last_exit_status = 0;
 	shell->session_arena = update_env_table_and_arr(shell);
 }
