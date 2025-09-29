@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <unistd.h>
 
 static void	choose_execution_type(t_command *cmd, t_shell *shell);
 static int	close_unused_pipe_fds(int pipe_fd[2][2], int i, int cmd_count);
@@ -54,12 +53,7 @@ void	execute_pipe(t_command *cmd, t_shell *shell)
 				close(pipe_fd[(i - 1) % 2][0]);
 				close(pipe_fd[(i - 1) % 2][1]);
 			}
-			else
-			{
-				close(pipe_fd[1][0]);
-				close(pipe_fd[1][1]);
-			}
-			if (i == -1)
+			if (i == cmd_count )
 				close_unused_pipe_fds(pipe_fd, i, cmd_count);
 			choose_execution_type(cmd, shell);
 		}
@@ -109,13 +103,13 @@ static int	close_unused_pipe_fds(int pipe_fd[2][2], int i, int cmd_count)
 	{
 	}
 	if (close(pipe_fd[0][0]))
-		ft_fprintf(STDERR_FILENO, "invalid close\n");
+		ft_fprintf(STDERR_FILENO, "%d invalid close [0][0]\n", i);
 	if (close(pipe_fd[0][1]))
-		ft_fprintf(STDERR_FILENO, "invalid close\n");
+		ft_fprintf(STDERR_FILENO, "%d invalid close [0][1]\n", i);
 	if (close(pipe_fd[1][0]))
-		ft_fprintf(STDERR_FILENO, "invalid close\n");
+		ft_fprintf(STDERR_FILENO, "%d invalid close [1][0]\n", i);
 	if (close(pipe_fd[1][1]))
-		ft_fprintf(STDERR_FILENO, "invalid close\n");
+		ft_fprintf(STDERR_FILENO, "%d invalid close [1][1]\n", i);
 	return (0);
 }
 

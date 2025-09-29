@@ -15,18 +15,6 @@
 static char	**copy_env_array(t_shell *shell);
 
 //NOTE: OK!
-// void	print_environment_variables(t_shell *shell)
-// {
-// 	int	i;
-//
-// 	if (!shell || !shell->env_array)
-// 		return ;
-// 	i = 0;
-// 	while (shell->env_array[i])
-// 		printf("%s\n", shell->env_array[i++]);
-// 	shell->last_exit_status = 0;
-// }
-
 void	print_environment_variables(t_shell *shell)
 {
 	int		i;
