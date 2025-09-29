@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 17:40:17 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/29 08:40:48 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/29 11:41:25 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,7 @@ int	interactive_shell(t_shell *shell)
 			continue ;
 		}
 		if (!shell->input)
-		{
-			write(STDOUT_FILENO, "exit\n", 5);
-			break ;
-		}
+			exit_builtin(NULL, shell);
 		if (shell->input[0] == '\0')
 		{
 			free(shell->input);
