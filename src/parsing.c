@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 11:45:53 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/22 12:49:40 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/29 17:55:35 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ t_command *create_command(t_arena *arena)
     if (!cmd)
         return (NULL);
     cmd->argv = NULL;
+    cmd->argv_expandable = NULL;
     cmd->cmd_type = CMD_EXTERNAL;
     cmd->redirections = NULL;
 	cmd->heredoc_filename = NULL;
@@ -102,7 +103,6 @@ t_token *handle_redir(t_command *current, t_token *token, t_arena *arena, int *e
 {
     t_redir *redir;
     t_token *target;
-    // t_redir	*tail;
     
     *error = 0;
     target = token->next;
@@ -111,14 +111,12 @@ t_token *handle_redir(t_command *current, t_token *token, t_arena *arena, int *e
         *error = 1;
         return (NULL);
     }
-    
     redir = arena_alloc(arena, sizeof(t_redir));
     if (!redir)
     {
         *error = 1;
         return (NULL);
     }
-    
     redir->type = token_to_redir_type(token->type);
     redir->target = arena_strdup(target->value, arena);
 	if (redir->type == REDIR_HEREDOC)
@@ -137,13 +135,14 @@ t_token *handle_redir(t_command *current, t_token *token, t_arena *arena, int *e
     return (target->next);
 }
 
+
 void add_word_cmd(t_command *cmd, t_token *word, t_arena *arena)
 {
     int current_count;
     int req_capacity;
     char **new_argv;
     int i;
-    
+
     current_count = 0;
     if(cmd->argv)
     {
@@ -154,12 +153,14 @@ void add_word_cmd(t_command *cmd, t_token *word, t_arena *arena)
     if(!cmd->argv || needs_realloc(current_count + 1))
     {
         new_argv = arena_alloc(arena, req_capacity*sizeof(char*));
-        if(!new_argv)
+        bool *new_expandable = arena_alloc(arena, req_capacity*sizeof(bool));
+        if(!new_argv || !new_expandable)
             return ;
         i = 0;
         while (i < req_capacity)
         {
             new_argv[i] = NULL;
+            new_expandable[i] = false;
             i++;
         }
         i = 0;
@@ -168,12 +169,15 @@ void add_word_cmd(t_command *cmd, t_token *word, t_arena *arena)
             while (i < current_count)
             {
                 new_argv[i] = cmd->argv[i];
+                new_expandable[i] = cmd->argv_expandable[i];
                 i++;
             }
         }
         cmd->argv = new_argv;
+        cmd->argv_expandable = new_expandable;
     }
     cmd->argv[current_count] = arena_strdup(word->value, arena);
+    cmd->argv_expandable[current_count] = word->expandable;
     cmd->argv[current_count + 1] = NULL;
 }
 

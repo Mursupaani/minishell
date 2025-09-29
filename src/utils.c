@@ -77,7 +77,7 @@ char *skip_whitespace(char *pos)
 
 int ft_is_special_char(char c)
 {
-    return (c == '|' || c == '<' || c == '>' || c == '"' || c == '\'');
+    return (c == '|' || c == '<' || c == '>');
 }
 
 int ft_isspace(char c)

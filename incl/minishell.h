@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/29 11:40:43 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/29 18:00:52 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,143 +43,144 @@
 typedef struct s_command t_command;
 
 typedef struct s_env_entry {
-    char                *key;
-    char                *value;
-    struct s_env_entry  *next;
+	char                *key;
+	char                *value;
+	struct s_env_entry  *next;
 } t_env_entry;
 
 typedef struct s_hash_table {
-    t_env_entry *buckets[HASH_TABLE_SIZE];
+	t_env_entry *buckets[HASH_TABLE_SIZE];
 } t_hash_table;
 
 // ============================================================================
 // SIMPLIFIED TOKENIZER (2-pass system for mandatory)
 // ============================================================================
 typedef enum e_token_type {
-    TOKEN_WORD,          // command, argument, filename
-    TOKEN_PIPE,          // |
-    TOKEN_REDIR_IN,      // 
-    TOKEN_REDIR_OUT,     // >
-    TOKEN_REDIR_APPEND,  // >>
-    TOKEN_HEREDOC,       // 
-    TOKEN_EOF
+	TOKEN_WORD,          // command, argument, filename
+	TOKEN_PIPE,          // |
+	TOKEN_REDIR_IN,      // 
+	TOKEN_REDIR_OUT,     // >
+	TOKEN_REDIR_APPEND,  // >>
+	TOKEN_HEREDOC,       // 
+	TOKEN_EOF
 } t_token_type;
 
 typedef struct s_token {
-    t_token_type    type;
-    char            *value;
-    int             quoted;       // 1=single, 2=double, 0=none
-    int             expandable;   // Should $VAR expand?
-    struct s_token  *next;
+	t_token_type    type;
+	char            *value;
+	int             quoted;       // 1=single, 2=double, 0=none
+	int             expandable;   // Should $VAR expand?
+	struct s_token  *next;
 } t_token;
 
 // ============================================================================
 // COMMAND STRUCTURES (same as before)
 // ============================================================================
 typedef enum e_cmd_type {
-    CMD_BUILTIN_PARENT,    // cd, export, unset, exit (run in shell process)
-    CMD_BUILTIN_CHILD,     // echo, pwd, env (run in child)
-    CMD_EXTERNAL           // everything else
+	CMD_BUILTIN_PARENT,    // cd, export, unset, exit (run in shell process)
+	CMD_BUILTIN_CHILD,     // echo, pwd, env (run in child)
+	CMD_EXTERNAL           // everything else
 } t_cmd_type;
 
 typedef enum e_builtin_type {
-    BUILTIN_NONE = -1,
-    BUILTIN_ECHO,
-    BUILTIN_CD,
-    BUILTIN_PWD,
-    BUILTIN_EXPORT,
-    BUILTIN_UNSET,
-    BUILTIN_ENV,
-    BUILTIN_EXIT
+	BUILTIN_NONE = -1,
+	BUILTIN_ECHO,
+	BUILTIN_CD,
+	BUILTIN_PWD,
+	BUILTIN_EXPORT,
+	BUILTIN_UNSET,
+	BUILTIN_ENV,
+	BUILTIN_EXIT
 } t_builtin_type;
 
 typedef enum e_redir_type {
-    REDIR_INPUT,           // 
-    REDIR_OUTPUT,          // >
-    REDIR_APPEND,          // >>
-    REDIR_HEREDOC,         // 
-    REDIR_ERROR            // 2>
+	REDIR_INPUT,           // 
+	REDIR_OUTPUT,          // >
+	REDIR_APPEND,          // >>
+	REDIR_HEREDOC,         // 
+	REDIR_ERROR            // 2>
 } t_redir_type;
 
 typedef struct s_redir {
-    t_redir_type		type;
-    char				*target;    // filename or heredoc delimiter
-    int					fd;         // file descriptor when opened
-    struct s_redir		*next;
+	t_redir_type		type;
+	char				*target;    // filename or heredoc delimiter
+	int					fd;         // file descriptor when opened
+	struct s_redir		*next;
 } t_redir;
 
 typedef struct s_command {
-    char				**argv;
+	char				**argv;
+	bool				*argv_expandable;  // Track which argv entries should expand variables
 	// Do we need this inside t_command?
 	char				**envp;
 	t_cmd_type			cmd_type;
 	bool				is_pipe;
 	t_builtin_type		built_in_type;
-    t_redir				*redirections;  // ordered list of redirections
+	t_redir				*redirections;  // ordered list of redirections
 	char				*heredoc_filename;
 
-    // Pipe management
+	// Pipe management
 	// FIXME: Change piping to use these? If so, change names
-    int					pipe_in[2];
-    int					pipe_out[2];
-    pid_t				pid;
-    
+	int					pipe_in[2];
+	int					pipe_out[2];
+	pid_t				pid;
+	
 	// Child process status and error
 	int					status;
-    struct s_command	*next;
+	struct s_command	*next;
 } t_command;
 
 // ============================================================================
 // SIMPLE PARSER STATE (no AST for mandatory)
 // ============================================================================
 typedef struct s_parser {
-    t_token     *tokens;          // Token list head
-    t_token     *current;         // Current position
-    t_command   *cmd_head;        // First command in pipeline
-    t_command   *cmd_current;     // Current command being built
-    char        **current_argv;   // Building argv array
-    int         arg_num;          // number of arguments
-    int         argv_capacity;    // Space allocated for argv
+	t_token     *tokens;          // Token list head
+	t_token     *current;         // Current position
+	t_command   *cmd_head;        // First command in pipeline
+	t_command   *cmd_current;     // Current command being built
+	char        **current_argv;   // Building argv array
+	int         arg_num;          // number of arguments
+	int         argv_capacity;    // Space allocated for argv
 } t_parser;
 
 // ============================================================================
 // SHELL SESSION STATE
 // ============================================================================
 typedef enum e_shell_mode {
-    MODE_PROMPT,
-    MODE_HEREDOC, 
-    MODE_WAIT
+	MODE_PROMPT,
+	MODE_HEREDOC, 
+	MODE_WAIT
 } t_shell_mode;
 
 typedef struct s_shell {
 	// User input
 	char			*input;
 
-    // Environment subsystem
-    t_hash_table    *env_table;        // Hash table for environment
-    char            **env_array;       // Built from env_table before fork
-    char            **path_dirs;       // PATH cache
-    int             path_dirty;        // Invalidation flag
-    
-    // Status & mode
-    int             last_exit_status;  // For $?
+	// Environment subsystem
+	t_hash_table    *env_table;        // Hash table for environment
+	char            **env_array;       // Built from env_table before fork
+	char            **path_dirs;       // PATH cache
+	int             path_dirty;        // Invalidation flag
+	
+	// Status & mode
+	int             last_exit_status;  // For $?
 	//FIXME: Is this needed?
-    int             interactive;       // isatty result
-    t_shell_mode    mode;             // Current mode
-    
-    // Terminal context
-    struct termios  original_termios;
-    int             stdin_fd;
-    int             stdout_fd;
+	int             interactive;       // isatty result
+	t_shell_mode    mode;             // Current mode
+	
+	// Terminal context
+	struct termios  original_termios;
+	int             stdin_fd;
+	int             stdout_fd;
 	int				child_pid;
-    
-    // Heredoc management
-    char            *tmp_dir;
-    int             heredoc_counter;
-    
-    // Memory management
-    t_arena         *session_arena;    // Lives across commands
-    t_arena         *command_arena;    // Reset after each command
+	
+	// Heredoc management
+	char            *tmp_dir;
+	int             heredoc_counter;
+	
+	// Memory management
+	t_arena         *session_arena;    // Lives across commands
+	t_arena         *command_arena;    // Reset after each command
 } t_shell;
 
 // ============================================================================
