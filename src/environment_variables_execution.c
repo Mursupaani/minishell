@@ -62,6 +62,7 @@ static char	*expand_single_variable(char **src, t_shell *shell, char *dst)
 	(*src)++;
 	if (**src == '?')
 	{
+		shell->last_exit_status = shell->last_exit_status & 0xFF;
 		//FIXME: sprintf is not allowed
 		dst += sprintf(dst, "%d", shell->last_exit_status);
 		(*src)++;
