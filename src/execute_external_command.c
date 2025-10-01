@@ -11,15 +11,11 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <fcntl.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 static char	*try_paths(char *filename, char **path_dirs, t_shell *shell);
-static bool	check_file_type_and_permissions(char *filepath);
+static bool	check_file_type_and_permissions(char *filepath, t_shell *shell);
 
-void	execute_external_command(t_command *cmd, t_shell *shell)
+int	execute_external_command(t_command *cmd, t_shell *shell)
 {
 	char	*executable_path;
 
@@ -28,17 +24,18 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 	else
 		executable_path = find_file_from_path(cmd->argv[0], shell);
 	if (!executable_path)
-		return ;
+		return (shell->last_exit_status);
 	if (cmd->redirections)
 		execute_redirection(cmd->redirections, cmd, shell);
-	if (!check_file_type_and_permissions(executable_path))
-		return ;
+	if (!check_file_type_and_permissions(executable_path, shell))
+		return (shell->last_exit_status);
 	if (execve(executable_path, cmd->argv, shell->env_array))
 	{
 		shell->last_exit_status = 127;
 		ft_fprintf(STDERR_FILENO,
 			"minishell: %s: %s\n", strerror(errno), cmd->argv[0]);
 	}
+	return (shell->last_exit_status);
 }
 
 char	*find_file_from_path(char *filename, t_shell *shell)
@@ -71,22 +68,21 @@ static char	*try_paths(char *filename, char **path_dirs, t_shell *shell)
 	return (NULL);
 }
 
-static bool	check_file_type_and_permissions(char *filepath)
+static bool	check_file_type_and_permissions(char *filepath, t_shell *shell)
 {
 	struct stat	stats;
 
-	if (!filepath)
-		return (false);
 	if (stat(filepath, &stats) == -1)
 	{
 		ft_fprintf(STDERR_FILENO, "minishell: %s: %s\n",
 			 filepath, strerror(errno));
 		return (false);
 	}
-	// if (stats.st_mode == S_IFDIR)
-	// {
-	// 	ft_fprintf(STDERR_FILENO, "minishell: %s: is a directory\n", filepath);
-	// 	return (false);
-	// }
+	if (stats.st_mode & S_IFDIR)
+	{
+		ft_fprintf(STDERR_FILENO, "minishell: %s: is a directory\n", filepath);
+		shell->last_exit_status = 126;
+		return (false);
+	}
 	return (true);
 }

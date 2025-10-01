@@ -223,7 +223,7 @@ int	non_interactve_shell(t_shell *shell, char **argv);
 void	execute_commands(t_command *cmd, t_shell *shell);
 void	execute_pipe(t_command *cmd, t_shell *shell);
 void	execute_builtin_command(t_command *cmd, t_shell *shell);
-void	execute_external_command(t_command *cmd, t_shell *shell);
+int		execute_external_command(t_command *cmd, t_shell *shell);
 
 // Redirection
 void		execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell);
