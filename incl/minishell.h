@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/29 18:00:52 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/10/01 12:13:57 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,10 +223,11 @@ int	non_interactve_shell(t_shell *shell, char **argv);
 void	execute_commands(t_command *cmd, t_shell *shell);
 void	execute_pipe(t_command *cmd, t_shell *shell);
 void	execute_builtin_command(t_command *cmd, t_shell *shell);
-int		execute_external_command(t_command *cmd, t_shell *shell);
+void	execute_external_command(t_command *cmd, t_shell *shell);
+void	find_non_empty_argument(t_command *cmd);
 
 // Redirection
-void		execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell);
+void	execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell);
 int		handle_heredocs(t_command *cmd);
 
 // Built-in commands
@@ -238,7 +239,6 @@ void	export_environment_variable(t_command *cmd, t_shell *shell);
 void	unset_environment_variable(t_command *cmd, t_shell *shell);
 
 // Environment & Variable expansion
-char	*find_file_from_path(char *filename, t_shell *shell);
 t_hash_table *hash_table_create(t_arena *arena);
 char	*hash_table_get(t_hash_table *table, char *key);
 void	hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena);
