@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/29 17:10:51 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/01 14:43:37 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 {
 	classify_commands(cmd);
 	prepare_cmd(cmd, shell);
-	if (handle_heredocs(cmd) != 0)
+	// FIXME: Make all heredocs exit if ctrl + c is pressed
+	if (handle_heredocs(cmd, shell) != 0)
 		return ;
 	if (cmd->next)
 		execute_pipe(cmd, shell);
@@ -30,12 +31,12 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 		shell->child_pid = create_fork(shell);
 		if (shell->child_pid == 0)
 			execute_external_command(cmd, shell);
-		// Variable in wrong place. Why not use the exit_status?
+		//FIXME: Variable in wrong place. Why not use the exit_status?
 		int wait_status;
 		waitpid(shell->child_pid, &wait_status, 0);
 		if (WIFEXITED(wait_status))
 			shell->last_exit_status = WEXITSTATUS(wait_status);
-		// Why use this?
+		//FIXME: Why use this?
 		else if (WIFSIGNALED(wait_status))
 			shell->last_exit_status = 128 + WTERMSIG(wait_status);
 		else
@@ -46,7 +47,10 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 void	execute_builtin_command(t_command *cmd, t_shell *shell)
 {
 	if (cmd->redirections)
-		execute_builtin_redirections(cmd, shell);
+	{
+		if (execute_builtin_redirections(cmd, shell) != 0)
+			return ;
+	}
 	if (ft_strncmp(cmd->argv[0], "cd", ft_strlen(cmd->argv[0])) == 0)
 		change_directory(cmd, shell);
 	else if (ft_strncmp(cmd->argv[0], "pwd", ft_strlen(cmd->argv[0])) == 0)
@@ -71,7 +75,8 @@ static int	execute_builtin_redirections(t_command *cmd, t_shell *shell)
 		return (1);
 	shell->stdin_fd = dup(STDIN_FILENO);
 	shell->stdout_fd = dup(STDOUT_FILENO);
-	execute_redirection(cmd->redirections, cmd, shell);
+	if (execute_redirection(cmd->redirections, cmd, shell) != 0)
+		return (-1);
 	return (0);
 }
 
