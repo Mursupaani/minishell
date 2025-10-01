@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 16:06:25 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/26 17:54:44 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/01 14:43:31 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,16 +76,13 @@ void	execute_pipe(t_command *cmd, t_shell *shell)
 	i = 0;
 	while (i < cmd_count)
 	{
-		int wait_status;
-		waitpid(pids[i], &wait_status, 0);
-
-		// Only set exit status from the last command (rightmost in pipeline)
+		waitpid(pids[i], &shell->last_exit_status, 0);
 		if (i == cmd_count - 1)
 		{
-			if (WIFEXITED(wait_status))
-				shell->last_exit_status = WEXITSTATUS(wait_status);
-			else if (WIFSIGNALED(wait_status))
-				shell->last_exit_status = 128 + WTERMSIG(wait_status);
+			if (WIFEXITED(shell->last_exit_status))
+				shell->last_exit_status = WEXITSTATUS(shell->last_exit_status);
+			else if (WIFSIGNALED(shell->last_exit_status))
+				shell->last_exit_status = 128 + WTERMSIG(shell->last_exit_status);
 			else
 				shell->last_exit_status = 1;
 		}
