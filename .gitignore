@@ -1,6 +1,7 @@
 # Minishell binary
 minishell
 minishell_tester
+42_minishell_tester
 
 # Compile commands
 compile_commands.json
