@@ -30,10 +30,12 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 		shell->child_pid = create_fork(shell);
 		if (shell->child_pid == 0)
 			execute_external_command(cmd, shell);
+		// Variable in wrong place. Why not use the exit_status?
 		int wait_status;
 		waitpid(shell->child_pid, &wait_status, 0);
 		if (WIFEXITED(wait_status))
 			shell->last_exit_status = WEXITSTATUS(wait_status);
+		// Why use this?
 		else if (WIFSIGNALED(wait_status))
 			shell->last_exit_status = 128 + WTERMSIG(wait_status);
 		else
