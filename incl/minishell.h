@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/01 12:13:57 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/01 14:37:27 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,10 +225,13 @@ void	execute_pipe(t_command *cmd, t_shell *shell);
 void	execute_builtin_command(t_command *cmd, t_shell *shell);
 void	execute_external_command(t_command *cmd, t_shell *shell);
 void	find_non_empty_argument(t_command *cmd);
+int		check_input_redirection(t_redir *redir, t_shell *shell);
+int		check_output_redirection(t_redir *redir, t_shell *shell);
+int		check_append_redirection(t_redir *redir, t_shell *shell);
 
 // Redirection
-void	execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell);
-int		handle_heredocs(t_command *cmd);
+int	execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell);
+int	handle_heredocs(t_command *cmd, t_shell *shell);
 
 // Built-in commands
 void	change_directory(t_command *cmd, t_shell *shell);

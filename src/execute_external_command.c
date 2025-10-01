@@ -6,21 +6,23 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/29 17:10:23 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/01 12:12:40 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/01 14:42:18 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+static char	*find_file_from_path(char *filename, t_shell *shell);
 static char	*try_paths(char *filename, char **path_dirs, t_shell *shell);
 static bool	check_file_type_and_permissions(char *filepath, t_shell *shell);
-static char	*find_file_from_path(char *filename, t_shell *shell);
 static bool	is_file_path(char *arg);
 
 void	execute_external_command(t_command *cmd, t_shell *shell)
 {
 	char	*executable_path;
 
+	if (!shell || !cmd)
+		exit(EXIT_FAILURE);
 	find_non_empty_argument(cmd);
 	if (is_file_path(cmd->argv[0]))
 		executable_path = cmd->argv[0];
@@ -29,7 +31,10 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 	if (!executable_path)
 		exit(shell->last_exit_status);
 	if (cmd->redirections)
-		execute_redirection(cmd->redirections, cmd, shell);
+	{
+		if (execute_redirection(cmd->redirections, cmd, shell) != 0)
+			exit(shell->last_exit_status);
+	}
 	if (!check_file_type_and_permissions(executable_path, shell))
 		exit(shell->last_exit_status);
 	if (execve(executable_path, cmd->argv, shell->env_array))
