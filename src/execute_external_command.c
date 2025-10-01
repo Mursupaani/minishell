@@ -11,6 +11,10 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <fcntl.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 static char	*try_paths(char *filename, char **path_dirs, t_shell *shell);
 static bool	check_file_type_and_permissions(char *filepath);
@@ -28,6 +32,7 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 	if (cmd->redirections)
 		execute_redirection(cmd->redirections, cmd, shell);
 	if (!check_file_type_and_permissions(executable_path))
+		return ;
 	if (execve(executable_path, cmd->argv, shell->env_array))
 	{
 		shell->last_exit_status = 127;
@@ -57,7 +62,6 @@ static char	*try_paths(char *filename, char **path_dirs, t_shell *shell)
 	{
 		full_path = ft_strjoin_arena(*path_dirs, "/", shell->command_arena);
 		full_path = ft_strjoin_arena(full_path, filename, shell->command_arena);
-		// FIXME:  Need to check different permissions?
 		if (access(full_path, F_OK) == 0)
 			return (full_path);
 		path_dirs++;
@@ -69,8 +73,20 @@ static char	*try_paths(char *filename, char **path_dirs, t_shell *shell)
 
 static bool	check_file_type_and_permissions(char *filepath)
 {
+	struct stat	stats;
+
 	if (!filepath)
 		return (false);
-
+	if (stat(filepath, &stats) == -1)
+	{
+		ft_fprintf(STDERR_FILENO, "minishell: %s: %s\n",
+			 filepath, strerror(errno));
+		return (false);
+	}
+	// if (stats.st_mode == S_IFDIR)
+	// {
+	// 	ft_fprintf(STDERR_FILENO, "minishell: %s: is a directory\n", filepath);
+	// 	return (false);
+	// }
 	return (true);
 }
