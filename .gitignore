@@ -2,6 +2,7 @@
 minishell
 minishell_tester
 42_minishell_tester
+.heredoc*
 
 # Compile commands
 compile_commands.json
