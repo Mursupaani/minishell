@@ -34,6 +34,15 @@ int	interactive_shell(t_shell *shell)
 			free(shell->input);
 			continue ;
 		}
+		// Check if input contains only whitespace
+		int i = 0;
+		while (shell->input[i] && (shell->input[i] == ' ' || shell->input[i] == '\t'))
+			i++;
+		if (shell->input[i] == '\0')
+		{
+			free(shell->input);
+			continue ;
+		}
 		add_history(shell->input);
 		tokens = tokenize(shell->input, shell->command_arena);
 		if (!tokens)

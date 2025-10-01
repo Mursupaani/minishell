@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/29 11:34:49 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/09/30 17:08:30 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,7 @@ int	main(int argc, char **argv, char **envp)
 		return (EXIT_FAILURE);
 	}
 	setup_signals();
-	// if (isatty(STDIN_FILENO))
-	if (argc == 1)
+	if (isatty(STDIN_FILENO))
 		interactive_shell(shell);
 	else
 		non_interactve_shell(shell, argv);
