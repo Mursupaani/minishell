@@ -20,6 +20,7 @@ int		cleanup_after_execution(t_shell *shell, t_command *cmd);
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	*shell;
+	int		exit_code;
 
 	(void)argc;
 	shell = shell_init(envp);
@@ -30,11 +31,11 @@ int	main(int argc, char **argv, char **envp)
 	}
 	setup_signals();
 	if (isatty(STDIN_FILENO))
-		interactive_shell(shell);
+		exit_code = interactive_shell(shell);
 	else
-		non_interactve_shell(shell, argv);
+		exit_code = non_interactve_shell(shell, argv);
 	free_memory_at_exit(shell);
-    return (EXIT_SUCCESS);
+    return (exit_code);
 }
 
 int	cleanup_after_execution(t_shell *shell, t_command *cmd)

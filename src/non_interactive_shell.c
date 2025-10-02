@@ -47,7 +47,7 @@ static int process_input_line(char *input, t_shell *shell)
 	execute_commands(commands, shell);
 	if (cleanup_after_execution(shell, commands))
 		return (EXIT_FAILURE);
-	return (EXIT_SUCCESS);
+	return (shell->last_exit_status);
 }
 
 int	non_interactve_shell(t_shell *shell, char **argv)
