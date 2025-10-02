@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   interactive_shell.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 17:40:17 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/02 12:48:22 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/02 17:29:17 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ int	interactive_shell(t_shell *shell)
 			free(shell->input);
 			continue;
 		}
+		print_tokens(tokens);
 		commands = parse_pipeline(tokens, shell);
 		if (!commands)
 		{
