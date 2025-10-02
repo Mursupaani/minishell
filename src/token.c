@@ -172,7 +172,7 @@ static t_token *tokenize_word(char **pos, t_arena *arena)
 				end++;
 			else
 				return (NULL);
-			break;
+			continue;
 		}
 		end++;
 	}
@@ -274,23 +274,34 @@ char *build_assignment_token(char *start, char *end, t_arena *arena)
 {
     char *equals_pos;
     size_t prefix_len;
-	char *content_start;
-	char *content_end;
-	size_t content_len;
+	char *src;
+	char *dst;
 	char *result;
 
 	equals_pos = start;
     while (*equals_pos != '=' && equals_pos < end)
         equals_pos++;
     prefix_len = (equals_pos - start) + 1;
-	content_start = equals_pos + 2;
-	content_end = end - 1;
-	content_len = content_end - content_start;
-	result = arena_alloc(arena, prefix_len + content_len + 1);
+	result = arena_alloc(arena, (end - start) + 1);
     if (!result)
         return (NULL);
     ft_strlcpy(result, start, prefix_len + 1);
-    ft_strlcpy(result + prefix_len, content_start, content_len + 1);
-    result[prefix_len + content_len] = '\0';
+	src = equals_pos + 1;
+	dst = result + prefix_len;
+	while (src < end)
+	{
+		if (*src == '\'' || *src == '"')
+		{
+			char quote_char = *src;
+			src++;
+			while (src < end && *src != quote_char)
+				*dst++ = *src++;
+			if (src < end && *src == quote_char)
+				src++;
+		}
+		else
+			*dst++ = *src++;
+	}
+	*dst = '\0';
     return (result);
 }
