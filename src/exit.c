@@ -12,26 +12,27 @@
 
 #include "minishell.h"
 
-static int	get_exit_status_from_args(t_command *cmd, t_shell *shell);
+static int	get_exit_val_from_args(t_command *cmd, t_shell *shell, int *val);
 
 //NOTE: OK!
 void	exit_builtin(t_command *cmd, t_shell *shell)
 {
-	int	exit_status;
+	int	val;
+	int	error;
 
 	if (!shell)
 		return ;
-	printf("exit\n");
+	// printf("exit\n");
 	if (cmd && cmd->argv[1])
 	{
-		exit_status = get_exit_status_from_args(cmd, shell);
-		if (exit_status == -1)
+		error = get_exit_val_from_args(cmd, shell, &val);
+		if (error)
 			return ;
 	}
 	else
-		exit_status = shell->last_exit_status;
+		val = shell->last_exit_status;
 	free_memory_at_exit(shell);
-	exit((uint8_t)exit_status);
+	exit((uint8_t)val);
 }
 
 void	free_memory_at_exit(t_shell *shell)
@@ -56,23 +57,24 @@ int	error_exit_and_free_memory(t_shell *shell)
 	exit(EXIT_FAILURE);
 }
 
-static int	get_exit_status_from_args(t_command *cmd, t_shell *shell)
+static int	get_exit_val_from_args(t_command *cmd, t_shell *shell, int *val)
 {
-	int	exit_status;
+	// FIXME: Bash can handle long or long long?
 	int	error;
 
-	exit_status = ft_atoi_safe(cmd->argv[1], &error);
+	*val = ft_atoi_safe(cmd->argv[1], &error);
 	if (error)
 	{
 		ft_fprintf(STDERR_FILENO,
 			"minishell: exit: %s: numeric argument required\n", cmd->argv[1]);
-		return (2);
+		*val = 2;
+		return (0);
 	}
 	if (cmd->argv[2])
 	{
 		ft_fprintf(STDERR_FILENO, "minishell: exit: too many arguments\n");
 		shell->last_exit_status = 1;
-		return (-1);
+		return (1);
 	}
-	return (exit_status);
+	return (error);
 }
