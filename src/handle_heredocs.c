@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <unistd.h>
 
 static int	generate_heredoc_file(t_redir *redirection, t_command *cmd);
 static int	get_user_input_to_heredoc(t_redir *redirection, int fd);
@@ -66,6 +67,7 @@ static int	process_heredocs(t_command *cmd)
 static int	generate_heredoc_file(t_redir *redirection, t_command *cmd)
 {
 	int		fd;
+	int		status;
 
 	if (!cmd || !redirection)
 		return (1);
@@ -76,12 +78,14 @@ static int	generate_heredoc_file(t_redir *redirection, t_command *cmd)
 			"minishell: heredoc: failed to create input file\n");
 		return (-1);
 	}
-	if (get_user_input_to_heredoc(redirection, fd) != 0)
-	{
-		close(fd);
-		return (-1);
-	}
+	status = get_user_input_to_heredoc(redirection, fd);
 	close(fd);
+	if (status == -1)
+		return (-1);
+	else if (status == 1)
+		ft_fprintf(STDERR_FILENO,
+			 "minishell: warning: here-document delimited by end-of-file \
+(wanted `%s')\n",redirection->target);
 	return (0);
 }
 
@@ -92,6 +96,8 @@ static int	get_user_input_to_heredoc(t_redir *redirection, int fd)
 	while (true)
 	{
 		input = readline("> ");
+		if (!input)
+			return (1);
 		if (*input == '\0')
 		{
 			free(input);
