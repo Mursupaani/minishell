@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/01 14:37:27 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/02 11:24:34 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,6 +236,7 @@ int	handle_heredocs(t_command *cmd, t_shell *shell);
 // Built-in commands
 void	change_directory(t_command *cmd, t_shell *shell);
 void	print_working_directory(t_shell *shell);
+void	env_builtin(t_command *cmd, t_shell *shell);
 void	ft_echo(t_command *cmd, t_shell *shell);
 void	print_environment_variables(t_shell *shell);
 void	export_environment_variable(t_command *cmd, t_shell *shell);

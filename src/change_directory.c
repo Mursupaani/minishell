@@ -12,9 +12,9 @@
 
 #include "minishell.h"
 
-// NOTE: OK!
 void	change_directory(t_command *cmd, t_shell *shell)
 {
+	//FIXME: User deleted parent folders?
 	if (cmd->argv[2] != NULL)
 	{
 		ft_fprintf(STDERR_FILENO,

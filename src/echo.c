@@ -14,6 +14,7 @@
 
 static int	print_argv(char **argv);
 static int	check_flags(char **argv, bool *print_new_line);
+static bool	arg_is_valid_flag(char *arg);
 
 // NOTE: OK!
 void	ft_echo(t_command *cmd, t_shell *shell)
@@ -31,18 +32,36 @@ void	ft_echo(t_command *cmd, t_shell *shell)
 
 static int	check_flags(char **argv, bool *print_new_line)
 {
-	int	i;
+	int		i;
 
 	i = 1;
 	while (argv[i])
 	{
-		if (ft_strncmp("-n", argv[i], 2) == 0)
+		if (arg_is_valid_flag(argv[i]))
 			*print_new_line = false;
 		else
 			break ;
 		i++;
 	}
 	return (i);
+}
+
+static bool	arg_is_valid_flag(char *arg)
+{
+	int	i;
+
+	if (!arg)
+		return (false);
+	if (ft_strncmp(arg, "-n", 2) != 0)
+		return (false);
+	i = 2;
+	while (arg[i])
+	{
+		if (arg[i] != 'n')
+			return (false);
+		i++;
+	}
+	return (true);
 }
 
 static int	print_argv(char **argv)
