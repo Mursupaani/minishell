@@ -6,7 +6,7 @@
 #    By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/24 11:49:18 by magebreh          #+#    #+#              #
-#    Updated: 2025/10/01 12:05:32 by anpollan         ###   ########.fr        #
+#    Updated: 2025/10/02 11:24:08 by anpollan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,7 +35,7 @@ SRC = main.c print_working_directory.c change_directory.c execute_command.c \
 	  strjoin_arena.c environment_variables_execution.c \
 	  handle_heredocs.c env_array_from_hashtable.c export.c unset.c \
 	  environment_utils.c exit.c execute_external_command.c \
-	  execute_command_utils.c check_redirections.c debug.c
+	  execute_command_utils.c check_redirections.c env.c debug.c
 
 # Combined sources
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
