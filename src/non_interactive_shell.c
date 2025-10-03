@@ -41,8 +41,9 @@ static int process_input_line(char *input, t_shell *shell)
 	if (!commands)
 	{
 		ft_fprintf(STDERR_FILENO, "minishell: syntax error\n");
+		shell->last_exit_status = 2;
 		arena_reset(shell->command_arena);
-		return (EXIT_FAILURE);
+		return (shell->last_exit_status);
 	}
 	execute_commands(commands, shell);
 	if (cleanup_after_execution(shell, commands))
