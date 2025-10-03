@@ -14,7 +14,7 @@
 
 void	find_non_empty_argument(t_command *cmd)
 {
-	if (!cmd)
+	if (!cmd || !cmd->argv)
 		exit(EXIT_FAILURE);
 	while (*cmd->argv)
 	{

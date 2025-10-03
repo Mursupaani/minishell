@@ -23,6 +23,11 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 
 	if (!shell || !cmd)
 		exit(EXIT_FAILURE);
+	if (cmd->redirections)
+	{
+		if (execute_redirection(cmd->redirections, cmd, shell) != 0)
+			exit(shell->last_exit_status);
+	}
 	find_non_empty_argument(cmd);
 	if (is_file_path(cmd->argv[0]))
 		executable_path = cmd->argv[0];
@@ -30,11 +35,6 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 		executable_path = find_file_from_path(cmd->argv[0], shell);
 	if (!executable_path)
 		exit(shell->last_exit_status);
-	if (cmd->redirections)
-	{
-		if (execute_redirection(cmd->redirections, cmd, shell) != 0)
-			exit(shell->last_exit_status);
-	}
 	if (!check_file_type_and_permissions(executable_path, shell))
 		exit(shell->last_exit_status);
 	if (execve(executable_path, cmd->argv, shell->env_array))

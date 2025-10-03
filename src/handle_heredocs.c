@@ -6,16 +6,15 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 11:40:45 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/22 13:04:36 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/03 11:54:38 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <unistd.h>
 
-static int	generate_heredoc_file(t_redir *redirection, t_command *cmd);
-static int	get_user_input_to_heredoc(t_redir *redirection, int fd);
-static int	process_heredocs(t_command *cmd);
+static int	generate_heredoc_file(t_redir *redirection, t_command *cmd, t_shell *shell);
+static int	get_user_input_to_heredoc(t_redir *redirection, int fd, t_shell *shell);
+static int	process_heredocs(t_command *cmd, t_shell *shell);
 
 int	handle_heredocs(t_command *cmd, t_shell *shell)
 {
@@ -25,7 +24,7 @@ int	handle_heredocs(t_command *cmd, t_shell *shell)
 		return (1);
 	// shell->child_pid = create_fork(shell);
 	// if (shell->child_pid == 0)
-	process_heredocs(cmd);
+	process_heredocs(cmd, shell);
 	(void)shell;
 	// else
 	// {
@@ -40,7 +39,7 @@ int	handle_heredocs(t_command *cmd, t_shell *shell)
 	return (0);
 }
 
-static int	process_heredocs(t_command *cmd)
+static int	process_heredocs(t_command *cmd, t_shell *shell)
 {
 	t_redir	*temp;
 
@@ -51,7 +50,7 @@ static int	process_heredocs(t_command *cmd)
 		{
 			if (temp->type == REDIR_HEREDOC)
 			{
-				if (generate_heredoc_file(temp, cmd) != 0)
+				if (generate_heredoc_file(temp, cmd, shell) != 0)
 				{
 					cmd->heredoc_filename = NULL;
 					exit(1);
@@ -64,12 +63,12 @@ static int	process_heredocs(t_command *cmd)
 	return (0);
 }
 
-static int	generate_heredoc_file(t_redir *redirection, t_command *cmd)
+static int	generate_heredoc_file(t_redir *redirection, t_command *cmd, t_shell *shell)
 {
 	int		fd;
 	int		status;
 
-	if (!cmd || !redirection)
+	if (!shell || !cmd || !redirection)
 		return (1);
 	fd = open(cmd->heredoc_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 	if (fd == -1)
@@ -78,7 +77,7 @@ static int	generate_heredoc_file(t_redir *redirection, t_command *cmd)
 			"minishell: heredoc: failed to create input file\n");
 		return (-1);
 	}
-	status = get_user_input_to_heredoc(redirection, fd);
+	status = get_user_input_to_heredoc(redirection, fd, shell);
 	close(fd);
 	if (status == -1)
 		return (-1);
@@ -89,7 +88,7 @@ static int	generate_heredoc_file(t_redir *redirection, t_command *cmd)
 	return (0);
 }
 
-static int	get_user_input_to_heredoc(t_redir *redirection, int fd)
+static int	get_user_input_to_heredoc(t_redir *redirection, int fd, t_shell *shell)
 {
 	char	*input;
 
@@ -111,8 +110,47 @@ static int	get_user_input_to_heredoc(t_redir *redirection, int fd)
 			free(input);
 			return (0);
 		}
+		input = expand_variables_from_input(input, shell);
+		if (!input)
+			return (1);
 		write(fd, input, ft_strlen(input));
 		write(fd, "\n", 1);
 		free(input);
 	}
+}
+
+char	*expand_variables_from_input(char *input, t_shell *shell)
+{
+	int		i;
+	char	**inputv;
+	char	*expanded;
+	char	*temp;
+
+	if (!input || !shell)
+		return (NULL);
+	inputv = split_input(input, shell);
+	if (!inputv)
+		return (NULL);
+	free(input);
+	i = 0;
+	temp = NULL;
+	expanded = ft_strdup("");
+	while (inputv[i])
+	{
+		if (inputv[i][0] == '$' && inputv[i][1] != '\0')
+		{
+			temp = hash_table_get(shell->env_table, &inputv[i][1]);
+			if (temp)
+				temp = ft_strjoin(expanded, temp);
+			else
+				temp = ft_strjoin(expanded, "");
+		}
+		else
+			temp = ft_strjoin(expanded, inputv[i]);
+		free(expanded);
+		expanded = ft_strdup(temp);
+		free(temp);
+		i++;
+	}
+	return (expanded);
 }
