@@ -22,7 +22,7 @@ void	exit_builtin(t_command *cmd, t_shell *shell)
 
 	if (!shell)
 		return ;
-	// printf("exit\n");
+	printf("exit\n");
 	if (cmd && cmd->argv[1])
 	{
 		error = get_exit_val_from_args(cmd, shell, &val);
@@ -59,8 +59,8 @@ int	error_exit_and_free_memory(t_shell *shell)
 
 static int	get_exit_val_from_args(t_command *cmd, t_shell *shell, int *val)
 {
-	// FIXME: Bash can handle long or long long?
 	int	error;
+	// FIXME: Bash can handle long or long long?
 
 	*val = ft_atoi_safe(cmd->argv[1], &error);
 	if (error)
