@@ -6,83 +6,81 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 16:06:25 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/01 14:43:31 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/03 16:08:28 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	choose_execution_type(t_command *cmd, t_shell *shell);
-static int	close_unused_pipe_fds(int pipe_fd[2][2], int i, int cmd_count);
 static int	count_commands(t_command *cmd);
+static int	**arena_alloc_pipe_arr(t_shell *shell, int cmd_count);
+static void	execute_pipeline(t_shell *shell, t_command *cmd, int cmd_count);
+static void	wait_pipeline_to_finish(t_shell *shell, int cmd_count);
 
 void	execute_pipe(t_command *cmd, t_shell *shell)
 {
-	int	*pids;
-	int	pipe_fd[2][2];
 	int	cmd_count;
-	int	i;
 
 	cmd_count = count_commands(cmd);
-	pids = arena_alloc(shell->command_arena, sizeof(int) * cmd_count);
-	if (!pids)
+	shell->pipe_array = arena_alloc_pipe_arr(shell, cmd_count);
+	shell->pipe_pids
+		= arena_alloc(shell->command_arena, sizeof(int) * cmd_count);
+	if (!shell->pipe_pids || !shell->pipe_array)
 	{
-		error_exit_and_free_memory(shell);
 		ft_fprintf(STDERR_FILENO,
-			"minishell: execute_pipe: error initializing pids\n");
+			"minishell: execute_pipe: error initializing pipes\n");
+		shell->last_exit_status = 1;
+		return ;
 	}
-	i = 0;
-	while (cmd)
+	execute_pipeline(shell, cmd, cmd_count);
+	close_unused_fds(shell->pipe_array, cmd_count, -1);
+	wait_pipeline_to_finish(shell, cmd_count);
+}
+
+static void	execute_pipeline(t_shell *shell, t_command *cmd, int cmd_count)
+{
+	int	i;
+
+	i = -1;
+	while (++i < cmd_count)
 	{
 		if (cmd->next)
-			pipe(pipe_fd[i % 2]);
-		pids[i] = create_fork(shell);
-		if (pids[i] == 0)
+			pipe(shell->pipe_array[i]);
+		shell->pipe_pids[i] = create_fork(shell);
+		if (shell->pipe_pids[i] == 0)
 		{
 			if (i < cmd_count - 1)
 			{
 				close(STDOUT_FILENO);
-				dup(pipe_fd[i % 2][1]);
-				close(pipe_fd[i % 2][1]);
-				close(pipe_fd[i % 2][0]);
+				dup(shell->pipe_array[i][1]);
 			}
 			if (i != 0)
 			{
 				close(STDIN_FILENO);
-				dup(pipe_fd[(i - 1) % 2][0]);
-				close(pipe_fd[(i - 1) % 2][0]);
-				close(pipe_fd[(i - 1) % 2][1]);
+				dup(shell->pipe_array[i - 1][0]);
 			}
-			if (i == cmd_count )
-				close_unused_pipe_fds(pipe_fd, i, cmd_count);
+			close_unused_fds(shell->pipe_array, cmd_count, i);
 			choose_execution_type(cmd, shell);
 		}
-		if (cmd->next)
-		{
-			if (close(pipe_fd[i % 2][1]))
-				ft_fprintf(STDERR_FILENO, "%d invalid close\n", i);
-			if (i != 0)
-				if (close(pipe_fd[(i - 1) % 2][0]))
-					ft_fprintf(STDERR_FILENO, "%d invalid close\n", i);
-		}
-		else
-		{
-			if (close(pipe_fd[(i - 1) % 2][0]))
-				ft_fprintf(STDERR_FILENO, "%d invalid close\n", i);
-		}
 		cmd = cmd->next;
-		i++;
 	}
+}
+
+static void	wait_pipeline_to_finish(t_shell *shell, int cmd_count)
+{
+	int	i;
+
 	i = 0;
 	while (i < cmd_count)
 	{
-		waitpid(pids[i], &shell->last_exit_status, 0);
+		waitpid(shell->pipe_pids[i], &shell->last_exit_status, 0);
 		if (i == cmd_count - 1)
 		{
 			if (WIFEXITED(shell->last_exit_status))
 				shell->last_exit_status = WEXITSTATUS(shell->last_exit_status);
 			else if (WIFSIGNALED(shell->last_exit_status))
-				shell->last_exit_status = 128 + WTERMSIG(shell->last_exit_status);
+				shell->last_exit_status
+					= 128 + WTERMSIG(shell->last_exit_status);
 			else
 				shell->last_exit_status = 1;
 		}
@@ -103,36 +101,23 @@ static int	count_commands(t_command *cmd)
 	return (cmd_count);
 }
 
-static int	close_unused_pipe_fds(int pipe_fd[2][2], int i, int cmd_count)
+static int	**arena_alloc_pipe_arr(t_shell *shell, int cmd_count)
 {
-	if (i < cmd_count - 1)
-	{
-	}
-	if (i == cmd_count - 1)
-	{
-	}
-	if (close(pipe_fd[0][0]))
-		ft_fprintf(STDERR_FILENO, "%d invalid close [0][0]\n", i);
-	if (close(pipe_fd[0][1]))
-		ft_fprintf(STDERR_FILENO, "%d invalid close [0][1]\n", i);
-	if (close(pipe_fd[1][0]))
-		ft_fprintf(STDERR_FILENO, "%d invalid close [1][0]\n", i);
-	if (close(pipe_fd[1][1]))
-		ft_fprintf(STDERR_FILENO, "%d invalid close [1][1]\n", i);
-	return (0);
-}
+	int	pipes_count;
+	int	**pipe_array;
+	int	i;
 
-static void	choose_execution_type(t_command *cmd, t_shell *shell)
-{
-	int	exit_status;
-
-	if (cmd->cmd_type == CMD_BUILTIN_CHILD)
+	pipes_count = cmd_count - 1;
+	pipe_array = arena_alloc(shell->command_arena, sizeof(int *) * pipes_count);
+	if (!pipe_array)
+		return (NULL);
+	i = 0;
+	while (i < pipes_count)
 	{
-		execute_builtin_command(cmd, shell);
-		exit_status = shell->last_exit_status;
-		free_memory_at_exit(shell);
-		exit(exit_status);
+		pipe_array[i] = arena_alloc(shell->command_arena, sizeof(int) * 2);
+		if (!pipe_array[i])
+			return (NULL);
+		i++;
 	}
-	else if (cmd->cmd_type == CMD_EXTERNAL)
-		execute_external_command(cmd, shell);
+	return (pipe_array);
 }
