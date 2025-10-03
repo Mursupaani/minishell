@@ -38,7 +38,7 @@ void	unset_environment_variable(t_command *cmd, t_shell *shell)
 	shell->env_array = env_array_from_hashtable(shell);
 	if (!shell->env_array)
 		exit_if_env_array_fails(shell);
-	shell->session_arena = update_env_table_and_arr(shell);
+	update_env_table_and_arr(shell);
 }
 
 static bool	is_valid_argument(char *arg, t_shell *shell)

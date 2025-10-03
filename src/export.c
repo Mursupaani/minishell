@@ -30,15 +30,7 @@ void	export_environment_variable(t_command *cmd, t_shell *shell)
 	}
 	shell->last_exit_status = 0;
 	get_and_set_entries_to_hashtable(cmd, shell);
-	shell->env_array = env_array_from_hashtable(shell);
-	if (!shell->env_array)
-	{
-		ft_fprintf(STDERR_FILENO,
-			"minishell: export: failed to update environment variables\n");
-		shell->last_exit_status = 1;
-		error_exit_and_free_memory(shell);
-	}
-	shell->session_arena = update_env_table_and_arr(shell);
+	update_env_table_and_arr(shell);
 }
 
 static int	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell)

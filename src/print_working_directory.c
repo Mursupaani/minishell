@@ -12,16 +12,21 @@
 
 #include "minishell.h"
 
-void	print_working_directory(t_shell *shell)
+char	*print_working_directory(t_shell *shell, bool print)
 {
-	char	buf[2048];
+	char	*pwd;
 
-	if (!getcwd(buf, sizeof(buf)))
+	pwd = arena_alloc(shell->command_arena, PWD_BUFFER);
+	if (!pwd)
+		return (NULL);
+	if (!getcwd(pwd, PWD_BUFFER))
 	{
 		perror(strerror(errno));
 		shell->last_exit_status = 1;
-		return ;
+		return (NULL);
 	}
 	shell->last_exit_status = 0;
-	printf("%s\n", buf);
+	if (print)
+		printf("%s\n", pwd);
+	return (pwd);
 }

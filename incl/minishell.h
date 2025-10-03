@@ -35,6 +35,7 @@
 
 #define COMMAND_ARENA_SIZE 1024
 #define SESSION_ARENA_SIZE 1024
+#define PWD_BUFFER 2048
 
 // ============================================================================
 // HASH TABLE FOR ENVIRONMENT (Simple implementation)
@@ -208,7 +209,7 @@ void			setup_signals(void);
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
 char			**env_array_from_hashtable(t_shell *shell);
 t_shell			*shell_init(char **env);
-t_arena			*update_env_table_and_arr(t_shell *shell);
+void			update_env_table_and_arr(t_shell *shell);
 void			free_memory_at_exit(t_shell *shell);
 int				error_exit_and_free_memory(t_shell *shell);
 int				cleanup_after_execution(t_shell *shell, t_command *cmd);
@@ -241,7 +242,7 @@ char	**split_input(char *input, t_shell *shell);
 
 // Built-in commands
 void	change_directory(t_command *cmd, t_shell *shell);
-void	print_working_directory(t_shell *shell);
+char	*print_working_directory(t_shell *shell, bool print);
 void	env_builtin(t_command *cmd, t_shell *shell);
 void	ft_echo(t_command *cmd, t_shell *shell);
 void	print_environment_variables(t_shell *shell);
