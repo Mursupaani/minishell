@@ -12,7 +12,27 @@
 
 #include "minishell.h"
 
-char	*print_working_directory(t_shell *shell, bool print)
+void	print_working_directory(t_shell *shell)
+{
+	char	*pwd;
+
+	if (!getcwd(NULL, 0))
+	{
+		printf("%s\n", hash_table_get(shell->env_table, "PWD"));
+		return ;
+	}
+	pwd = get_current_directory(shell);
+	if (!pwd)
+	{
+		ft_fprintf(STDERR_FILENO, "minishell: pwd: ");
+		ft_fprintf(STDERR_FILENO, "failed to get current directory\n");
+		shell->last_exit_status = 1;
+	}
+	shell->last_exit_status = 0;
+	printf("%s\n", pwd);
+}
+
+char	*get_current_directory(t_shell *shell)
 {
 	char	*pwd;
 
@@ -25,8 +45,5 @@ char	*print_working_directory(t_shell *shell, bool print)
 		shell->last_exit_status = 1;
 		return (NULL);
 	}
-	shell->last_exit_status = 0;
-	if (print)
-		printf("%s\n", pwd);
 	return (pwd);
 }

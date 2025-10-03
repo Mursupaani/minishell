@@ -242,12 +242,13 @@ char	**split_input(char *input, t_shell *shell);
 
 // Built-in commands
 void	change_directory(t_command *cmd, t_shell *shell);
-char	*print_working_directory(t_shell *shell, bool print);
+void	print_working_directory(t_shell *shell);
 void	env_builtin(t_command *cmd, t_shell *shell);
 void	ft_echo(t_command *cmd, t_shell *shell);
 void	print_environment_variables(t_shell *shell);
 void	export_environment_variable(t_command *cmd, t_shell *shell);
 void	unset_environment_variable(t_command *cmd, t_shell *shell);
+char	*get_current_directory(t_shell *shell);
 
 // Environment & Variable expansion
 t_hash_table *hash_table_create(t_arena *arena);
