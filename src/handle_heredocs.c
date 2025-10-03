@@ -18,8 +18,7 @@ static int	process_heredocs(t_command *cmd, t_shell *shell);
 
 int	handle_heredocs(t_command *cmd, t_shell *shell)
 {
-	//FIXME: How to reproduce "bash: warning: here-document at line 1 delimited by end-of-file (wanted `eof')"
-	// with ctrl-d?
+	// FIXME: Make all heredocs exit if ctrl + c is pressed
 	if (!cmd)
 		return (1);
 	// shell->child_pid = create_fork(shell);

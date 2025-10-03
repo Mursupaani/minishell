@@ -13,16 +13,23 @@
 #include "minishell.h"
 
 static char	**copy_env_array(t_shell *shell);
+static void	print_array(t_shell *shell);
 
 //NOTE: OK!
 void	print_environment_variables(t_shell *shell)
+{
+	if (!shell->env_array)
+		return ;
+	print_array(shell);
+	shell->last_exit_status = 0;
+}
+
+static void	print_array(t_shell *shell)
 {
 	int		i;
 	int		j;
 	bool	no_value;
 
-	if (!shell->env_array)
-		return ;
 	i = 0;
 	while (shell->env_array[i])
 	{
@@ -38,13 +45,11 @@ void	print_environment_variables(t_shell *shell)
 			}
 			j++;
 		}
-		printf("%s", shell->env_array[i]);
+		printf("%s", shell->env_array[i++]);
 		if (no_value)
 			printf("''");
 		printf("\n");
-		i++;
 	}
-	shell->last_exit_status = 0;
 }
 
 void	update_env_table_and_arr(t_shell *shell)
@@ -64,7 +69,8 @@ void	update_env_table_and_arr(t_shell *shell)
 	if (!temp_env_arr)
 		return ;
 	arena_reset(shell->session_arena);
-	shell->env_table = populate_env_from_envp( temp_env_arr, shell->session_arena);
+	shell->env_table
+		= populate_env_from_envp(temp_env_arr, shell->session_arena);
 	if (!shell->env_table)
 		return ;
 	shell->env_array = env_array_from_hashtable(shell);

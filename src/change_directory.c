@@ -18,7 +18,6 @@ void	change_directory(t_command *cmd, t_shell *shell)
 {
 	int	status;
 
-	//FIXME: User deleted parent folders?
 	if (cmd->argv[2] != NULL)
 	{
 		ft_fprintf(STDERR_FILENO,
@@ -30,7 +29,7 @@ void	change_directory(t_command *cmd, t_shell *shell)
 	if (status == 0)
 	{
 		hash_table_set(shell->env_table, "PWD",
-				 get_current_directory(shell), shell->session_arena);
+			get_current_directory(shell), shell->session_arena);
 		update_env_table_and_arr(shell);
 	}
 	else if (status == -1)

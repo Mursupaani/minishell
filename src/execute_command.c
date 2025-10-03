@@ -19,7 +19,6 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 {
 	classify_commands(cmd);
 	prepare_cmd(cmd, shell);
-	// FIXME: Make all heredocs exit if ctrl + c is pressed
 	if (handle_heredocs(cmd, shell) != 0)
 		return ;
 	if (cmd->next)
