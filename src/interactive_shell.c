@@ -51,7 +51,7 @@ int	interactive_shell(t_shell *shell)
 			free(shell->input);
 			continue;
 		}
-		print_tokens(tokens);
+		// print_tokens(tokens);
 		commands = parse_pipeline(tokens, shell);
 		if (!commands)
 		{
