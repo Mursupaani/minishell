@@ -36,7 +36,7 @@ int	check_output_redirection(t_redir *redir, t_shell *shell)
 	if (redir->type == REDIR_OUTPUT)
 	{
 		if (access(redir->target, F_OK) == 0
-		&& access(redir->target, W_OK == -1))
+			&& access(redir->target, W_OK == -1))
 		{
 			ft_fprintf(STDERR_FILENO, "minishell: %s: %s\n",
 				redir->target, strerror(errno));

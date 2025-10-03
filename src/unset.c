@@ -46,7 +46,7 @@ static bool	is_valid_argument(char *arg, t_shell *shell)
 	if (!arg || arg[0] == '-')
 	{
 		ft_fprintf(STDERR_FILENO,
-		  "minishell: unset: %s: invalid option\n", arg);
+			"minishell: unset: %s: invalid option\n", arg);
 		shell->last_exit_status = 2;
 		return (false);
 	}
@@ -56,6 +56,6 @@ static bool	is_valid_argument(char *arg, t_shell *shell)
 static void	exit_if_env_array_fails(t_shell *shell)
 {
 	ft_fprintf(STDERR_FILENO,
-				"minishell: export: failed to update environment variables\n");
+		"minishell: export: failed to update environment variables\n");
 	error_exit_and_free_memory(shell);
 }
