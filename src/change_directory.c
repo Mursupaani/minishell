@@ -12,6 +12,8 @@
 
 #include "minishell.h"
 
+static int	try_to_change_directory(t_command *cmd, t_shell *shell);
+
 void	change_directory(t_command *cmd, t_shell *shell)
 {
 	//FIXME: User deleted parent folders?
@@ -22,6 +24,19 @@ void	change_directory(t_command *cmd, t_shell *shell)
 		shell->last_exit_status = 1;
 		return ;
 	}
+	if (try_to_change_directory(cmd, shell) == 0)
+	{
+		hash_table_set(shell->env_table, "PWD",
+				 print_working_directory(shell, false), shell->session_arena);
+		update_env_table_and_arr(shell);
+	}
+
+}
+
+static int	try_to_change_directory(t_command *cmd, t_shell *shell)
+{
+	if (!cmd || ! shell)
+		return (1);
 	if (cmd->argv[1] == NULL
 		|| ft_strncmp(cmd->argv[1], "~", ft_strlen(cmd->argv[1])) == 0)
 	{
@@ -30,7 +45,7 @@ void	change_directory(t_command *cmd, t_shell *shell)
 			ft_fprintf(STDERR_FILENO, "minishell: cd: %s: %s\n",
 				cmd->argv[1], strerror(errno));
 			shell->last_exit_status = 1;
-			return ;
+			return (1);
 		}
 	}
 	else if (chdir(cmd->argv[1]) == -1)
@@ -38,6 +53,7 @@ void	change_directory(t_command *cmd, t_shell *shell)
 		ft_fprintf(STDERR_FILENO, "minishell: cd: %s: %s\n",
 			cmd->argv[1], strerror(errno));
 		shell->last_exit_status = 1;
-		return ;
+		return (1);
 	}
+	return (0);
 }

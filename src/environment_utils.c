@@ -47,27 +47,32 @@ void	print_environment_variables(t_shell *shell)
 	shell->last_exit_status = 0;
 }
 
-t_arena	*update_env_table_and_arr(t_shell *shell)
+void	update_env_table_and_arr(t_shell *shell)
 {
 	char	**temp_env_arr;
 
 	if (!shell)
-		return (NULL);
+		return ;
+	shell->env_array = env_array_from_hashtable(shell);
+	if (!shell->env_array)
+	{
+		ft_fprintf(STDERR_FILENO, "minishell: failed to update environment\n");
+		shell->last_exit_status = 1;
+		error_exit_and_free_memory(shell);
+	}
 	temp_env_arr = copy_env_array(shell);
 	if (!temp_env_arr)
-		return (NULL);
+		return ;
 	arena_reset(shell->session_arena);
-	shell->env_table = populate_env_from_envp(
-			temp_env_arr, shell->session_arena);
+	shell->env_table = populate_env_from_envp( temp_env_arr, shell->session_arena);
 	if (!shell->env_table)
-		return (NULL);
+		return ;
 	shell->env_array = env_array_from_hashtable(shell);
 	if (!shell->env_array)
 	{
 		cleanup_shell_partial(shell, 2);
-		return (NULL);
+		return ;
 	}
-	return (shell->session_arena);
 }
 
 static char	**copy_env_array(t_shell *shell)
