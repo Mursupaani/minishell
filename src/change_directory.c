@@ -16,6 +16,8 @@ static int	try_to_change_directory(t_command *cmd, t_shell *shell);
 
 void	change_directory(t_command *cmd, t_shell *shell)
 {
+	int	status;
+
 	//FIXME: User deleted parent folders?
 	if (cmd->argv[2] != NULL)
 	{
@@ -24,13 +26,19 @@ void	change_directory(t_command *cmd, t_shell *shell)
 		shell->last_exit_status = 1;
 		return ;
 	}
-	if (try_to_change_directory(cmd, shell) == 0)
+	status = try_to_change_directory(cmd, shell);
+	if (status == 0)
 	{
 		hash_table_set(shell->env_table, "PWD",
-				 print_working_directory(shell, false), shell->session_arena);
+				 get_current_directory(shell), shell->session_arena);
 		update_env_table_and_arr(shell);
 	}
-
+	else if (status == -1)
+	{
+		ft_fprintf(STDERR_FILENO, "cd: error retrieving current directory: ");
+		ft_fprintf(STDERR_FILENO, "getcwd: cannot access parent directories: ");
+		ft_fprintf(STDERR_FILENO, "No such file or directory\n");
+	}
 }
 
 static int	try_to_change_directory(t_command *cmd, t_shell *shell)
@@ -55,5 +63,7 @@ static int	try_to_change_directory(t_command *cmd, t_shell *shell)
 		shell->last_exit_status = 1;
 		return (1);
 	}
+	if (!getcwd(NULL, 0))
+		return (-1);
 	return (0);
 }
