@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/03 11:11:18 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/03 16:06:31 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,8 @@ typedef struct s_shell {
 	int             stdin_fd;
 	int             stdout_fd;
 	int				child_pid;
+	int				**pipe_array;
+	int				*pipe_pids;
 	
 	// Heredoc management
 	char            *tmp_dir;
@@ -222,6 +224,8 @@ int	non_interactve_shell(t_shell *shell, char **argv);
 // Execution
 void	execute_commands(t_command *cmd, t_shell *shell);
 void	execute_pipe(t_command *cmd, t_shell *shell);
+void	choose_execution_type(t_command *cmd, t_shell *shell);
+int		close_unused_fds(int **pipe_array, int cmd_count, int process_index);
 void	execute_builtin_command(t_command *cmd, t_shell *shell);
 void	execute_external_command(t_command *cmd, t_shell *shell);
 void	find_non_empty_argument(t_command *cmd);
