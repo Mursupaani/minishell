@@ -18,6 +18,7 @@
 # include <stdarg.h>
 # include <stdint.h>
 # include <stdio.h>
+# include <limits.h>
 
 # ifndef LOWERCASE
 #  define LOWERCASE 0
@@ -60,6 +61,7 @@ typedef struct s_arena
 }	t_arena;
 
 int		ft_atoi_safe(const char *str, int *err);
+int64_t	ft_atol_safe(const char *str, int *err);
 int		ft_atoi_hex(const char *str, int *err);
 void	ft_bzero(void *s, size_t n);
 int		ft_isalnum(int s);
@@ -144,7 +146,7 @@ void	arena_reset(t_arena *arena);
 void	arena_free(t_arena **arena);
 char	**ft_split_arena(char const *s, char c, t_arena *arena);
 char	*ft_substr_arena(
-char const *s, unsigned int start, size_t len, t_arena *arena);
+			char const *s, unsigned int start, size_t len, t_arena *arena);
 char	*ft_strjoin_arena(char const *s1, char const *s2, t_arena *arena);
 
 #endif

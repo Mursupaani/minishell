@@ -61,7 +61,7 @@ static int	get_exit_val_from_args(t_command *cmd, t_shell *shell, int *val)
 {
 	int	error;
 
-	*val = ft_atoi_safe(cmd->argv[1], &error);
+	*val = ft_atol_safe(cmd->argv[1], &error);
 	if (error)
 	{
 		ft_fprintf(STDERR_FILENO,
