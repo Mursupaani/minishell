@@ -17,8 +17,8 @@ static int	generate_heredoc_file(
 static int	get_user_input_to_heredoc(
 				t_redir *redirection, int fd, t_shell *shell);
 static int	process_heredocs(t_command *cmd, t_shell *shell);
-// static int	handle_heredoc_input(
-// 				char **input, t_redir *redirection, int fd, t_shell *shell);
+static int	handle_heredoc_input(
+				char **input, t_redir *redirection, int fd, t_shell *shell);
 
 int	handle_heredocs(t_command *cmd, t_shell *shell)
 {
@@ -78,80 +78,46 @@ static int	generate_heredoc_file(
 	return (0);
 }
 
-// static int	get_user_input_to_heredoc(
-// 				t_redir *redirection, int fd, t_shell *shell)
-// {
-// 	char	*input;
-// 	int		status;
-//
-// 	while (true)
-// 	{
-// 		input = readline("> ");
-// 		if (!input)
-// 			return (1);
-// 		status = handle_heredoc_input(&input, redirection, fd, shell);
-// 		if (status == -1)
-// 			return (1);
-// 		else if (status == 1)
-// 			return (0);
-// 	}
-// }
-//
-// static int	handle_heredoc_input(
-// 				char **input, t_redir *redirection, int fd, t_shell *shell)
-// {
-// 		if (!*input)
-// 			return (-1);
-// 		if (**input == '\0')
-// 		{
-// 			free(*input);
-// 			*input = ft_calloc(1, 2);
-// 			if (!*input)
-// 				return (-1);
-// 			*input[0] = '\n';
-// 		}
-// 		if (ft_strncmp(*input, redirection->target, ft_strlen(*input)) == 0)
-// 		{
-// 			free(*input);
-// 			return (1);
-// 		}
-// 		*input = expand_variables_from_input(*input, shell);
-// 		if (!*input)
-// 			return (-1);
-// 		write(fd, input, ft_strlen(*input));
-// 		write(fd, "\n", 1);
-// 		free(*input);
-// 		return (0);
-// }
-
 static int	get_user_input_to_heredoc(
 				t_redir *redirection, int fd, t_shell *shell)
 {
 	char	*input;
+	int		status;
 
 	while (true)
 	{
 		input = readline("> ");
 		if (!input)
 			return (1);
-		if (*input == '\0')
-		{
-			free(input);
-			input = ft_calloc(1, 2);
-			if (!input)
-				return (-1);
-			input[0] = '\n';
-		}
-		if (ft_strncmp(input, redirection->target, ft_strlen(input)) == 0)
-		{
-			free(input);
-			return (0);
-		}
-		input = expand_variables_from_input(input, shell);
-		if (!input)
+		status = handle_heredoc_input(&input, redirection, fd, shell);
+		if (status == -1)
 			return (1);
-		write(fd, input, ft_strlen(input));
-		write(fd, "\n", 1);
-		free(input);
+		else if (status == 1)
+			return (0);
 	}
+}
+
+static int	handle_heredoc_input(
+				char **input, t_redir *redirection, int fd, t_shell *shell)
+{
+	if (**input == '\0')
+	{
+		free(*input);
+		*input = ft_calloc(1, 2);
+		if (!*input)
+			return (-1);
+		*input[0] = '\n';
+	}
+	if (ft_strncmp(*input, redirection->target, ft_strlen(*input)) == 0)
+	{
+		free(*input);
+		return (1);
+	}
+	*input = expand_variables_from_input(*input, shell);
+	if (!*input)
+		return (-1);
+	write(fd, *input, ft_strlen(*input));
+	write(fd, "\n", 1);
+	free(*input);
+	return (0);
 }
