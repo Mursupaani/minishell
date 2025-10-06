@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static void	handle_word(char **inputv, char *expanded, t_shell *shell);
+static char	*handle_word(char **inputv, char *expanded, t_shell *shell);
 
 char	*expand_variables_from_input(char *input, t_shell *shell)
 {
@@ -26,11 +26,11 @@ char	*expand_variables_from_input(char *input, t_shell *shell)
 		return (NULL);
 	free(input);
 	expanded = ft_strdup("");
-	handle_word(inputv, expanded, shell);
+	expanded = handle_word(inputv, expanded, shell);
 	return (expanded);
 }
 
-static void	handle_word(char **inputv, char *expanded, t_shell *shell)
+static char	*handle_word(char **inputv, char *expanded, t_shell *shell)
 {
 	char	*temp;
 	int		i;
@@ -54,4 +54,5 @@ static void	handle_word(char **inputv, char *expanded, t_shell *shell)
 		free(temp);
 		i++;
 	}
+	return (expanded);
 }
