@@ -5,10 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/21 17:49:15 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/30 17:25:49 by magebreh         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2025/10/06 15:19:11 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "minishell.h"
 
@@ -33,6 +34,8 @@ static int	process_input_line(char *input, t_shell *shell)
 
 	if (!input || input[0] == '\0' || is_whitespace_only(input))
 		return (EXIT_SUCCESS);
+	if (!input || input[0] == '\0' || is_whitespace_only(input))
+		return (EXIT_SUCCESS);
 	tokens = tokenize(input, shell->command_arena);
 	if (!tokens)
 	{
@@ -46,6 +49,9 @@ static int	process_input_line(char *input, t_shell *shell)
 		shell->last_exit_status = 2;
 		arena_reset(shell->command_arena);
 		return (shell->last_exit_status);
+		shell->last_exit_status = 2;
+		arena_reset(shell->command_arena);
+		return (shell->last_exit_status);
 	}
 	execute_commands(commands, shell);
 	if (cleanup_after_execution(shell, commands))
@@ -55,8 +61,8 @@ static int	process_input_line(char *input, t_shell *shell)
 
 int	non_interactve_shell(t_shell *shell, char **argv)
 {
-	char		*input;
-	int			status;
+	char	*input;
+	int		status;
 
 	if (count_args(argv) > 2 && strcmp(argv[1], "-c") == 0)
 	{
@@ -75,30 +81,31 @@ int	non_interactve_shell(t_shell *shell, char **argv)
 	}
 }
 
-static int count_args(char **argv)
+static int	count_args(char **argv)
 {
-    int count = 0;
-    while (argv[count])
-        count++;
-    return (count);
+	int	count;
+
+	count = 0;
+	while (argv[count])
+		count++;
+	return (count);
 }
 
-static char *read_line_from_stdin(t_arena *arena)
+static char	*read_line_from_stdin(t_arena *arena)
 {
-    char *line = get_next_line(STDIN_FILENO);
-    if (!line)
-        return (NULL);
-    
-    // Remove trailing newline if present
-    size_t len = ft_strlen(line);
-    if (len > 0 && line[len-1] == '\n')
-        line[len-1] = '\0';
-    
-    // Copy to arena memory
-    char *arena_line = arena_strdup(line, arena);
-    free(line);  // get_next_line allocates with malloc
-    
-    return (arena_line);
+	char	*line;
+	char	*arena_line;
+	size_t	len;
+
+	line = get_next_line(STDIN_FILENO);
+	if (!line)
+		return (NULL);
+	len = ft_strlen(line);
+	if (len > 0 && line[len - 1] == '\n')
+		line[len - 1] = '\0';
+	arena_line = arena_strdup(line, arena);
+	free(line);
+	return (arena_line);
 }
 
 static char	*join_argv_to_single_input(char **argv, t_arena *arena)
