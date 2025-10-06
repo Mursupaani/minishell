@@ -215,7 +215,7 @@ void			free_memory_at_exit(t_shell *shell);
 int				error_exit_and_free_memory(t_shell *shell);
 int				cleanup_after_execution(t_shell *shell, t_command *cmd);
 void			exit_builtin(t_command *cmd, t_shell *shell);
-void			update_prompt(t_shell *shell, t_arena *arena);
+void			update_prompt(t_shell *shell);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
