@@ -12,6 +12,9 @@
 
 #include "minishell.h"
 
+// FIXME: 
+// - rl_event_hook
+// - rl_catch_signal
 void	sigint_handler(int sig)
 {
 	g_signal_received = sig;

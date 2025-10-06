@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 17:23:17 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/02 11:36:58 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/06 13:18:24 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,17 @@ static bool	valid_format(char *key);
 
 void	export_environment_variable(t_command *cmd, t_shell *shell)
 {
+	char	**temp;
+	int		i;
 	//FIXME: Print variables in alphabetical order with "declare -x " -prefix
 	//FIXME: += should append to the variable. Out of scope?
 	if (!shell || !cmd)
 		return ;
 	if (!cmd->argv[1])
 	{
-		print_environment_variables(shell);
+		temp = copy_env_array(shell, shell->command_arena, &i);
+		quick_sort_string_array(temp, 0, i - 1);
+		print_environment_variables(temp,shell, true);
 		return ;
 	}
 	shell->last_exit_status = 0;

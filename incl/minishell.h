@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/03 16:06:31 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/06 13:29:28 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,6 @@ typedef struct s_shell {
 	
 	// Status & mode
 	int             last_exit_status;  // For $?
-	//FIXME: Is this needed?
 	int             interactive;       // isatty result
 	t_shell_mode    mode;             // Current mode
 	
@@ -204,6 +203,7 @@ void print_commands(t_command *commands);
 // Signal handling (signals.c)
 void			sigint_handler(int sig);
 void			setup_signals(void);
+void			setup_child_signals(void);
 
 // Shell initialization and management (shell.c)
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
@@ -217,6 +217,7 @@ void			exit_builtin(t_command *cmd, t_shell *shell);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
+void			quick_sort_string_array(char **str_arr, int start, int end);
 
 // Shell modes
 int	interactive_shell(t_shell *shell);
@@ -245,7 +246,7 @@ void	change_directory(t_command *cmd, t_shell *shell);
 void	print_working_directory(t_shell *shell);
 void	env_builtin(t_command *cmd, t_shell *shell);
 void	ft_echo(t_command *cmd, t_shell *shell);
-void	print_environment_variables(t_shell *shell);
+void	print_environment_variables(char **env, t_shell *shell, bool export);
 void	export_environment_variable(t_command *cmd, t_shell *shell);
 void	unset_environment_variable(t_command *cmd, t_shell *shell);
 char	*get_current_directory(t_shell *shell);
@@ -259,6 +260,7 @@ void	expand_cmd(t_command *cmd, t_shell *shell);
 char	*expand_var(char *str, t_shell *shell, t_arena *arena);
 char	*process_var_expand(char *str, t_shell *shell, t_arena *arena);
 void	hash_table_delete(t_hash_table *table, char *key);
+char	**copy_env_array(t_shell *shell, t_arena *arena, int *count);
 
 // Parsing
 t_command	*parse_pipeline(t_token *tokens, t_shell *shell);
