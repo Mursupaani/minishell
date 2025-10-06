@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/06 15:20:37 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/10/06 15:56:50 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 
 	classify_commands(cmd);
 	prepare_cmd(cmd, shell);
-	// FIXME: Make all heredocs exit if ctrl + c is pressed
 	if (handle_heredocs(cmd, shell) != 0)
 		return ;
 	if (cmd->next)
@@ -30,7 +29,6 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 		execute_builtin_command(cmd, shell);
 	else if (cmd->cmd_type == CMD_EXTERNAL)
 	{
-
 		shell->child_pid = create_fork(shell);
 		if (shell->child_pid == 0)
 			execute_external_command(cmd, shell);

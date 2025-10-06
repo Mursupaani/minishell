@@ -71,7 +71,7 @@ static int	count_input_segments(char *input)
 			while (ft_isspace(*input))
 				input++;
 		}
-		else if ((ft_isprint(*input) && *input != ' ') || *input > 127)
+		else if (ft_isprint(*input) && *input != ' ')
 		{
 			input++;
 			segments++;
@@ -95,12 +95,11 @@ static int	get_segment_size(char *input)
 			segment_size++;
 		}
 	}
-	else if ((ft_isprint(*input) && *input != ' ') || *input > 127)
+	else if (ft_isprint(*input) && *input != ' ')
 	{
 		input++;
 		segment_size++;
-		while ((ft_isprint(*input) && *input != ' ' && *input != '$')
-			|| *input > 127)
+		while (ft_isprint(*input) && *input != ' ' && *input != '$')
 		{
 			input++;
 			segment_size++;

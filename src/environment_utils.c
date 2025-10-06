@@ -6,13 +6,14 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/26 09:30:04 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/06 13:18:07 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/06 16:03:18 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	print_array(char **env_array, bool export);
+static void	print_env_array(char **env_array, bool export);
+static void	print_in_format(char *str, bool export, bool no_value);
 
 //NOTE: OK!
 void	print_environment_variables(char **env, t_shell *shell, bool export)
@@ -24,11 +25,11 @@ void	print_environment_variables(char **env, t_shell *shell, bool export)
 		shell->last_exit_status = 1;
 		return ;
 	}
-	print_array(env, export);
+	print_env_array(env, export);
 	shell->last_exit_status = 0;
 }
 
-static void	print_array(char **env_array, bool export)
+static void	print_env_array(char **env_array, bool export)
 {
 	int		i;
 	int		j;
@@ -49,13 +50,18 @@ static void	print_array(char **env_array, bool export)
 			}
 			j++;
 		}
-		if (export)
-			printf("declare -x ");
-		printf("%s", env_array[i]);
-		if (no_value)
-			printf("''");
-		printf("\n");
+		print_in_format(env_array[i], export, no_value);
 	}
+}
+
+static void	print_in_format(char *str, bool export, bool no_value)
+{
+	if (export)
+		printf("declare -x ");
+	printf("%s", str);
+	if (no_value)
+		printf("''");
+	printf("\n");
 }
 
 void	update_env_table_and_arr(t_shell *shell)

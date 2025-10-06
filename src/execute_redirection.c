@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 10:33:51 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/22 13:31:48 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/06 15:56:05 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell)
 			return (-1);
 	}
 	if (redir->next)
-		return(execute_redirection(redir->next, cmd, shell));
+		return (execute_redirection(redir->next, cmd, shell));
 	return (0);
 }
 
@@ -43,7 +43,6 @@ static int	execute_input_redirection(t_redir *redir, t_shell *shell)
 {
 	if (!redir || !shell)
 		return (-1);
-	//FIXME: Need to return a value?!
 	if (check_input_redirection(redir, shell) != 0)
 		return (-1);
 	redir->fd = open(redir->target, O_RDONLY);

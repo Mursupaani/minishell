@@ -14,7 +14,7 @@
 
 void	prepare_cmd(t_command *cmd, t_shell *shell)
 {
-	t_command *current = cmd;
+	t_command	*current = cmd;
 	while (current)
 	{
 		expand_cmd(current, shell);

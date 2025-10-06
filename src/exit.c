@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/29 11:29:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/06 13:23:58 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/06 15:55:20 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ int	error_exit_and_free_memory(t_shell *shell)
 static int	get_exit_val_from_args(t_command *cmd, t_shell *shell, int *val)
 {
 	int	error;
-	// FIXME: Bash can handle long or long long?
 
 	*val = ft_atoi_safe(cmd->argv[1], &error);
 	if (error)
