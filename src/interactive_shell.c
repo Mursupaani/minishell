@@ -10,7 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include "minishell.h"
+
+static void	update_prompt(t_shell *shell, t_arena *arena);
 
 static int	is_empty_input(char *input)
 {
@@ -79,7 +82,8 @@ int	interactive_shell(t_shell *shell)
 	while (1)
 	{
 		g_signal_received = 0;
-		shell->input = readline("minishell$ ");
+		update_prompt(shell, shell->command_arena);
+		shell->input = readline(shell->prompt);
 		if (handle_input_validation(shell))
 			continue ;
 		result = process_input(shell);
@@ -87,4 +91,33 @@ int	interactive_shell(t_shell *shell)
 			return (EXIT_FAILURE);
 	}
 	return (EXIT_SUCCESS);
+}
+
+static void	update_prompt(t_shell *shell, t_arena *arena)
+{
+	char	*cwd;
+	char	*home;
+	int		home_len;
+
+	cwd = arena_alloc(shell->command_arena, PWD_BUFFER);
+	if (!cwd)
+		error_exit_and_free_memory(shell);
+	if (!getcwd(cwd, PWD_BUFFER))
+		cwd = arena_strdup(hash_table_get(shell->env_table, "PWD"), arena);
+	if (!cwd)
+	{
+		shell->prompt = "minishell\n% ";
+		return ;
+	}
+	home = hash_table_get(shell->env_table, "HOME");
+	if (home && home[0] != '\0')
+	{
+		home_len = ft_strlen(home);
+		if (ft_strnstr(cwd, home, home_len) == cwd)
+		{
+			cwd[home_len - 1] = '~';
+			cwd += home_len - 1;
+		}
+	}
+	shell->prompt = ft_strjoin_arena(cwd, "\n% ", shell->command_arena);
 }

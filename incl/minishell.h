@@ -156,6 +156,7 @@ typedef enum e_shell_mode {
 typedef struct s_shell {
 	// User input
 	char			*input;
+	char			*prompt;
 
 	// Environment subsystem
 	t_hash_table    *env_table;        // Hash table for environment
