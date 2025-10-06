@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/06 13:29:28 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/06 22:10:34 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,6 +215,7 @@ void			free_memory_at_exit(t_shell *shell);
 int				error_exit_and_free_memory(t_shell *shell);
 int				cleanup_after_execution(t_shell *shell, t_command *cmd);
 void			exit_builtin(t_command *cmd, t_shell *shell);
+void			update_prompt(t_shell *shell, t_arena *arena);
 
 // Utility functions (utils.c)
 void			print_str_array(char **str_array);
