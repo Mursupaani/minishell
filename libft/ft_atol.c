@@ -29,34 +29,27 @@ static int	parse(const char *str, int *i)
 	return (sign);
 }
 
-static int64_t	handle_overflow(int64_t result, int sign, int *err)
+static void	handle_overflow(long long result, int sign, int *err, int val)
 {
 	result *= sign;
-	if (sign > 0)
+	if (result < 0)
 	{
-		if (result > LONG_MAX)
-		{
+		if (result < ((LONG_MIN + val) / 10))
 			*err = 1;
-			return (LLONG_MAX);
-		}
 	}
 	else
 	{
-		if (result < LONG_MIN)
-		{
+		if (result > (LONG_MAX - val) / 10)
 			*err = 1;
-			return (LLONG_MIN);
-		}
 	}
-	return (result);
 }
 
-int64_t	ft_atol_safe(const char *str, int *err)
+long	ft_atol_safe(const char *str, int *err)
 {
-	int		i;
-	int		sign;
-	int64_t	result;
-	int64_t	overflow_val;
+	int			i;
+	int			sign;
+	int			value;
+	long long	result;
 
 	i = 0;
 	result = 0;
@@ -68,10 +61,11 @@ int64_t	ft_atol_safe(const char *str, int *err)
 		return (*err = 1, 0);
 	while (str[i] >= '0' && str[i] <= '9')
 	{
-		result = result * 10 + (str[i] - '0');
-		overflow_val = handle_overflow(result, sign, err);
+		value = str[i] - '0';
+		handle_overflow(result, sign, err, value);
 		if (*err)
-			return ((long int)overflow_val);
+			return (0);
+		result = result * 10 + value;
 		i++;
 	}
 	if (str[i] != '\0' && str[i] != '\n')

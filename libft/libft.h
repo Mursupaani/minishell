@@ -61,7 +61,7 @@ typedef struct s_arena
 }	t_arena;
 
 int		ft_atoi_safe(const char *str, int *err);
-int64_t	ft_atol_safe(const char *str, int *err);
+long	ft_atol_safe(const char *str, int *err);
 int		ft_atoi_hex(const char *str, int *err);
 void	ft_bzero(void *s, size_t n);
 int		ft_isalnum(int s);
