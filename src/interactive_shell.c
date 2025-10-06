@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   interactive_shell.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/10/06 15:18:18 by magebreh         ###   ########.fr       */
+/*   Created: 2025/10/06 15:47:09 by anpollan          #+#    #+#             */
+/*   Updated: 2025/10/06 15:47:11 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "minishell.h"
 
