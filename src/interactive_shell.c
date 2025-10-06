@@ -120,4 +120,6 @@ static void	update_prompt(t_shell *shell, t_arena *arena)
 		}
 	}
 	shell->prompt = ft_strjoin_arena(cwd, "\n% ", shell->command_arena);
+	// shell->prompt = ft_strjoin_arena("\033[1;30;47m", cwd, shell->command_arena);
+	// shell->prompt = ft_strjoin_arena(shell->prompt, "\033[0m\n% ", shell->command_arena);
 }
