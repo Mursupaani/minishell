@@ -35,7 +35,7 @@
 
 #define COMMAND_ARENA_SIZE 1024
 #define SESSION_ARENA_SIZE 1024
-#define PWD_BUFFER 2048
+#define PWD_BUFFER 4096
 
 // ============================================================================
 // HASH TABLE FOR ENVIRONMENT (Simple implementation)
