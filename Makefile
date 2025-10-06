@@ -36,7 +36,8 @@ SRC = main.c print_working_directory.c change_directory.c execute_command.c \
 	  handle_heredocs.c env_array_from_hashtable.c export.c unset.c \
 	  environment_utils.c exit.c execute_external_command.c \
 	  execute_command_utils.c check_redirections.c env.c heredoc_utils.c \
-	  pipe_utils.c quick_sort_string_array.c debug.c
+	  pipe_utils.c quick_sort_string_array.c expand_variables_from_input.c \
+	  debug.c
 
 # Combined sources
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)

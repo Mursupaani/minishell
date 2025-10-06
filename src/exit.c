@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/29 11:29:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/29 12:10:34 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/06 13:23:58 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	exit_builtin(t_command *cmd, t_shell *shell)
 
 	if (!shell)
 		return ;
-	printf("exit\n");
+	// printf("exit\n");
 	if (cmd && cmd->argv[1])
 	{
 		error = get_exit_val_from_args(cmd, shell, &val);

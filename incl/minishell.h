@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/06 13:16:33 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/06 13:29:28 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,6 @@ typedef struct s_shell {
 	
 	// Status & mode
 	int             last_exit_status;  // For $?
-	//FIXME: Is this needed?
 	int             interactive;       // isatty result
 	t_shell_mode    mode;             // Current mode
 	
@@ -204,6 +203,7 @@ void print_commands(t_command *commands);
 // Signal handling (signals.c)
 void			sigint_handler(int sig);
 void			setup_signals(void);
+void			setup_child_signals(void);
 
 // Shell initialization and management (shell.c)
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);

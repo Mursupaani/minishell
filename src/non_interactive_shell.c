@@ -13,18 +13,20 @@
 #include "minishell.h"
 
 static char	*join_argv_to_single_input(char **argv, t_arena *arena);
-static int count_args(char **argv);
-static char *read_line_from_stdin(t_arena *arena);
+static int	count_args(char **argv);
+static char	*read_line_from_stdin(t_arena *arena);
 
-static int is_whitespace_only(char *str)
+static int	is_whitespace_only(char *str)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	while (str[i] && (str[i] == ' ' || str[i] == '\t'))
 		i++;
 	return (str[i] == '\0');
 }
 
-static int process_input_line(char *input, t_shell *shell)
+static int	process_input_line(char *input, t_shell *shell)
 {
 	t_token		*tokens;
 	t_command	*commands;
@@ -58,13 +60,11 @@ int	non_interactve_shell(t_shell *shell, char **argv)
 
 	if (count_args(argv) > 2 && strcmp(argv[1], "-c") == 0)
 	{
-		// Script mode: execute single command from args
 		input = join_argv_to_single_input(argv + 2, shell->command_arena);
 		return (process_input_line(input, shell));
 	}
 	else
 	{
-		// Piped input mode: read and execute all lines from stdin
 		status = EXIT_SUCCESS;
 		while ((input = read_line_from_stdin(shell->command_arena)) != NULL)
 		{
