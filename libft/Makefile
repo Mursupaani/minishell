@@ -6,7 +6,7 @@
 #    By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/24 11:49:18 by magebreh          #+#    #+#              #
-#    Updated: 2025/08/23 12:04:41 by anpollan         ###   ########.fr        #
+#    Updated: 2025/10/06 17:52:52 by anpollan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ LIBFT_SRC = ft_atoi.c ft_atoi_hex.c ft_bzero.c ft_calloc.c ft_isalnum.c ft_isalp
             ft_strlcpy.c ft_strlen.c ft_strmapi.c ft_strncmp.c ft_strnstr.c \
             ft_strrchr.c ft_strtrim.c ft_substr.c ft_tolower.c ft_toupper.c \
 			memory_arena.c ft_split_arena.c ft_substr_arena.c strjoin_arena.c \
-			ft_strcmp.c
+			ft_strcmp.c ft_atol.c
 
 # ft_printf sources  
 PRINTF_SRC = ft_printf/ft_printf.c ft_printf/print_char.c ft_printf/print_string.c \

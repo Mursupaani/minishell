@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "minishell.h"
 
 static char	*join_argv_to_single_input(char **argv, t_arena *arena);
@@ -46,9 +45,6 @@ static int	process_input_line(char *input, t_shell *shell)
 	if (!commands)
 	{
 		ft_fprintf(STDERR_FILENO, "minishell: syntax error\n");
-		shell->last_exit_status = 2;
-		arena_reset(shell->command_arena);
-		return (shell->last_exit_status);
 		shell->last_exit_status = 2;
 		arena_reset(shell->command_arena);
 		return (shell->last_exit_status);
