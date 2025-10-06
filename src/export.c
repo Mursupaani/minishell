@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 17:23:17 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/06 15:48:28 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/06 15:54:28 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,13 @@ void	export_environment_variable(t_command *cmd, t_shell *shell)
 	char	**temp;
 	int		i;
 	//FIXME: += should append to the variable. Out of scope?
-	print_commands(cmd);
 	if (!shell || !cmd)
 		return ;
 	if (!cmd->argv[1])
 	{
 		temp = copy_env_array(shell, shell->command_arena, &i);
 		quick_sort_string_array(temp, 0, i - 1);
-		print_environment_variables(temp,shell, true);
+		print_environment_variables(temp, shell, true);
 		return ;
 	}
 	shell->last_exit_status = 0;
