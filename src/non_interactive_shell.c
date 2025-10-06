@@ -5,10 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/21 17:49:15 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/04 17:44:05 by magebreh         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2025/10/06 15:19:11 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "minishell.h"
 
@@ -33,6 +34,8 @@ static int	process_input_line(char *input, t_shell *shell)
 
 	if (!input || input[0] == '\0' || is_whitespace_only(input))
 		return (EXIT_SUCCESS);
+	if (!input || input[0] == '\0' || is_whitespace_only(input))
+		return (EXIT_SUCCESS);
 	tokens = tokenize(input, shell->command_arena);
 	if (!tokens)
 	{
@@ -43,6 +46,9 @@ static int	process_input_line(char *input, t_shell *shell)
 	if (!commands)
 	{
 		ft_fprintf(STDERR_FILENO, "minishell: syntax error\n");
+		shell->last_exit_status = 2;
+		arena_reset(shell->command_arena);
+		return (shell->last_exit_status);
 		shell->last_exit_status = 2;
 		arena_reset(shell->command_arena);
 		return (shell->last_exit_status);

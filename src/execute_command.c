@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/06 15:05:51 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/10/06 15:20:37 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 
 	classify_commands(cmd);
 	prepare_cmd(cmd, shell);
+	// FIXME: Make all heredocs exit if ctrl + c is pressed
 	if (handle_heredocs(cmd, shell) != 0)
 		return ;
 	if (cmd->next)
@@ -33,11 +34,11 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 		shell->child_pid = create_fork(shell);
 		if (shell->child_pid == 0)
 			execute_external_command(cmd, shell);
-		waitpid(shell->child_pid, &shell->last_exit_status, 0);
-		if (WIFEXITED(shell->last_exit_status))
-			shell->last_exit_status = WEXITSTATUS(shell->last_exit_status);
-		else if (WIFSIGNALED(shell->last_exit_status))
-			shell->last_exit_status = 128 + WTERMSIG(shell->last_exit_status);
+		waitpid(shell->child_pid, &wait_status, 0);
+		if (WIFEXITED(wait_status))
+			shell->last_exit_status = WEXITSTATUS(wait_status);
+		else if (WIFSIGNALED(wait_status))
+			shell->last_exit_status = 128 + WTERMSIG(wait_status);
 		else
 			shell->last_exit_status = 1;
 	}
