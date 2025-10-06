@@ -70,4 +70,6 @@ dkms.conf
 #md files
 *.md
 
-/minishell_tester
+minishell_tester/
+
+.vscode/

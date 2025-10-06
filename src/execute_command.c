@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/02 11:24:48 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/06 15:05:42 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ static int	reset_std_fds(t_shell *shell);
 
 void	execute_commands(t_command *cmd, t_shell *shell)
 {
+	int	wait_status;
+
 	classify_commands(cmd);
 	prepare_cmd(cmd, shell);
 	if (handle_heredocs(cmd, shell) != 0)
@@ -27,6 +29,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 		execute_builtin_command(cmd, shell);
 	else if (cmd->cmd_type == CMD_EXTERNAL)
 	{
+
 		shell->child_pid = create_fork(shell);
 		if (shell->child_pid == 0)
 			execute_external_command(cmd, shell);

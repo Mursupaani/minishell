@@ -6,15 +6,15 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:40:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/09/26 18:02:35 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/04 16:05:30 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static unsigned int hash_function(const char *key)
+static unsigned int	hash_function(const char *key)
 {
-	unsigned int hash;
+	unsigned int	hash;
 
 	hash = 0;
 	while (*key)
@@ -25,73 +25,75 @@ static unsigned int hash_function(const char *key)
 	return (hash);
 }
 
-t_hash_table *hash_table_create(t_arena *arena)
+t_hash_table	*hash_table_create(t_arena *arena)
 {
-    t_hash_table *table;
-    int i;
-    
-    table = arena_alloc(arena, sizeof(t_hash_table));
-    if (!table)
-        return (NULL);
-    i = 0;
-    while (i < HASH_TABLE_SIZE)
-    {
-        table->buckets[i] = NULL;
-        i++;
-    }
-    
-    return (table);
-}
+	t_hash_table	*table;
+	int				i;
 
-void hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena)
-{
-    unsigned int index;
-    t_env_entry *entry;
-    t_env_entry *current;
-
-    if (!table || !key)
-    // if (!table || !key || !value)
-        return;
-    index = hash_function(key);
-    current = table->buckets[index];
-    while (current)
-    {
-        if(ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
-        {
-			if (value)
-				current->value = arena_strdup(value, arena);
-			else
-				current->value = NULL;
-            return;
-        }
-        current = current->next;
-    }
-    entry = arena_alloc(arena, sizeof(t_env_entry));
-    if (!entry)
-        return;
-    entry->key = arena_strdup(key, arena);
-	if (value)
+	table = arena_alloc(arena, sizeof(t_hash_table));
+	if (!table)
+		return (NULL);
+	i = 0;
+	while (i < HASH_TABLE_SIZE)
 	{
-		entry->value = arena_strdup(value, arena);
-		if (!entry->value)
-			return ;
+		table->buckets[i] = NULL;
+		i++;
 	}
-	else
-		entry->value = NULL;
-	if (!entry->key)
-		return;
-    entry->next = table->buckets[index];
-    table->buckets[index] = entry;
+	return (table);
 }
 
-void hash_table_delete(t_hash_table *table, char *key)
+static t_env_entry	*find_entry(t_hash_table *table, char *key,
+		unsigned int index)
 {
-	unsigned int index;
-	t_env_entry *current;
-	t_env_entry *prev;
+	t_env_entry	*current;
+
+	current = table->buckets[index];
+	while (current)
+	{
+		if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
+			return (current);
+		current = current->next;
+	}
+	return (NULL);
+}
+
+void	hash_table_set(t_hash_table *table, char *key, char *value,
+		t_arena *arena)
+{
+	unsigned int	index;
+	t_env_entry		*entry;
 
 	if (!table || !key)
-		return;
+		return ;
+	index = hash_function(key);
+	entry = find_entry(table, key, index);
+	if (entry)
+	{
+		if (value)
+			entry->value = arena_strdup(value, arena);
+		else
+			entry->value = NULL;
+		return ;
+	}
+	entry = arena_alloc(arena, sizeof(t_env_entry));
+	if (!entry || !(entry->key = arena_strdup(key, arena)))
+		return ;
+	if (value)
+		entry->value = arena_strdup(value, arena);
+	else
+		entry->value = NULL;
+	entry->next = table->buckets[index];
+	table->buckets[index] = entry;
+}
+
+void	hash_table_delete(t_hash_table *table, char *key)
+{
+	unsigned int	index;
+	t_env_entry		*current;
+	t_env_entry		*prev;
+
+	if (!table || !key)
+		return ;
 	index = hash_function(key);
 	current = table->buckets[index];
 	prev = NULL;
@@ -103,36 +105,51 @@ void hash_table_delete(t_hash_table *table, char *key)
 				prev->next = current->next;
 			else
 				table->buckets[index] = current->next;
-			return;
+			return ;
 		}
 		prev = current;
 		current = current->next;
 	}
 }
 
-char *hash_table_get(t_hash_table *table, char *key)
+char	*hash_table_get(t_hash_table *table, char *key)
 {
-    unsigned int index;
-    t_env_entry *current;
-	
+	unsigned int	index;
+	t_env_entry		*current;
+
 	index = hash_function(key);
 	current = table->buckets[index];
-    while (current)
-    {
-        if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
-            return (current->value);
-        current = current->next;
-    }
-    return (NULL);
+	while (current)
+	{
+		if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
+			return (current->value);
+		current = current->next;
+	}
+	return (NULL);
+}
+
+static char	*extract_key(char *env_str, char *equal_pos, t_arena *arena)
+{
+	char	*key;
+	size_t	len;
+
+	if (equal_pos)
+		len = equal_pos - env_str;
+	else
+		len = ft_strlen(env_str);
+	key = arena_alloc(arena, len + 1);
+	if (!key)
+		return (NULL);
+	ft_strlcpy(key, env_str, len + 1);
+	return (key);
 }
 
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena)
 {
 	t_hash_table	*table;
-	int i;
-	char *key;
-	char *value;
-	char *equal_pos;
+	int				i;
+	char			*key;
+	char			*equal_pos;
 
 	table = hash_table_create(arena);
 	if (!table)
@@ -140,39 +157,20 @@ t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena)
 	i = 0;
 	while (envp[i])
 	{
-		//FIXME:Export should not accept empty or only whitespace
 		equal_pos = ft_strchr(envp[i], '=');
-		// NOTE: Need to be able to parse env variables without "="
-		// if (!equal_pos)
-		// {
-		// 	i++;
-		// 	continue;
-		// }
+		key = extract_key(envp[i], equal_pos, arena);
+		if (!key)
+			return (NULL);
 		if (equal_pos)
-		{
-			key = arena_alloc(arena, (equal_pos - envp[i]) + 1);
-			if (!key)
-				return (NULL);
-			ft_strlcpy(key, envp[i], (equal_pos - envp[i]) + 1);
-			key[equal_pos - envp[i]] = '\0';
-			value = equal_pos + 1;
-		}
+			hash_table_set(table, key, equal_pos + 1, arena);
 		else
-		{
-			key = arena_alloc(arena, ft_strlen(envp[i]) + 1);
-			if (!key)
-				return (NULL);
-			ft_strlcpy(key, envp[i], ft_strlen(envp[i]) + 1);
-			key[ft_strlen(envp[i])] = '\0';
-			value = NULL;
-		}
-		hash_table_set(table, key, value, arena);
+			hash_table_set(table, key, NULL, arena);
 		i++;
 	}
 	return (table);
 }
 
-t_shell	*shell_init(char **env)
+static t_shell	*shell_static_init(void)
 {
 	t_shell	*shell;
 
@@ -190,30 +188,46 @@ t_shell	*shell_init(char **env)
 	shell->env_table = NULL;
 	shell->env_array = NULL;
 	shell->path_dirs = NULL;
+	return (shell);
+}
+
+static int	shell_dynamic_init(t_shell *shell, char **env)
+{
 	shell->session_arena = arena_init(8192);
 	if (!shell->session_arena)
 	{
 		cleanup_shell_partial(shell, 1);
-		return (NULL);
+		return (0);
 	}
 	shell->command_arena = arena_init(4096);
 	if (!shell->command_arena)
 	{
 		cleanup_shell_partial(shell, 2);
-		return (NULL);
+		return (0);
 	}
 	shell->env_table = populate_env_from_envp(env, shell->session_arena);
 	if (!shell->env_table)
 	{
 		cleanup_shell_partial(shell, 3);
-		return (NULL);
+		return (0);
 	}
-	shell->env_array =
-		env_array_from_hashtable(shell);
+	shell->env_array = env_array_from_hashtable(shell);
 	if (!shell->env_array)
 	{
 		cleanup_shell_partial(shell, 3);
-		return (NULL);
+		return (0);
 	}
+	return (1);
+}
+
+t_shell	*shell_init(char **env)
+{
+	t_shell	*shell;
+
+	shell = shell_static_init();
+	if (!shell)
+		return (NULL);
+	if (!shell_dynamic_init(shell, env))
+		return (NULL);
 	return (shell);
 }
