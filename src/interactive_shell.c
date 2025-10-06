@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 17:40:17 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/06 15:04:33 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/10/06 15:04:52 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,11 @@ static int	process_input(t_shell *shell)
 		free(shell->input);
 		return (1);
 	}
-	// print_tokens(tokens);
 	commands = parse_pipeline(tokens, shell);
 	if (!commands)
 	{
 		ft_fprintf(STDERR_FILENO, "minishell: syntax error\n");
-			shell->last_exit_status = 2;
+		shell->last_exit_status = 2;
 		arena_reset(shell->command_arena);
 		free(shell->input);
 		return (1);
