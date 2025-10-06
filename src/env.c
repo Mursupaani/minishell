@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 11:21:45 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/02 11:25:42 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/06 13:18:41 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,5 +23,5 @@ void	env_builtin(t_command *cmd, t_shell *shell)
 		return ;
 	}
 	else
-		print_environment_variables(shell);
+		print_environment_variables(shell->env_array, shell, false);
 }

@@ -6,46 +6,52 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/26 09:30:04 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/26 09:44:02 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/06 13:18:07 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char	**copy_env_array(t_shell *shell);
-static void	print_array(t_shell *shell);
+static void	print_array(char **env_array, bool export);
 
 //NOTE: OK!
-void	print_environment_variables(t_shell *shell)
+void	print_environment_variables(char **env, t_shell *shell, bool export)
 {
-	if (!shell->env_array)
+	if (!shell)
 		return ;
-	print_array(shell);
+	if (!env)
+	{
+		shell->last_exit_status = 1;
+		return ;
+	}
+	print_array(env, export);
 	shell->last_exit_status = 0;
 }
 
-static void	print_array(t_shell *shell)
+static void	print_array(char **env_array, bool export)
 {
 	int		i;
 	int		j;
 	bool	no_value;
 
-	i = 0;
-	while (shell->env_array[i])
+	i = -1;
+	while (env_array[++i])
 	{
-		j = 0;
+		j = -1;
 		no_value = false;
-		while (shell->env_array[i][j])
+		while (env_array[i][++j])
 		{
-			if (shell->env_array[i][j] == '=')
+			if (env_array[i][j] == '=')
 			{
-				if (shell->env_array[i][j + 1] == '\0')
+				if (env_array[i][j + 1] == '\0')
 					no_value = true;
 				break ;
 			}
 			j++;
 		}
-		printf("%s", shell->env_array[i++]);
+		if (export)
+			printf("declare -x ");
+		printf("%s", env_array[i]);
 		if (no_value)
 			printf("''");
 		printf("\n");
@@ -65,7 +71,7 @@ void	update_env_table_and_arr(t_shell *shell)
 		shell->last_exit_status = 1;
 		error_exit_and_free_memory(shell);
 	}
-	temp_env_arr = copy_env_array(shell);
+	temp_env_arr = copy_env_array(shell, shell->command_arena, NULL);
 	if (!temp_env_arr)
 		return ;
 	arena_reset(shell->session_arena);
@@ -81,7 +87,7 @@ void	update_env_table_and_arr(t_shell *shell)
 	}
 }
 
-static char	**copy_env_array(t_shell *shell)
+char	**copy_env_array(t_shell *shell, t_arena *arena, int *count)
 {
 	char	**temp_env_arr;
 	int		i;
@@ -91,7 +97,7 @@ static char	**copy_env_array(t_shell *shell)
 	i = 0;
 	while (shell->env_array[i])
 		i++;
-	temp_env_arr = arena_alloc(shell->command_arena, sizeof(char *) * (i + 1));
+	temp_env_arr = arena_alloc(arena, sizeof(char *) * (i + 1));
 	if (!temp_env_arr)
 		return (NULL);
 	i = 0;
@@ -103,5 +109,7 @@ static char	**copy_env_array(t_shell *shell)
 			return (NULL);
 		i++;
 	}
+	if (count)
+		*count = i;
 	return (temp_env_arr);
 }
