@@ -79,7 +79,7 @@ int	interactive_shell(t_shell *shell)
 	while (1)
 	{
 		g_signal_received = 0;
-		update_prompt(shell, shell->command_arena);
+		update_prompt(shell);
 		shell->input = readline(shell->prompt);
 		if (handle_input_validation(shell))
 			continue ;

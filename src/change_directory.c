@@ -44,8 +44,6 @@ static int	try_to_change_directory(t_command *cmd, t_shell *shell)
 {
 	char	cwd[4096];
 
-	if (!getcwd(cwd, 4096))
-		return (-1);
 	if (!cmd || ! shell)
 		return (1);
 	if (cmd->argv[1] == NULL
@@ -66,5 +64,7 @@ static int	try_to_change_directory(t_command *cmd, t_shell *shell)
 		shell->last_exit_status = 1;
 		return (1);
 	}
+	if (!getcwd(cwd, 4096))
+		return (-1);
 	return (0);
 }
