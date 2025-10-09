@@ -29,7 +29,6 @@ int	main(int argc, char **argv, char **envp)
 		write(STDERR_FILENO, "Failed to initialize shell\n", 28);
 		return (EXIT_FAILURE);
 	}
-	setup_signals();
 	if (isatty(STDIN_FILENO))
 		exit_code = interactive_shell(shell);
 	else
