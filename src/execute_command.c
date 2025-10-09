@@ -31,6 +31,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 	{
 		shell->child_pid = create_fork(shell);
 		if (shell->child_pid == 0)
+		//FIXME: Reset child signal handling so they can exit with ctr-c and ctrl-'\'
 			execute_external_command(cmd, shell);
 		waitpid(shell->child_pid, &wait_status, 0);
 		if (WIFEXITED(wait_status))

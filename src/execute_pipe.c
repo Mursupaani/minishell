@@ -49,6 +49,7 @@ static void	execute_pipeline(t_shell *shell, t_command *cmd, int cmd_count)
 		shell->pipe_pids[i] = create_fork(shell);
 		if (shell->pipe_pids[i] == 0)
 		{
+		//FIXME: Reset child signal handling so they can exit with ctr-c and ctrl-'\'
 			if (i < cmd_count - 1)
 			{
 				close(STDOUT_FILENO);

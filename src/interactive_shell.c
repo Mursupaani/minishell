@@ -78,6 +78,8 @@ int	interactive_shell(t_shell *shell)
 
 	while (1)
 	{
+		//NOTE: Reset signal handling on every loop
+		setup_parent_signals();
 		g_signal_received = 0;
 		update_prompt(shell);
 		shell->input = readline(shell->prompt);
