@@ -42,6 +42,9 @@ void	setup_parent_signals(void)
 	struct sigaction	s_sigint;
 	struct sigaction	s_sigquit;
 
+	//NOTE: If rl_done == 1 then readline doesn't wait for input. This way we can exit heredocs.
+	//FIXME: Make a 'setup_child_signals' function that resets child signal handling so they can exit with ctr-c and ctrl-'\'
+	rl_done = 0;
 	s_sigint.sa_flags = SA_SIGINFO;
 	s_sigquit.sa_flags = SA_SIGINFO;
 	sigemptyset(&s_sigint.sa_mask);
@@ -50,7 +53,6 @@ void	setup_parent_signals(void)
 	s_sigquit.sa_sigaction = parent_sigquit_handler;
 	sigaction(SIGINT, &s_sigint, NULL);
 	sigaction(SIGQUIT, &s_sigquit, NULL);
-
 }
 //
 // void	setup_signals(void)
