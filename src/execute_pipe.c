@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 16:06:25 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/03 16:08:28 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/10 18:34:23 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static void	execute_pipeline(t_shell *shell, t_command *cmd, int cmd_count)
 		shell->pipe_pids[i] = create_fork(shell);
 		if (shell->pipe_pids[i] == 0)
 		{
-		//FIXME: Reset child signal handling so they can exit with ctr-c and ctrl-'\'
+			setup_child_signals();
 			if (i < cmd_count - 1)
 			{
 				close(STDOUT_FILENO);

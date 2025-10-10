@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/06 22:10:34 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/10 18:44:02 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,6 +206,7 @@ void print_commands(t_command *commands);
 // Signal handling (signals.c)
 void			setup_parent_signals(void);
 void			setup_child_signals(void);
+void			setup_heredoc_signals(void);
 
 // Shell initialization and management (shell.c)
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);

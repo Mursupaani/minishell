@@ -6,11 +6,12 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 11:40:45 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/06 13:32:03 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/10 18:58:17 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <signal.h>
 
 static int	generate_heredoc_file(
 				t_redir *redirection, t_command *cmd, t_shell *shell);
@@ -22,25 +23,32 @@ static int	handle_heredoc_input(
 
 int	handle_heredocs(t_command *cmd, t_shell *shell)
 {
-	// FIXME: Make all heredocs exit if ctrl + c is pressed
+	int	status;
 	if (!cmd)
 		return (1);
-	return (process_heredocs(cmd, shell));
+	setup_heredoc_signals();
+	status = process_heredocs(cmd, shell);
+	setup_parent_signals();
+	return (status);
 }
 
 static int	process_heredocs(t_command *cmd, t_shell *shell)
 {
 	t_redir	*temp;
+	int		status;
 
-	while (cmd)
+	while (cmd && g_signal_received != SIGINT)
 	{
 		temp = cmd->redirections;
-		while (temp)
+		while (temp && g_signal_received != SIGINT)
 		{
 			if (temp->type == REDIR_HEREDOC)
 			{
-				if (generate_heredoc_file(temp, cmd, shell) != 0)
+				status = generate_heredoc_file(temp, cmd, shell);
+				if (status != 0)
 				{
+					if (status == 2)
+						return (2);
 					cmd->heredoc_filename = NULL;
 					return (1);
 				}
@@ -75,6 +83,8 @@ static int	generate_heredoc_file(
 		ft_fprintf(STDERR_FILENO,
 			"minishell: warning: here-document delimited by end-of-file \
 (wanted `%s')\n", redirection->target);
+	else if (status == 2)
+		return (2);
 	return (0);
 }
 
@@ -84,7 +94,7 @@ static int	get_user_input_to_heredoc(
 	char	*input;
 	int		status;
 
-	while (true)
+	while (g_signal_received != SIGINT)
 	{
 		input = readline("> ");
 		if (!input)
@@ -95,6 +105,7 @@ static int	get_user_input_to_heredoc(
 		else if (status == 1)
 			return (0);
 	}
+	return (2);
 }
 
 static int	handle_heredoc_input(

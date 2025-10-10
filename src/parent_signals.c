@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signals.c                                          :+:      :+:    :+:   */
+/*   parent_signals.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:40:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/08/19 12:42:59 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/10/10 19:09:13 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,36 @@
 //
 // Jos heredoc saa sigint, niin rl_done = 1
 // tama rl_even_hookiin, joka asetetaan handlerin sisalla
+
+int	check_if_sigint_received(void)
+{
+	if (g_signal_received == SIGINT)
+	{
+		rl_done = 1;
+		return (1);
+	}
+	return (0);
+}
+
+void	heredoc_sigint_handler(int sig, siginfo_t *info, void *context)
+{
+	g_signal_received = sig;
+	(void)info;
+	(void)context;
+}
+
+void	setup_heredoc_signals(void)
+{
+	struct sigaction	s_sigint;
+
+	rl_done = 0;
+	rl_event_hook = check_if_sigint_received;
+	sigemptyset(&s_sigint.sa_mask);
+	s_sigint.sa_flags = SA_SIGINFO;
+	s_sigint.sa_sigaction = heredoc_sigint_handler;
+	sigaction(SIGINT, &s_sigint, NULL);
+}
+
 void	parent_sigint_handler(int sig, siginfo_t *info, void *context)
 {
 	g_signal_received = sig;
@@ -54,9 +84,3 @@ void	setup_parent_signals(void)
 	sigaction(SIGINT, &s_sigint, NULL);
 	sigaction(SIGQUIT, &s_sigquit, NULL);
 }
-//
-// void	setup_signals(void)
-// {
-// 	signal(SIGINT, sigint_handler);
-// 	signal(SIGQUIT, SIG_IGN);
-// }
