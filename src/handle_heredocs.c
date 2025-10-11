@@ -26,9 +26,9 @@ int	handle_heredocs(t_command *cmd, t_shell *shell)
 
 	if (!cmd)
 		return (1);
-	// setup_heredoc_signals();
+	setup_heredoc_signals();
 	status = process_heredocs(cmd, shell);
-	// setup_parent_signals();
+	setup_parent_signals();
 	return (status);
 }
 

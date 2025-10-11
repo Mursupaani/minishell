@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/11 13:02:00 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/11 13:02:03 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/11 17:49:28 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ int	main(int argc, char **argv, char **envp)
 		write(STDERR_FILENO, "Failed to initialize shell\n", 28);
 		return (EXIT_FAILURE);
 	}
+	update_shell_lvl(shell);
 	if (isatty(STDIN_FILENO))
 		exit_code = interactive_shell(shell);
 	else
