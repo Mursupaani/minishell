@@ -53,7 +53,8 @@ static void	update_prompt_colors(char *cwd, t_shell *shell)
 	temp = ft_strjoin("\033[1;30;47m", cwd);
 	if (!temp)
 		error_exit_and_free_memory(shell);
-	shell->prompt = ft_strjoin_arena(temp, "\033[0m\n % ", shell->command_arena);
+	shell->prompt = ft_strjoin_arena(
+			temp, "\033[0m\n % ", shell->command_arena);
 	free(temp);
 	if (!shell->prompt)
 		error_exit_and_free_memory(shell);
