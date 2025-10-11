@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "minishell.h"
 
 void	update_shell_lvl(t_shell *shell)
@@ -23,12 +22,20 @@ void	update_shell_lvl(t_shell *shell)
 		return ;
 	shlvl = hash_table_get(shell->env_table, "SHLVL");
 	if (!shlvl)
-		return ;
-	shlvl_num = ft_atol_safe(shlvl, &error);
-	if (error != 0)
-		return ;
-	shlvl_num++;
-	shlvl = ft_itoa(shlvl_num);
-	hash_table_set(shell->env_table, "SHLVL", shlvl, shell->session_arena);
+		hash_table_set(shell->env_table, "SHLVL", "1", shell->session_arena);
+	else
+	{
+		shlvl_num = ft_atol_safe(shlvl, &error);
+		if (error != 0)
+			hash_table_set(
+				shell->env_table, "SHLVL", "1", shell->session_arena);
+		else
+		{
+			shlvl_num++;
+			shlvl = ft_itoa(shlvl_num);
+			hash_table_set(
+				shell->env_table, "SHLVL", shlvl, shell->session_arena);
+		}
+	}
 	update_env_table_and_arr(shell);
 }
