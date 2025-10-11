@@ -185,6 +185,43 @@ static char	*find_word_end(char *start)
 	return (end);
 }
 
+static int	check_expandable_in_context(char *start, size_t word_len)
+{
+	size_t	i;
+	char	in_quote;
+
+	i = 0;
+	in_quote = 0;
+	while (i < word_len)
+	{
+		// Track quote context
+		if (is_quote(start[i]) && !in_quote)
+			in_quote = start[i];
+		else if (start[i] == in_quote)
+			in_quote = 0;
+		// Check if $ can expand in this context
+		else if (start[i] == '$' && i + 1 < word_len)
+		{
+			// If $ is immediately followed by a quote, it's literal
+			if (is_quote(start[i + 1]))
+			{
+				i++;
+				continue;
+			}
+			// $ followed by valid variable char
+			if (ft_isalnum(start[i + 1]) || start[i + 1] == '_'
+				|| start[i + 1] == '?')
+			{
+				// Can expand if: outside quotes OR inside double quotes
+				if (in_quote != '\'')
+					return (1);
+			}
+		}
+		i++;
+	}
+	return (0);
+}
+
 static void	set_token_quote_flags(t_token *token, char *start, size_t word_len)
 {
 	if (ft_strchr_range(start, '\'', word_len)
@@ -196,12 +233,12 @@ static void	set_token_quote_flags(t_token *token, char *start, size_t word_len)
 	else if (ft_strchr_range(start, '"', word_len))
 	{
 		token->quoted = 2;
-		token->expandable = (ft_strchr(token->value, '$') != NULL);
+		token->expandable = check_expandable_in_context(start, word_len);
 	}
 	else
 	{
 		token->quoted = 0;
-		token->expandable = (ft_strchr(token->value, '$') != NULL);
+		token->expandable = check_expandable_in_context(start, word_len);
 	}
 }
 
@@ -281,7 +318,7 @@ static char	*remove_quotes_from_word(char *start, size_t word_len,
 	char	*dst;
 	char	*end;
 
-	result = arena_alloc(arena, word_len + 1);
+	result = arena_alloc(arena, word_len + 2);  // +1 for potential escape, +1 for null
 	if (!result)
 		return (NULL);
 	src = start;
@@ -289,7 +326,13 @@ static char	*remove_quotes_from_word(char *start, size_t word_len,
 	end = start + word_len;
 	while (src < end)
 	{
-		if (is_quote(*src))
+		// Special case: $ followed by quote should be removed (bash $"..." behavior)
+		if (*src == '$' && src + 1 < end && is_quote(*(src + 1)))
+		{
+			// Skip the $, it's part of the $"..." syntax
+			src++;
+		}
+		else if (is_quote(*src))
 			copy_quoted_content(&src, &dst, end, *src);
 		else
 			*dst++ = *src++;
