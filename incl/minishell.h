@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/11 13:06:55 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/11 17:46:18 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,6 +187,7 @@ void			setup_heredoc_signals(void);
 t_shell			*shell_init(char **env);
 int				cleanup_after_execution(t_shell *shell, t_command *cmd);
 void			update_prompt(t_shell *shell);
+void			update_shell_lvl(t_shell *shell);
 int				error_exit_and_free_memory(t_shell *shell);
 void			free_memory_at_exit(t_shell *shell);
 
