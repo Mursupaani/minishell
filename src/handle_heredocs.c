@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <signal.h>
 
 static int	generate_heredoc_file(
 				t_redir *redirection, t_command *cmd, t_shell *shell);
