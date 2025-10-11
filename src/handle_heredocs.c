@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 11:40:45 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/10 18:58:17 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/11 13:16:04 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ static int	handle_heredoc_input(
 int	handle_heredocs(t_command *cmd, t_shell *shell)
 {
 	int	status;
+
 	if (!cmd)
 		return (1);
 	setup_heredoc_signals();

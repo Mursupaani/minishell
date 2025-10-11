@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 15:47:09 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/06 22:10:03 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/11 13:16:45 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,6 @@ int	interactive_shell(t_shell *shell)
 
 	while (1)
 	{
-		//NOTE: Reset signal handling on every loop
 		setup_parent_signals();
 		g_signal_received = 0;
 		update_prompt(shell);
