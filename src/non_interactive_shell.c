@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   non_interactive_shell.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/10/06 15:19:11 by magebreh         ###   ########.fr       */
+/*   Created: 2025/10/11 13:02:31 by anpollan          #+#    #+#             */
+/*   Updated: 2025/10/11 13:03:57 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/15 14:53:52 by anpollan          #+#    #+#             */
-/*   Updated: 2025/09/30 17:08:30 by magebreh         ###   ########.fr       */
+/*   Created: 2025/10/11 13:02:00 by anpollan          #+#    #+#             */
+/*   Updated: 2025/10/11 13:02:03 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-volatile sig_atomic_t g_signal_received = 0;
+volatile sig_atomic_t	g_signal_received = 0;
 
 void	free_memory_at_exit(t_shell *shell);
 int		cleanup_after_execution(t_shell *shell, t_command *cmd);
@@ -34,16 +34,16 @@ int	main(int argc, char **argv, char **envp)
 	else
 		exit_code = non_interactve_shell(shell, argv);
 	free_memory_at_exit(shell);
-    return (exit_code);
+	return (exit_code);
 }
 
 int	cleanup_after_execution(t_shell *shell, t_command *cmd)
 {
-	while(cmd)
+	while (cmd)
 	{
 		if (cmd->heredoc_filename != NULL)
 		{
-			if(unlink(cmd->heredoc_filename))
+			if (unlink(cmd->heredoc_filename))
 			{
 				perror(strerror(errno));
 				return (1);

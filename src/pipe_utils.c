@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/03 15:39:43 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/03 16:07:10 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/11 12:51:15 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,42 @@ int	close_unused_fds(int **pipe_array, int cmd_count, int process_index)
 		}
 	}
 	return (0);
+}
+
+int	count_commands(t_command *cmd)
+{
+	int	cmd_count;
+
+	if (!cmd)
+		return (-1);
+	cmd_count = 0;
+	while (cmd)
+	{
+		cmd_count++;
+		cmd = cmd->next;
+	}
+	return (cmd_count);
+}
+
+int	**arena_alloc_pipe_arr(t_shell *shell, int cmd_count)
+{
+	int	pipes_count;
+	int	**pipe_array;
+	int	i;
+
+	if (!shell || cmd_count <= 0)
+		return (NULL);
+	pipes_count = cmd_count - 1;
+	pipe_array = arena_alloc(shell->command_arena, sizeof(int *) * pipes_count);
+	if (!pipe_array)
+		return (NULL);
+	i = 0;
+	while (i < pipes_count)
+	{
+		pipe_array[i] = arena_alloc(shell->command_arena, sizeof(int) * 2);
+		if (!pipe_array[i])
+			return (NULL);
+		i++;
+	}
+	return (pipe_array);
 }
