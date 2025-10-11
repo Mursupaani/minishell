@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <unistd.h>
 
 static int		attach_heredoc_filename_to_command(t_command *cmd,
 					t_arena *arena);
@@ -316,17 +317,25 @@ static int	attach_heredoc_filename_to_command(t_command *cmd, t_arena *arena)
 {
 	static unsigned int	file_counter;
 	const char			*heredoc_name_base = ".heredoc-";
-	char				*temp;
+	char				*temp_num;
+	char				*temp_path;
 
-	if (cmd->heredoc_filename == NULL)
+	while (cmd->heredoc_filename == NULL)
 	{
-		temp = ft_itoa(file_counter);
-		if (!temp)
+		temp_num = ft_itoa(file_counter++);
+		if (!temp_num)
 			return (1);
-		cmd->heredoc_filename = ft_strjoin_arena(heredoc_name_base, temp,
-				arena);
-		free(temp);
-		file_counter++;
+		temp_path = ft_strjoin(heredoc_name_base, temp_num);
+		free(temp_num);
+		if (!temp_path)
+			return (1);
+		if (access(temp_path, F_OK) == 0)
+		{
+			free(temp_path);
+			continue ;
+		}
+		cmd->heredoc_filename = arena_strdup(temp_path, arena);
+		free(temp_path);
 	}
 	return (0);
 }

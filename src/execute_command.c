@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/06 15:56:50 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/10 18:40:33 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@ static int	reset_std_fds(t_shell *shell);
 
 void	execute_commands(t_command *cmd, t_shell *shell)
 {
-	int	wait_status;
-
 	classify_commands(cmd);
 	prepare_cmd(cmd, shell);
 	if (handle_heredocs(cmd, shell) != 0)
@@ -31,13 +29,15 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 	{
 		shell->child_pid = create_fork(shell);
 		if (shell->child_pid == 0)
-		//FIXME: Reset child signal handling so they can exit with ctr-c and ctrl-'\'
+		{
+			setup_child_signals();
 			execute_external_command(cmd, shell);
-		waitpid(shell->child_pid, &wait_status, 0);
-		if (WIFEXITED(wait_status))
-			shell->last_exit_status = WEXITSTATUS(wait_status);
-		else if (WIFSIGNALED(wait_status))
-			shell->last_exit_status = 128 + WTERMSIG(wait_status);
+		}
+		waitpid(shell->child_pid, &shell->last_exit_status, 0);
+		if (WIFEXITED(shell->last_exit_status))
+			shell->last_exit_status = WEXITSTATUS(shell->last_exit_status);
+		else if (WIFSIGNALED(shell->last_exit_status))
+			shell->last_exit_status = 128 + WTERMSIG(shell->last_exit_status);
 		else
 			shell->last_exit_status = 1;
 	}
