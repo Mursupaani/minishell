@@ -38,10 +38,11 @@
 # define HASH_TABLE_SIZE 256
 # define PWD_BUFFER 4096
 
+extern volatile sig_atomic_t	g_signal_received;
+typedef struct s_command		t_command;
 // ============================================================================
 // HASH TABLE FOR ENVIRONMENT (Simple implementation)
 // ============================================================================
-typedef struct s_command	t_command;
 
 typedef struct s_env_entry
 {
@@ -163,12 +164,6 @@ typedef struct s_shell
 	t_arena						*session_arena;
 	t_arena						*command_arena;
 }	t_shell;
-
-// ============================================================================
-// GLOBAL VARIABLE (ONLY ONE ALLOWED BY PDF)
-// ============================================================================
-
-extern volatile sig_atomic_t	g_signal_received;
 
 // ============================================================================
 // FUNCTION PROTOTYPES
