@@ -178,9 +178,6 @@ static t_shell	*shell_static_init(void)
 	if (!shell)
 		return (NULL);
 	shell->last_exit_status = 0;
-	shell->interactive = isatty(STDIN_FILENO);
-	shell->mode = MODE_PROMPT;
-	shell->path_dirty = 1;
 	shell->heredoc_counter = 0;
 	shell->stdin_fd = STDIN_FILENO;
 	shell->stdout_fd = STDOUT_FILENO;
@@ -193,13 +190,13 @@ static t_shell	*shell_static_init(void)
 
 static int	shell_dynamic_init(t_shell *shell, char **env)
 {
-	shell->session_arena = arena_init(8192);
+	shell->session_arena = arena_init(SESSION_ARENA_SIZE);
 	if (!shell->session_arena)
 	{
 		cleanup_shell_partial(shell, 1);
 		return (0);
 	}
-	shell->command_arena = arena_init(4096);
+	shell->command_arena = arena_init(COMMAND_ARENA_SIZE);
 	if (!shell->command_arena)
 	{
 		cleanup_shell_partial(shell, 2);
