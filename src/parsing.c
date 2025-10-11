@@ -104,11 +104,6 @@ t_command	*create_command(t_arena *arena)
 	cmd->cmd_type = CMD_EXTERNAL;
 	cmd->redirections = NULL;
 	cmd->heredoc_filename = NULL;
-	cmd->pipe_in[0] = -1;
-	cmd->pipe_in[1] = -1;
-	cmd->pipe_out[0] = -1;
-	cmd->pipe_out[1] = -1;
-	cmd->pid = -1;
 	cmd->next = NULL;
 	return (cmd);
 }
