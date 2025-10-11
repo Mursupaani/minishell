@@ -33,8 +33,8 @@
 # include <unistd.h>
 # include <../libft/libft.h>
 
-# define COMMAND_ARENA_SIZE 1024
-# define SESSION_ARENA_SIZE 1024
+# define COMMAND_ARENA_SIZE 4096
+# define SESSION_ARENA_SIZE 8192
 # define HASH_TABLE_SIZE 256
 # define PWD_BUFFER 4096
 
@@ -45,154 +45,130 @@ typedef struct s_command	t_command;
 
 typedef struct s_env_entry
 {
-	char				*key;
-	char				*value;
-	struct s_env_entry	*next;
+	char						*key;
+	char						*value;
+	struct s_env_entry			*next;
 }	t_env_entry;
 
 typedef struct s_hash_table
 {
-	t_env_entry *buckets[HASH_TABLE_SIZE];
+	t_env_entry					*buckets[HASH_TABLE_SIZE];
 }	t_hash_table;
 
 // ============================================================================
 // SIMPLIFIED TOKENIZER (2-pass system for mandatory)
 // ============================================================================
-typedef enum e_token_type {
-	TOKEN_WORD,          // command, argument, filename
-	TOKEN_PIPE,          // |
-	TOKEN_REDIR_IN,      // 
-	TOKEN_REDIR_OUT,     // >
-	TOKEN_REDIR_APPEND,  // >>
-	TOKEN_HEREDOC,       // 
+typedef enum e_token_type
+{
+	TOKEN_WORD,
+	TOKEN_PIPE,
+	TOKEN_REDIR_IN,
+	TOKEN_REDIR_OUT,
+	TOKEN_REDIR_APPEND,
+	TOKEN_HEREDOC,
 	TOKEN_EOF
-} t_token_type;
+}	t_token_type;
 
-typedef struct s_token {
-	t_token_type    type;
-	char            *value;
-	int             quoted;       // 1=single, 2=double, 0=none
-	int             expandable;   // Should $VAR expand?
-	struct s_token  *next;
-} t_token;
+typedef struct s_token
+{
+	t_token_type				type;
+	char						*value;
+	int							quoted;
+	int							expandable;
+	struct s_token				*next;
+}	t_token;
 
 // ============================================================================
 // COMMAND STRUCTURES (same as before)
 // ============================================================================
-typedef enum e_cmd_type {
-	CMD_BUILTIN_PARENT,    // cd, export, unset, exit (run in shell process)
-	CMD_BUILTIN_CHILD,     // echo, pwd, env (run in child)
-	CMD_EXTERNAL           // everything else
-} t_cmd_type;
+typedef enum e_cmd_type
+{
+	CMD_BUILTIN_PARENT,
+	CMD_BUILTIN_CHILD,
+	CMD_EXTERNAL
+}	t_cmd_type;
 
-typedef enum e_builtin_type {
-	BUILTIN_NONE = -1,
-	BUILTIN_ECHO,
-	BUILTIN_CD,
-	BUILTIN_PWD,
-	BUILTIN_EXPORT,
-	BUILTIN_UNSET,
-	BUILTIN_ENV,
-	BUILTIN_EXIT
-} t_builtin_type;
+typedef enum e_redir_type
+{
+	REDIR_INPUT,
+	REDIR_OUTPUT,
+	REDIR_APPEND,
+	REDIR_HEREDOC,
+	REDIR_ERROR
+}	t_redir_type;
 
-typedef enum e_redir_type {
-	REDIR_INPUT,           // 
-	REDIR_OUTPUT,          // >
-	REDIR_APPEND,          // >>
-	REDIR_HEREDOC,         // 
-	REDIR_ERROR            // 2>
-} t_redir_type;
+typedef struct s_redir
+{
+	t_redir_type				type;
+	char						*target;
+	int							fd;
+	struct s_redir				*next;
+}	t_redir;
 
-typedef struct s_redir {
-	t_redir_type		type;
-	char				*target;    // filename or heredoc delimiter
-	int					fd;         // file descriptor when opened
-	struct s_redir		*next;
-} t_redir;
-
-typedef struct s_command {
-	char				**argv;
-	bool				*argv_expandable;  // Track which argv entries should expand variables
-	// Do we need this inside t_command?
-	char				**envp;
-	t_cmd_type			cmd_type;
-	bool				is_pipe;
-	t_builtin_type		built_in_type;
-	t_redir				*redirections;  // ordered list of redirections
-	char				*heredoc_filename;
-
-	// Pipe management
-	// FIXME: Change piping to use these? If so, change names
-	int					pipe_in[2];
-	int					pipe_out[2];
-	pid_t				pid;
-	
-	// Child process status and error
-	int					status;
-	struct s_command	*next;
-} t_command;
+typedef struct s_command
+{
+	char						**argv;
+	bool						*argv_expandable;
+	t_cmd_type					cmd_type;
+	t_redir						*redirections;
+	char						*heredoc_filename;
+	struct s_command			*next;
+}	t_command;
 
 // ============================================================================
 // SIMPLE PARSER STATE (no AST for mandatory)
 // ============================================================================
-typedef struct s_parser {
-	t_token     *tokens;          // Token list head
-	t_token     *current;         // Current position
-	t_command   *cmd_head;        // First command in pipeline
-	t_command   *cmd_current;     // Current command being built
-	char        **current_argv;   // Building argv array
-	int         arg_num;          // number of arguments
-	int         argv_capacity;    // Space allocated for argv
-} t_parser;
+// FIXME: Not using this
+// typedef struct s_parser
+// {
+// 	t_token				*tokens;
+// 	t_token				*current;
+// 	t_command			*cmd_head;
+// 	t_command			*cmd_current;
+// 	char				**current_argv;
+// 	int				arg_num;
+// 	int				argv_capacity;
+// }	t_parser;
 
-// ============================================================================
-// SHELL SESSION STATE
-// ============================================================================
-typedef enum e_shell_mode {
-	MODE_PROMPT,
-	MODE_HEREDOC, 
-	MODE_WAIT
-} t_shell_mode;
-
-typedef struct s_shell {
+typedef struct s_shell
+{
 	// User input
-	char			*input;
-	char			*prompt;
+	char						*input;
+	char						*prompt;
 
 	// Environment subsystem
-	t_hash_table    *env_table;        // Hash table for environment
-	char            **env_array;       // Built from env_table before fork
-	char            **path_dirs;       // PATH cache
-	int             path_dirty;        // Invalidation flag
-	
+	t_hash_table				*env_table;
+	char						**env_array;
+	char						**path_dirs;
+
 	// Status & mode
-	int             last_exit_status;  // For $?
-	int             interactive;       // isatty result
-	t_shell_mode    mode;             // Current mode
-	
+	int							last_exit_status;
+
 	// Terminal context
-	struct termios  original_termios;
-	int             stdin_fd;
-	int             stdout_fd;
-	int				child_pid;
-	int				**pipe_array;
-	int				*pipe_pids;
-	
+	//FIXME: Not using original_termios. What is it?
+	struct termios				original_termios;
+	int							stdin_fd;
+	int							stdout_fd;
+	int							child_pid;
+	int							**pipe_array;
+	int							*pipe_pids;
+
 	// Heredoc management
-	char            *tmp_dir;
-	int             heredoc_counter;
-	
+	//FIXME: Not using tmp_dir. Thinking about using.
+	char						*tmp_dir;
+	//FIXME: Not using heredoc counder. Need this to check max heredocs.
+	int							heredoc_counter;
+
 	// Memory management
-	t_arena         *session_arena;    // Lives across commands
-	t_arena         *command_arena;    // Reset after each command
-} t_shell;
+	t_arena						*session_arena;
+	t_arena						*command_arena;
+}	t_shell;
 
 // ============================================================================
 // GLOBAL VARIABLE (ONLY ONE ALLOWED BY PDF)
 // ============================================================================
 
-extern volatile sig_atomic_t g_signal_received;
+extern volatile sig_atomic_t	g_signal_received;
 
 // ============================================================================
 // FUNCTION PROTOTYPES
@@ -200,28 +176,29 @@ extern volatile sig_atomic_t g_signal_received;
 
 // FIXME: Debug. Can be deleted from final:
 // also debug.c
-void print_tokens(t_token *tokens);
-void print_commands(t_command *commands);
+void			print_tokens(t_token *tokens);
+void			print_commands(t_command *commands);
 
-// Signal handling (signals.c)
+// FIXME: Not using these:
+int				is_parent_only_builtin(char *cmd_name);
+void			print_str_array(char **str_array);
+
+// Signal handling
 void			setup_parent_signals(void);
 void			setup_child_signals(void);
 void			setup_heredoc_signals(void);
 
-// Shell initialization and management (shell.c)
+// Shell initialization and management
+t_shell			*shell_init(char **env);
+int				cleanup_after_execution(t_shell *shell, t_command *cmd);
+void			update_prompt(t_shell *shell);
+int				error_exit_and_free_memory(t_shell *shell);
+void			free_memory_at_exit(t_shell *shell);
+
+// Environment
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
 char			**env_array_from_hashtable(t_shell *shell);
-t_shell			*shell_init(char **env);
 void			update_env_table_and_arr(t_shell *shell);
-void			free_memory_at_exit(t_shell *shell);
-int				error_exit_and_free_memory(t_shell *shell);
-int				cleanup_after_execution(t_shell *shell, t_command *cmd);
-void			exit_builtin(t_command *cmd, t_shell *shell);
-void			update_prompt(t_shell *shell);
-
-// Utility functions (utils.c)
-void			print_str_array(char **str_array);
-void			quick_sort_string_array(char **str_arr, int start, int end);
 
 // Shell modes
 int				interactive_shell(t_shell *shell);
@@ -233,18 +210,20 @@ void			choose_execution_type(t_command *cmd, t_shell *shell);
 void			execute_builtin_command(t_command *cmd, t_shell *shell);
 void			execute_external_command(t_command *cmd, t_shell *shell);
 void			find_non_empty_argument(t_command *cmd);
-int				check_input_redirection(t_redir *redir, t_shell *shell);
-int				check_output_redirection(t_redir *redir, t_shell *shell);
-int				check_append_redirection(t_redir *redir, t_shell *shell);
 
 // Pipe
 void			execute_pipe(t_command *cmd, t_shell *shell);
 int				**arena_alloc_pipe_arr(t_shell *shell, int cmd_count);
 int				count_commands(t_command *cmd);
-int				close_unused_fds(int **pipe_array, int cmd_count, int process_index);
+int				close_unused_fds(
+					int **pipe_array, int cmd_count, int process_index);
 
 // Redirection
-int				execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell);
+int				check_input_redirection(t_redir *redir, t_shell *shell);
+int				check_output_redirection(t_redir *redir, t_shell *shell);
+int				check_append_redirection(t_redir *redir, t_shell *shell);
+int				execute_redirection(
+					t_redir *redir, t_command *cmd, t_shell *shell);
 int				handle_heredocs(t_command *cmd, t_shell *shell);
 char			*expand_variables_from_input(char *input, t_shell *shell);
 char			**split_input(char *input, t_shell *shell);
@@ -254,15 +233,18 @@ void			change_directory(t_command *cmd, t_shell *shell);
 void			print_working_directory(t_shell *shell);
 void			env_builtin(t_command *cmd, t_shell *shell);
 void			ft_echo(t_command *cmd, t_shell *shell);
-void			print_environment_variables(char **env, t_shell *shell, bool export);
+void			print_environment_variables(
+					char **env, t_shell *shell, bool export);
 void			export_environment_variable(t_command *cmd, t_shell *shell);
 void			unset_environment_variable(t_command *cmd, t_shell *shell);
 char			*get_current_directory(t_shell *shell);
+void			exit_builtin(t_command *cmd, t_shell *shell);
 
 // Environment & Variable expansion
 t_hash_table	*hash_table_create(t_arena *arena);
 char			*hash_table_get(t_hash_table *table, char *key);
-void			hash_table_set(t_hash_table *table, char *key, char *value, t_arena *arena);
+void			hash_table_set(t_hash_table *table,
+					char *key, char *value, t_arena *arena);
 void			prepare_cmd(t_command *cmd, t_shell *shell);
 void			expand_cmd(t_command *cmd, t_shell *shell);
 char			*expand_var(char *str, t_shell *shell, t_arena *arena);
@@ -274,7 +256,8 @@ char			**copy_env_array(t_shell *shell, t_arena *arena, int *count);
 t_command		*parse_pipeline(t_token *tokens, t_shell *shell);
 t_command		*create_command(t_arena *arena);
 int				is_redir(t_token *token);
-t_token			*handle_redir(t_command *current, t_token *token, t_arena *arena, int *error);
+t_token			*handle_redir(t_command *current, t_token *token,
+					t_arena *arena, int *error);
 void			add_word_cmd(t_command *cmd, t_token *word, t_arena *arena);
 t_redir_type	token_to_redir_type(t_token_type token_type);
 void			attach_redir(t_command *cmd, t_redir *redir);
@@ -286,26 +269,21 @@ t_token			*tokenize(char *input, t_arena *arena);
 
 // Utility functions for tokenizer (utils.c)
 char			*skip_whitespace(char *pos);
-char			*arena_substr(char *src, size_t start, size_t len, t_arena *arena);
+char			*arena_substr(
+					char *src, size_t start, size_t len, t_arena *arena);
 char			*arena_strdup(const char *s, t_arena *arena);
 int				ft_is_special_char(char c);
 int				ft_isspace(char c);
 char			**ft_split_arena(char const *s, char c, t_arena *arena);
 
-// Signal handling (signals.c)
-void			sigint_handler(int sig);
-void			setup_signals(void);
-
 // Utility functions (utils.c)
-void			print_str_array(char **str_array);
 void			cleanup_shell_partial(t_shell *shell, int level);
 char			*arena_strdup(const char *s, t_arena *arena);
+void			quick_sort_string_array(char **str_arr, int start, int end);
 
 // Error handling fork wrapper
 int				create_fork(t_shell *shell);
 int				is_builtin_command(char *cmd_name);
-int				is_parent_only_builtin(char *cmd_name);
 void			classify_commands(t_command *cmd);
-
 
 #endif
