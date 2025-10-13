@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_heredocs.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 11:40:45 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/11 13:16:04 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/13 14:13:14 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,13 @@ int	handle_heredocs(t_command *cmd, t_shell *shell)
 
 	if (!cmd)
 		return (1);
-	// setup_heredoc_signals();
+	if (isatty(STDIN_FILENO))
+		setup_heredoc_signals();
 	status = process_heredocs(cmd, shell);
-	// setup_parent_signals();
+	if (isatty(STDIN_FILENO))
+		setup_parent_signals();
+	if (g_signal_received == SIGINT)
+		return (130);
 	return (status);
 }
 
@@ -119,7 +123,9 @@ static int	handle_heredoc_input(
 			return (-1);
 		*input[0] = '\n';
 	}
-	if (ft_strncmp(*input, redirection->target, ft_strlen(*input)) == 0)
+	if (ft_strncmp(*input, redirection->target,
+			ft_strlen(redirection->target) + 1) == 0
+		&& ft_strlen(*input) == ft_strlen(redirection->target))
 	{
 		free(*input);
 		return (1);
