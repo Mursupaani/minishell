@@ -6,33 +6,34 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:57:16 by magebreh          #+#    #+#             */
-/*   Updated: 2025/10/06 15:18:35 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/10/13 14:15:08 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 // Forward declarations for static functions
-static t_token *create_next_token(char **pos, t_arena *arena);
-static t_token *tokenize_pipe(char **pos, t_arena *arena);
-static t_token *tokenize_input_redirect(char **pos, t_arena *arena);
-static t_token *tokenize_output_redirect(char **pos, t_arena *arena);
-static t_token *tokenize_word(char **pos, t_arena *arena);
-static char *build_assignment_token(char *start, char *end, t_arena *arena);
-static char *remove_quotes_from_word(char *start, size_t word_len, t_arena *arena);
-static char *ft_strchr_range(char *str, char c, size_t len);
+static t_token	*create_next_token(char **pos, t_arena *arena);
+static t_token	*tokenize_pipe(char **pos, t_arena *arena);
+static t_token	*tokenize_input_redirect(char **pos, t_arena *arena);
+static t_token	*tokenize_output_redirect(char **pos, t_arena *arena);
+static t_token	*tokenize_word(char **pos, t_arena *arena);
+static char		*build_assignment_token(char *start, char *end, t_arena *arena);
+static char		*remove_quotes_from_word(char *start, size_t word_len,
+					t_arena *arena);
+static char		*ft_strchr_range(char *str, char c, size_t len);
 
 static int	is_quote(char c)
 {
 	return (c == '\'' || c == '"');
 }
 
-t_token *tokenize(char *input, t_arena *arena)
+t_token	*tokenize(char *input, t_arena *arena)
 {
-	t_token *head;
-	t_token *current;
-	t_token *new_token;
-	char *pos;
+	t_token	*head;
+	t_token	*current;
+	t_token	*new_token;
+	char	*pos;
 
 	head = NULL;
 	current = NULL;
@@ -41,7 +42,7 @@ t_token *tokenize(char *input, t_arena *arena)
 	{
 		pos = skip_whitespace(pos);
 		if (!*pos)
-			break;
+			break ;
 		new_token = create_next_token(&pos, arena);
 		if (!new_token)
 			return (NULL);
@@ -54,7 +55,7 @@ t_token *tokenize(char *input, t_arena *arena)
 	return (head);
 }
 
-static t_token *create_next_token(char **pos, t_arena *arena)
+static t_token	*create_next_token(char **pos, t_arena *arena)
 {
 	if (**pos == '|')
 		return (tokenize_pipe(pos, arena));
@@ -66,15 +67,15 @@ static t_token *create_next_token(char **pos, t_arena *arena)
 		return (tokenize_word(pos, arena));
 }
 
-static t_token *tokenize_pipe(char **pos, t_arena *arena)
+static t_token	*tokenize_pipe(char **pos, t_arena *arena)
 {
-	t_token *token;
-	
+	t_token	*token;
+
 	token = arena_alloc(arena, sizeof(t_token));
 	if (!token)
 		return (NULL);
 	token->value = arena_strdup("|", arena);
-	if(!token->value)
+	if (!token->value)
 		return (NULL);
 	token->type = TOKEN_PIPE;
 	token->quoted = 0;
@@ -84,18 +85,18 @@ static t_token *tokenize_pipe(char **pos, t_arena *arena)
 	return (token);
 }
 
-static t_token *tokenize_input_redirect(char **pos, t_arena *arena)
+static t_token	*tokenize_input_redirect(char **pos, t_arena *arena)
 {
-	t_token *token;
+	t_token	*token;
 
 	token = arena_alloc(arena, sizeof(t_token));
 	if (!token)
 		return (NULL);
-	if(**pos == '<' && *(*pos + 1) == '<')
+	if (**pos == '<' && *(*pos + 1) == '<')
 	{
 		token->type = TOKEN_HEREDOC;
 		token->value = arena_strdup("<<", arena);
-		if(!token->value)
+		if (!token->value)
 			return (NULL);
 		*pos += 2;
 	}
@@ -103,36 +104,7 @@ static t_token *tokenize_input_redirect(char **pos, t_arena *arena)
 	{
 		token->type = TOKEN_REDIR_IN;
 		token->value = arena_strdup("<", arena);
-		if(!token->value)
-			return (NULL);
-		(*pos)++;
-	}
-	token->quoted = 0;
-	token->expandable = 0;
-	token->next = NULL;
-	return(token);
-}
-
-static t_token *tokenize_output_redirect(char **pos, t_arena *arena)
-{
-	t_token *token;
-	
-	token = arena_alloc(arena, sizeof(t_token));
-	if(!token)
-		return (NULL);
-	if(**pos == '>' && *(*pos + 1) == '>')
-	{
-		token->type = TOKEN_REDIR_APPEND;
-		token->value = arena_strdup(">>", arena);
-		if(!token->value)
-			return (NULL);
-		*pos += 2;
-	}
-	else
-	{
-		token->type = TOKEN_REDIR_OUT;
-		token->value = arena_strdup(">", arena);
-		if(!token->value)
+		if (!token->value)
 			return (NULL);
 		(*pos)++;
 	}
@@ -142,6 +114,34 @@ static t_token *tokenize_output_redirect(char **pos, t_arena *arena)
 	return (token);
 }
 
+static t_token	*tokenize_output_redirect(char **pos, t_arena *arena)
+{
+	t_token	*token;
+
+	token = arena_alloc(arena, sizeof(t_token));
+	if (!token)
+		return (NULL);
+	if (**pos == '>' && *(*pos + 1) == '>')
+	{
+		token->type = TOKEN_REDIR_APPEND;
+		token->value = arena_strdup(">>", arena);
+		if (!token->value)
+			return (NULL);
+		*pos += 2;
+	}
+	else
+	{
+		token->type = TOKEN_REDIR_OUT;
+		token->value = arena_strdup(">", arena);
+		if (!token->value)
+			return (NULL);
+		(*pos)++;
+	}
+	token->quoted = 0;
+	token->expandable = 0;
+	token->next = NULL;
+	return (token);
+}
 
 static char	*skip_quoted_section(char *end)
 {
@@ -194,25 +194,20 @@ static int	check_expandable_in_context(char *start, size_t word_len)
 	in_quote = 0;
 	while (i < word_len)
 	{
-		// Track quote context
 		if (is_quote(start[i]) && !in_quote)
 			in_quote = start[i];
 		else if (start[i] == in_quote)
 			in_quote = 0;
-		// Check if $ can expand in this context
 		else if (start[i] == '$' && i + 1 < word_len)
 		{
-			// If $ is immediately followed by a quote, it's literal
 			if (is_quote(start[i + 1]))
 			{
 				i++;
-				continue;
+				continue ;
 			}
-			// $ followed by valid variable char
-			if (ft_isalnum(start[i + 1]) || start[i + 1] == '_'
-				|| start[i + 1] == '?')
+			if (ft_isalnum(start[i + 1]) || start[i + 1] == '_' || start[i
+				+ 1] == '?')
 			{
-				// Can expand if: outside quotes OR inside double quotes
 				if (in_quote != '\'')
 					return (1);
 			}
@@ -224,8 +219,8 @@ static int	check_expandable_in_context(char *start, size_t word_len)
 
 static void	set_token_quote_flags(t_token *token, char *start, size_t word_len)
 {
-	if (ft_strchr_range(start, '\'', word_len)
-		&& !ft_strchr_range(start, '"', word_len))
+	if (ft_strchr_range(start, '\'', word_len) && !ft_strchr_range(start, '"',
+			word_len))
 	{
 		token->quoted = 1;
 		token->expandable = 0;
@@ -284,8 +279,8 @@ static t_token	*tokenize_word(char **pos, t_arena *arena)
 	token = arena_alloc(arena, sizeof(t_token));
 	if (!token)
 		return (NULL);
-	if (ft_strchr_range(start, '"', word_len)
-		|| ft_strchr_range(start, '\'', word_len))
+	if (ft_strchr_range(start, '"', word_len) || ft_strchr_range(start, '\'',
+			word_len))
 	{
 		if (!process_quoted_word(token, start, end, arena))
 			return (NULL);
@@ -318,7 +313,7 @@ static char	*remove_quotes_from_word(char *start, size_t word_len,
 	char	*dst;
 	char	*end;
 
-	result = arena_alloc(arena, word_len + 2);  // +1 for potential escape, +1 for null
+	result = arena_alloc(arena, word_len + 2);
 	if (!result)
 		return (NULL);
 	src = start;
@@ -326,12 +321,8 @@ static char	*remove_quotes_from_word(char *start, size_t word_len,
 	end = start + word_len;
 	while (src < end)
 	{
-		// Special case: $ followed by quote should be removed (bash $"..." behavior)
 		if (*src == '$' && src + 1 < end && is_quote(*(src + 1)))
-		{
-			// Skip the $, it's part of the $"..." syntax
 			src++;
-		}
 		else if (is_quote(*src))
 			copy_quoted_content(&src, &dst, end, *src);
 		else
@@ -341,9 +332,9 @@ static char	*remove_quotes_from_word(char *start, size_t word_len,
 	return (result);
 }
 
-static char *ft_strchr_range(char *str, char c, size_t len)
+static char	*ft_strchr_range(char *str, char c, size_t len)
 {
-	size_t i;
+	size_t	i;
 
 	i = 0;
 	while (i < len)
