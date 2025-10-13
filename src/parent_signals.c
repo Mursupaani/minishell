@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:40:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/10/11 13:14:58 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/13 16:44:48 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ void	setup_parent_signals(void)
 	struct sigaction	s_sigquit;
 
 	rl_done = 0;
+	rl_event_hook = NULL;
 	s_sigint.sa_flags = SA_SIGINFO;
 	s_sigquit.sa_flags = SA_SIGINFO;
 	sigemptyset(&s_sigint.sa_mask);
