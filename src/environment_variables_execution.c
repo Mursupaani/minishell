@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 13:58:42 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/01 18:54:01 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/10/14 18:18:39 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,10 @@ void expand_cmd(t_command *cmd, t_shell *shell)
         return;
     while (cmd->argv[i])
     {
-        if (cmd->argv_expandable && cmd->argv_expandable[i] && ft_strchr(cmd->argv[i], '$'))
+        if (cmd->argv_expandable && cmd->argv_expandable[i])
         {
             expanded = expand_var(cmd->argv[i], shell, shell->command_arena);
-            if (expanded && ft_strchr(expanded, ' '))
+            if (expanded && ft_strchr(expanded, ' ') && ft_strchr(cmd->argv[i], '$'))
             {
                 split_result = ft_split(expanded, ' ');
                 if (split_result && split_result[0])
@@ -76,6 +76,8 @@ void expand_cmd(t_command *cmd, t_shell *shell)
             else if (expanded)
                 cmd->argv[i] = expanded;
         }
+        else
+            cmd->argv[i] = expand_var(cmd->argv[i], shell, shell->command_arena);
         i++;
     }
 }
@@ -85,8 +87,8 @@ char	*expand_var(char *str, t_shell *shell, t_arena *arena)
 {
 	char *res;
 
-	if(!str || !ft_strchr(str, '$'))
-		return(arena_strdup(str, arena));
+	if(!str)
+		return(NULL);
 	res = process_var_expand(str, shell, arena);
 	return (res);
 }
@@ -108,7 +110,8 @@ static char	*expand_single_variable(char **src, t_shell *shell, char *dst)
 	else
 	{
 		var_start = *src;
-		while (**src && (ft_isalnum(**src) || **src == '_'))
+		while (**src && (ft_isalnum(**src) || **src == '_')
+			&& **src != '\'' && **src != '"')
 			(*src)++;
 		var_len = *src - var_start;
 
@@ -124,8 +127,10 @@ static char	*expand_single_variable(char **src, t_shell *shell, char *dst)
 
 			value = hash_table_get(shell->env_table, var_name);
 			if (value)
+			{
 				//FIXME: sprintf is not allowed
 				dst += sprintf(dst, "%s", value);
+			}
 		}
 	}
 	return (dst);
@@ -136,17 +141,43 @@ char	*process_var_expand(char *str, t_shell *shell, t_arena *arena)
 	char *res;
 	char *src;
 	char *dst;
+	size_t est_size;
+	char in_quote;
 
-	res = arena_alloc(arena, ft_strlen(str) * 2 + 1);
+	est_size = ft_strlen(str) * 10 + 1024;
+	res = arena_alloc(arena, est_size);
 	src = str;
 	dst = res;
+	in_quote = 0;
+
 	while (*src)
 	{
-		if (*src == '$')
-			dst = expand_single_variable(&src, shell, dst);
+		if (*src == '$' && (*(src + 1) == '"' || *(src + 1) == '\'') && !in_quote)
+		{
+			src++;
+			continue;
+		}
+		if ((*src == '\'' || *src == '"') && !in_quote)
+		{
+			in_quote = *src;
+			src++;
+		}
+		else if (*src == in_quote)
+		{
+			in_quote = 0;
+			src++;
+		}
+		else if (*src == '$' && in_quote != '\'' && *(src + 1) != '\0')
+		{
+			if (in_quote && (*(src + 1) == '\'' || *(src + 1) == '"'))
+				*dst++ = *src++;
+			else
+				dst = expand_single_variable(&src, shell, dst);
+		}
 		else
 			*dst++ = *src++;
 	}
 	*dst = '\0';
+
 	return (res);
 }
