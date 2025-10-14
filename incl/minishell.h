@@ -143,6 +143,7 @@ typedef struct s_shell
 	char						**path_dirs;
 
 	// Status & mode
+	int							is_a_tty;
 	int							last_exit_status;
 
 	// Terminal context
