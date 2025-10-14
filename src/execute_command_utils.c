@@ -12,10 +12,19 @@
 
 #include "minishell.h"
 
+static bool	has_append(t_command *cmd);
+
 void	find_non_empty_argument(t_command *cmd)
 {
-	if (!cmd || !cmd->argv)
+	if (!cmd)
 		exit(EXIT_FAILURE);
+	if (!cmd->argv)
+	{
+		if (has_append(cmd))
+			exit(EXIT_SUCCESS);
+		else
+			exit(EXIT_FAILURE);
+	}
 	while (*cmd->argv)
 	{
 		if (*cmd->argv[0] != '\0')
@@ -24,4 +33,18 @@ void	find_non_empty_argument(t_command *cmd)
 	}
 	if (!*cmd->argv)
 		exit(EXIT_SUCCESS);
+}
+
+static bool	has_append(t_command *cmd)
+{
+	t_redir	*redir;
+
+	redir = cmd->redirections;
+	while (redir)
+	{
+		if (redir->type == REDIR_APPEND)
+			return (true);
+		redir = redir->next;
+	}
+	return (false);
 }

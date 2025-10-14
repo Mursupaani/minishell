@@ -73,9 +73,7 @@ static char	*get_entry_key(char *entry, t_arena *arena)
 	if (!entry || !arena)
 		return (NULL);
 	if (!valid_format(entry))
-	{
 		return (NULL);
-	}
 	i = 0;
 	while (entry[i] && entry[i] != '=')
 		i++;

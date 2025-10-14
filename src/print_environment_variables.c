@@ -14,7 +14,7 @@
 
 static void	print_env_array(char **env_array, bool export);
 static void	print_in_format(
-				char *str, bool export, bool no_value, bool has_equals);
+			char *str, bool export, bool no_value, bool has_equals);
 
 void	print_environment_variables(char **env, t_shell *shell, bool export)
 {
@@ -58,7 +58,7 @@ static void	print_env_array(char **env_array, bool export)
 }
 
 static void	print_in_format(
-				char *str, bool export, bool no_value, bool has_equals)
+			char *str, bool export, bool no_value, bool has_equals)
 {
 	if (export)
 	{
