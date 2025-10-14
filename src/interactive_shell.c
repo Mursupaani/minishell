@@ -53,9 +53,9 @@ static int	process_input(t_shell *shell)
 	tokens = tokenize(shell->input, shell->command_arena);
 	if (!tokens)
 	{
-		ft_fprintf(STDERR_FILENO, "Tokenization failed \n");
-		free(shell->input);
-		return (1);
+		ft_fprintf(STDERR_FILENO, "minishell: syntax error\n");
+		shell->last_exit_status = 2;
+		return (0);
 	}
 	commands = parse_pipeline(tokens, shell);
 	if (!commands)
@@ -63,8 +63,7 @@ static int	process_input(t_shell *shell)
 		ft_fprintf(STDERR_FILENO, "minishell: syntax error\n");
 		shell->last_exit_status = 2;
 		arena_reset(shell->command_arena);
-		free(shell->input);
-		return (1);
+		return (0);
 	}
 	execute_commands(commands, shell);
 	if (cleanup_after_execution(shell, commands))
@@ -86,7 +85,7 @@ int	interactive_shell(t_shell *shell)
 			continue ;
 		result = process_input(shell);
 		if (result == EXIT_FAILURE)
-			return (EXIT_FAILURE);
+			return (shell->last_exit_status);
 	}
-	return (EXIT_SUCCESS);
+	return (result);
 }

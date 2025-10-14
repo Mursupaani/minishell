@@ -38,8 +38,9 @@ static int	process_input_line(char *input, t_shell *shell)
 	tokens = tokenize(input, shell->command_arena);
 	if (!tokens)
 	{
-		ft_fprintf(STDERR_FILENO, "Tokenization failed \n");
-		return (EXIT_FAILURE);
+		ft_fprintf(STDERR_FILENO, "minishell: syntax error\n");
+		shell->last_exit_status = 2;
+		return (shell->last_exit_status);
 	}
 	commands = parse_pipeline(tokens, shell);
 	if (!commands)
