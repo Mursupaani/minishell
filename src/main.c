@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <unistd.h>
 
 volatile sig_atomic_t	g_signal_received = 0;
 
@@ -30,7 +31,8 @@ int	main(int argc, char **argv, char **envp)
 		return (EXIT_FAILURE);
 	}
 	update_shell_lvl(shell);
-	if (isatty(STDIN_FILENO))
+	shell->is_a_tty = isatty(STDIN_FILENO);
+	if (shell->is_a_tty)
 		exit_code = interactive_shell(shell);
 	else
 		exit_code = non_interactve_shell(shell, argv);
