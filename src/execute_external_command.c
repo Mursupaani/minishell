@@ -14,7 +14,6 @@
 
 static char	*find_file_from_path(char *filename, t_shell *shell);
 static char	*try_paths(char *filename, char **path_dirs, t_shell *shell);
-static bool	check_file_type_and_permissions(char *filepath, t_shell *shell);
 static bool	is_file_path(char *arg);
 
 void	execute_external_command(t_command *cmd, t_shell *shell)
@@ -49,7 +48,11 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 char	*find_file_from_path(char *filename, t_shell *shell)
 {
 	if (!filename)
+	{
+		ft_fprintf(STDERR_FILENO, "minishell: command '' not found\n");
+		shell->last_exit_status = 127;
 		return (NULL);
+	}
 	shell->path_dirs = ft_split_arena(hash_table_get(
 				shell->env_table, "PATH"), ':', shell->command_arena);
 	if (!shell->path_dirs)
@@ -76,7 +79,7 @@ static char	*try_paths(char *filename, char **path_dirs, t_shell *shell)
 	return (NULL);
 }
 
-static bool	check_file_type_and_permissions(char *filepath, t_shell *shell)
+bool	check_file_type_and_permissions(char *filepath, t_shell *shell)
 {
 	struct stat	stats;
 
@@ -105,6 +108,8 @@ static bool	check_file_type_and_permissions(char *filepath, t_shell *shell)
 
 static bool	is_file_path(char *arg)
 {
+	if (!arg)
+		return false;
 	if (arg[0] == '.' || arg[0] == '/')
 		return (true);
 	while (*arg)

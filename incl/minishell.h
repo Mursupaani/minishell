@@ -103,6 +103,7 @@ typedef struct s_redir
 	t_redir_type				type;
 	char						*target;
 	int							fd;
+	bool						heredoc_expand;
 	struct s_redir				*next;
 }	t_redir;
 
@@ -277,6 +278,7 @@ char			**ft_split_arena(char const *s, char c, t_arena *arena);
 void			cleanup_shell_partial(t_shell *shell, int level);
 char			*arena_strdup(const char *s, t_arena *arena);
 void			quick_sort_string_array(char **str_arr, int start, int end);
+bool			check_file_type_and_permissions(char *filepath, t_shell *shell);
 
 // Error handling fork wrapper
 int				create_fork(t_shell *shell);

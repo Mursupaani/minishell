@@ -133,7 +133,8 @@ static int	handle_heredoc_input(
 		free(*input);
 		return (1);
 	}
-	*input = expand_variables_from_input(*input, shell);
+	// if (redirection->heredoc_expand)
+		*input = expand_variables_from_input(*input, shell);
 	if (!*input)
 		return (-1);
 	write(fd, *input, ft_strlen(*input));
