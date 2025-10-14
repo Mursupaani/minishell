@@ -6,7 +6,7 @@
 #    By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/24 11:49:18 by magebreh          #+#    #+#              #
-#    Updated: 2025/10/11 17:46:47 by anpollan         ###   ########.fr        #
+#    Updated: 2025/10/14 12:45:54 by anpollan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,7 @@ SRC = main.c print_working_directory.c change_directory.c execute_command.c \
 	  execute_command_utils.c check_redirections.c env.c heredoc_utils.c \
 	  pipe_utils.c quick_sort_string_array.c expand_variables_from_input.c \
 	  update_prompt.c parent_signals.c child_signals.c heredoc_signals.c \
-	  update_shell_lvl.c debug.c
+	  update_shell_lvl.c print_environment_variables.c debug.c
 
 # Combined sources
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
