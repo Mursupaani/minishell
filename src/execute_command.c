@@ -14,11 +14,13 @@
 
 static int	execute_builtin_redirections(t_command *cmd, t_shell *shell);
 static int	reset_std_fds(t_shell *shell);
+static void	execute_single_external_command(t_command *cmd, t_shell *shell);
 
 void	execute_commands(t_command *cmd, t_shell *shell)
 {
 	int	heredoc_status;
 
+	print_commands(cmd);
 	classify_commands(cmd);
 	prepare_cmd(cmd, shell);
 	heredoc_status = handle_heredocs(cmd, shell);
@@ -33,21 +35,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 	else if (cmd->cmd_type == CMD_BUILTIN_PARENT)
 		execute_builtin_command(cmd, shell);
 	else if (cmd->cmd_type == CMD_EXTERNAL)
-	{
-		shell->child_pid = create_fork(shell);
-		if (shell->child_pid == 0)
-		{
-			setup_child_signals();
-			execute_external_command(cmd, shell);
-		}
-		waitpid(shell->child_pid, &shell->last_exit_status, 0);
-		if (WIFEXITED(shell->last_exit_status))
-			shell->last_exit_status = WEXITSTATUS(shell->last_exit_status);
-		else if (WIFSIGNALED(shell->last_exit_status))
-			shell->last_exit_status = 128 + WTERMSIG(shell->last_exit_status);
-		else
-			shell->last_exit_status = 1;
-	}
+		execute_single_external_command(cmd, shell);
 }
 
 void	execute_builtin_command(t_command *cmd, t_shell *shell)
@@ -93,4 +81,21 @@ static int	reset_std_fds(t_shell *shell)
 	close(shell->stdin_fd);
 	close(shell->stdout_fd);
 	return (0);
+}
+
+static void	execute_single_external_command(t_command *cmd, t_shell *shell)
+{
+	shell->child_pid = create_fork(shell);
+	if (shell->child_pid == 0)
+	{
+		setup_child_signals();
+		execute_external_command(cmd, shell);
+	}
+	waitpid(shell->child_pid, &shell->last_exit_status, 0);
+	if (WIFEXITED(shell->last_exit_status))
+		shell->last_exit_status = WEXITSTATUS(shell->last_exit_status);
+	else if (WIFSIGNALED(shell->last_exit_status))
+		shell->last_exit_status = 128 + WTERMSIG(shell->last_exit_status);
+	else
+		shell->last_exit_status = 1;
 }

@@ -26,10 +26,10 @@ int	handle_heredocs(t_command *cmd, t_shell *shell)
 
 	if (!cmd)
 		return (1);
-	if (isatty(STDIN_FILENO))
+	if (shell->is_a_tty)
 		setup_heredoc_signals();
 	status = process_heredocs(cmd, shell);
-	if (isatty(STDIN_FILENO))
+	if (shell->is_a_tty)
 		setup_parent_signals();
 	if (g_signal_received == SIGINT)
 		return (130);
