@@ -67,6 +67,31 @@ static void	print_in_format(
 		if (no_value)
 			printf("''");
 		printf("\n");
+				break ;
+			}
+		}
+		print_in_format(env_array[i], export, has_equals);
+	}
+}
+
+static void	print_in_format(char *str, bool export, bool has_equals)
+{
+	if (export)
+	{
+		if (str[0] == '_' && str[1] == '=')
+			return ;
+		write(1, "declare -x ", 11);
+		while (*str && *str != '=')
+			write(1, str++, 1);
+		if (*str == '=')
+		{
+			write(1, str++, 1);
+			write(1, "\"", 1);
+			while(*str)
+				write(1, str++, 1);
+			write(1, "\"", 1);
+		}
+		write(1, "\n", 1);
 	}
 	else
 	{

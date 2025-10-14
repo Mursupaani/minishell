@@ -32,7 +32,10 @@ int	handle_heredocs(t_command *cmd, t_shell *shell)
 	if (shell->is_a_tty)
 		setup_parent_signals();
 	if (g_signal_received == SIGINT)
+	{
+		shell->last_exit_status = 130;
 		return (130);
+	}
 	return (status);
 }
 
