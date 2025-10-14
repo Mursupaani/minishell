@@ -18,9 +18,6 @@ static t_token	*tokenize_pipe(char **pos, t_arena *arena);
 static t_token	*tokenize_input_redirect(char **pos, t_arena *arena);
 static t_token	*tokenize_output_redirect(char **pos, t_arena *arena);
 static t_token	*tokenize_word(char **pos, t_arena *arena);
-static char		*build_assignment_token(char *start, char *end, t_arena *arena);
-static char		*remove_quotes_from_word(char *start, size_t word_len,
-					t_arena *arena);
 static char		*ft_strchr_range(char *str, char c, size_t len);
 
 static int	is_quote(char c)
@@ -243,10 +240,8 @@ static int	process_quoted_word(t_token *token, char *start, char *end,
 	size_t	word_len;
 
 	word_len = end - start;
-	if (ft_strchr(start, '='))
-		token->value = build_assignment_token(start, end, arena);
-	else
-		token->value = remove_quotes_from_word(start, word_len, arena);
+	// Just copy the string as-is, preserving quotes
+	token->value = arena_substr(start, 0, word_len, arena);
 	if (!token->value)
 		return (0);
 	set_token_quote_flags(token, start, word_len);
@@ -293,45 +288,6 @@ static t_token	*tokenize_word(char **pos, t_arena *arena)
 	return (token);
 }
 
-static void	copy_quoted_content(char **src, char **dst, char *end,
-		char quote_char)
-{
-	(*src)++;
-	while (*src < end && **src != quote_char)
-	{
-		*(*dst)++ = *(*src)++;
-	}
-	if (*src < end && **src == quote_char)
-		(*src)++;
-}
-
-static char	*remove_quotes_from_word(char *start, size_t word_len,
-		t_arena *arena)
-{
-	char	*result;
-	char	*src;
-	char	*dst;
-	char	*end;
-
-	result = arena_alloc(arena, word_len + 2);
-	if (!result)
-		return (NULL);
-	src = start;
-	dst = result;
-	end = start + word_len;
-	while (src < end)
-	{
-		if (*src == '$' && src + 1 < end && is_quote(*(src + 1)))
-			src++;
-		else if (is_quote(*src))
-			copy_quoted_content(&src, &dst, end, *src);
-		else
-			*dst++ = *src++;
-	}
-	*dst = '\0';
-	return (result);
-}
-
 static char	*ft_strchr_range(char *str, char c, size_t len)
 {
 	size_t	i;
@@ -344,38 +300,4 @@ static char	*ft_strchr_range(char *str, char c, size_t len)
 		i++;
 	}
 	return (NULL);
-}
-
-static void	copy_value_part(char **src, char **dst, char *end)
-{
-	while (*src < end)
-	{
-		if (is_quote(**src))
-			copy_quoted_content(src, dst, end, **src);
-		else
-			*(*dst)++ = *(*src)++;
-	}
-}
-
-char	*build_assignment_token(char *start, char *end, t_arena *arena)
-{
-	char	*equals_pos;
-	size_t	prefix_len;
-	char	*src;
-	char	*dst;
-	char	*result;
-
-	equals_pos = start;
-	while (*equals_pos != '=' && equals_pos < end)
-		equals_pos++;
-	prefix_len = (equals_pos - start) + 1;
-	result = arena_alloc(arena, (end - start) + 1);
-	if (!result)
-		return (NULL);
-	ft_strlcpy(result, start, prefix_len + 1);
-	src = equals_pos + 1;
-	dst = result + prefix_len;
-	copy_value_part(&src, &dst, end);
-	*dst = '\0';
-	return (result);
 }

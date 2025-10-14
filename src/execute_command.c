@@ -20,12 +20,15 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 {
 	int	heredoc_status;
 
-	print_commands(cmd);
 	classify_commands(cmd);
 	prepare_cmd(cmd, shell);
 	heredoc_status = handle_heredocs(cmd, shell);
 	if (heredoc_status != 0)
+	{
+		if (heredoc_status == 130)
+			shell->last_exit_status = 130;
 		return ;
+	}
 	if (cmd->next)
 		execute_pipe(cmd, shell);
 	else if (cmd->cmd_type == CMD_BUILTIN_PARENT)
