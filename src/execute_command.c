@@ -20,6 +20,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 {
 	int	heredoc_status;
 
+	print_commands(cmd);
 	classify_commands(cmd);
 	prepare_cmd(cmd, shell);
 	heredoc_status = handle_heredocs(cmd, shell);
