@@ -47,10 +47,7 @@ int	cleanup_after_execution(t_shell *shell, t_command *cmd)
 		if (cmd->heredoc_filename != NULL)
 		{
 			if (unlink(cmd->heredoc_filename))
-			{
 				perror(strerror(errno));
-				return (1);
-			}
 		}
 		cmd = cmd->next;
 	}
