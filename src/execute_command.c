@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/10 18:40:33 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/15 10:55:48 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,11 @@ static int	execute_builtin_redirections(t_command *cmd, t_shell *shell)
 	shell->stdin_fd = dup(STDIN_FILENO);
 	shell->stdout_fd = dup(STDOUT_FILENO);
 	if (execute_redirection(cmd->redirections, cmd, shell) != 0)
+	{
+		close(shell->stdin_fd);
+		close(shell->stdout_fd);
 		return (-1);
+	}
 	return (0);
 }
 

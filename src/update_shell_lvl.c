@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/11 17:39:28 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/11 17:45:44 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/15 10:51:44 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void	update_shell_lvl(t_shell *shell)
 			shlvl = ft_itoa(shlvl_num);
 			hash_table_set(
 				shell->env_table, "SHLVL", shlvl, shell->session_arena);
+			free(shlvl);
 		}
 	}
 	update_env_table_and_arr(shell);
