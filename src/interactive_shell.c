@@ -30,12 +30,6 @@ static int	handle_input_validation(t_shell *shell)
 {
 	if (!shell->input)
 		exit_builtin(NULL, shell);
-	if (g_signal_received == SIGINT)
-	{
-		free(shell->input);
-		shell->last_exit_status = 130;
-		return (1);
-	}
 	if (is_empty_input(shell->input))
 	{
 		free(shell->input);
