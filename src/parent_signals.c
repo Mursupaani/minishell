@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:40:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/10/13 16:44:48 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/10/15 15:23:30 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 
 void	parent_sigint_handler(int sig, siginfo_t *info, void *context)
 {
-	g_signal_received = sig;
+	(void)sig;
+	(void)info;
+	(void)context;
 	write(STDOUT_FILENO, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-	(void)context;
-	(void)info;
 }
 
 void	setup_parent_signals(void)
