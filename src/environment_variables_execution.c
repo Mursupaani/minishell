@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 13:58:42 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/14 18:18:39 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/10/15 10:47:03 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,18 @@
 
 void	prepare_cmd(t_command *cmd, t_shell *shell)
 {
-	t_command	*current = cmd;
+	t_command	*current;
+	t_redir		*redir;
+
+	current = cmd;
 	while (current)
 	{
+		redir = current->redirections;
+		while (redir)
+		{
+			redir->target = arena_expand_variables(redir->target, shell);
+			redir = redir->next;
+		}
 		expand_cmd(current, shell);
 		current = current->next;
 	}
