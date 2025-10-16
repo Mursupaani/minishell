@@ -128,6 +128,10 @@ static t_redir	*create_redir(t_token *token, t_token *target, t_arena *arena)
 	if (!redir->target)
 		return (NULL);
 	redir->fd = -1;
+	if (token->type == TOKEN_HEREDOC)
+		redir->heredoc_expand = (target->quoted == 0);
+	else
+		redir->heredoc_expand = false;
 	redir->next = NULL;
 	return (redir);
 }

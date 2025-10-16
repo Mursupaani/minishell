@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/29 11:29:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/06 15:55:20 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/16 17:27:01 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ void	exit_builtin(t_command *cmd, t_shell *shell)
 
 	if (!shell)
 		return ;
-	// printf("exit\n");
 	if (cmd && cmd->argv[1])
 	{
 		error = get_exit_val_from_args(cmd, shell, &val);
