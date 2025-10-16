@@ -48,9 +48,8 @@ static void	execute_pipeline(t_shell *shell, t_command *cmd, int cmd_count)
 		if (shell->pipe_pids[i] == 0)
 			execute_child_process(i, cmd_count, cmd, shell);
 		cmd = cmd->next;
-		close_unused_fds(shell->pipe_array, cmd_count, -1);
+		close_unused_fds(shell->pipe_array, cmd_count, i, true);
 	}
-	close_unused_fds(shell->pipe_array, cmd_count, -1);
 }
 
 static void	wait_pipeline_to_finish(t_shell *shell, int cmd_count)
@@ -83,6 +82,6 @@ static void	execute_child_process(
 		dup2(shell->pipe_array[i % 2][1], STDOUT_FILENO);
 	if (i != 0)
 		dup2(shell->pipe_array[(i - 1) % 2][0], STDIN_FILENO);
-	close_unused_fds(shell->pipe_array, cmd_count, i);
+	close_unused_fds(shell->pipe_array, cmd_count, i, false);
 	choose_execution_type(cmd, shell);
 }

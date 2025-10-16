@@ -12,6 +12,9 @@
 
 #include "minishell.h"
 
+static void	close_unused_child_fds(
+				int pipe_array[2][2], int cmd_count, int process_index);
+
 void	choose_execution_type(t_command *cmd, t_shell *shell)
 {
 	int	exit_status;
@@ -27,11 +30,10 @@ void	choose_execution_type(t_command *cmd, t_shell *shell)
 		execute_external_command(cmd, shell);
 }
 
-void	close_unused_fds(int pipe_array[2][2], int cmd_count, int process_index)
+void	close_unused_fds(int pipe_array[2][2],
+				int cmd_count, int process_index, bool parent)
 {
-	(void)cmd_count;
-
-	if (process_index == -1)
+	if (parent)
 	{
 		if (process_index > 0)
 		{
@@ -40,27 +42,7 @@ void	close_unused_fds(int pipe_array[2][2], int cmd_count, int process_index)
 		}
 	}
 	else
-	{
-		if (process_index == 0)
-		{
-			close(pipe_array[process_index][0]);
-			close(pipe_array[process_index][1]);
-		}
-		else if (process_index < cmd_count - 1)
-		{
-			close(pipe_array[(process_index - 1) % 2][0]);
-			close(pipe_array[(process_index - 1) % 2][1]);
-			close(pipe_array[process_index % 2][0]);
-			close(pipe_array[process_index % 2][1]);
-		}
-		else
-		{
-			close(pipe_array[(process_index - 1) % 2][0]);
-			close(pipe_array[(process_index - 1) % 2][1]);
-			close(pipe_array[process_index % 2][0]);
-			close(pipe_array[process_index % 2][1]);
-		}
-	}
+		close_unused_child_fds(pipe_array, cmd_count, process_index);
 }
 
 int	count_commands(t_command *cmd)
@@ -99,4 +81,26 @@ int	**arena_alloc_pipe_arr(t_shell *shell)
 		i++;
 	}
 	return (pipe_array);
+}
+
+static void	close_unused_child_fds(
+	int pipe_array[2][2], int cmd_count, int process_index)
+{
+	if (process_index == 0)
+	{
+		close(pipe_array[process_index][0]);
+		close(pipe_array[process_index][1]);
+	}
+	else if (process_index < cmd_count - 1)
+	{
+		close(pipe_array[(process_index - 1) % 2][0]);
+		close(pipe_array[(process_index - 1) % 2][1]);
+		close(pipe_array[process_index % 2][0]);
+		close(pipe_array[process_index % 2][1]);
+	}
+	else
+	{
+		close(pipe_array[(process_index - 1) % 2][0]);
+		close(pipe_array[(process_index - 1) % 2][1]);
+	}
 }

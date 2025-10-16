@@ -213,8 +213,8 @@ void			find_non_empty_argument(t_command *cmd);
 void			execute_pipe(t_command *cmd, t_shell *shell);
 int				**arena_alloc_pipe_arr(t_shell *shell);
 int				count_commands(t_command *cmd);
-void			close_unused_fds(
-					int pipe_array[2][2], int cmd_count, int process_index);
+void			close_unused_fds(int pipe_array[2][2],
+					int cmd_count, int process_index, bool parent);
 
 // Redirection
 int				check_input_redirection(t_redir *redir, t_shell *shell);
