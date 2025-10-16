@@ -12,6 +12,9 @@
 
 #include "minishell.h"
 
+static void	close_unused_child_fds(
+				int pipe_array[2][2], int cmd_count, int process_index);
+
 void	choose_execution_type(t_command *cmd, t_shell *shell)
 {
 	int	exit_status;
@@ -27,32 +30,19 @@ void	choose_execution_type(t_command *cmd, t_shell *shell)
 		execute_external_command(cmd, shell);
 }
 
-int	close_unused_fds(int **pipe_array, int cmd_count, int process_index)
+void	close_unused_fds(int pipe_array[2][2],
+				int cmd_count, int process_index, bool parent)
 {
-	int	pipes;
-
-	if (process_index == -1)
+	if (parent)
 	{
-		pipes = cmd_count - 1;
-		while (--pipes >= 0)
+		if (process_index > 0)
 		{
-			close(pipe_array[pipes][0]);
-			close(pipe_array[pipes][1]);
+			close(pipe_array[(process_index - 1) % 2][0]);
+			close(pipe_array[(process_index - 1) % 2][1]);
 		}
 	}
 	else
-	{
-		if (process_index < cmd_count -1)
-			pipes = process_index + 1;
-		else
-			pipes = process_index;
-		while (--pipes >= 0)
-		{
-			close(pipe_array[pipes][1]);
-			close(pipe_array[pipes][0]);
-		}
-	}
-	return (0);
+		close_unused_child_fds(pipe_array, cmd_count, process_index);
 }
 
 int	count_commands(t_command *cmd)
@@ -70,15 +60,15 @@ int	count_commands(t_command *cmd)
 	return (cmd_count);
 }
 
-int	**arena_alloc_pipe_arr(t_shell *shell, int cmd_count)
+int	**arena_alloc_pipe_arr(t_shell *shell)
 {
 	int	pipes_count;
 	int	**pipe_array;
 	int	i;
 
-	if (!shell || cmd_count <= 0)
+	if (!shell)
 		return (NULL);
-	pipes_count = cmd_count - 1;
+	pipes_count = 2;
 	pipe_array = arena_alloc(shell->command_arena, sizeof(int *) * pipes_count);
 	if (!pipe_array)
 		return (NULL);
@@ -91,4 +81,26 @@ int	**arena_alloc_pipe_arr(t_shell *shell, int cmd_count)
 		i++;
 	}
 	return (pipe_array);
+}
+
+static void	close_unused_child_fds(
+	int pipe_array[2][2], int cmd_count, int process_index)
+{
+	if (process_index == 0)
+	{
+		close(pipe_array[process_index][0]);
+		close(pipe_array[process_index][1]);
+	}
+	else if (process_index < cmd_count - 1)
+	{
+		close(pipe_array[(process_index - 1) % 2][0]);
+		close(pipe_array[(process_index - 1) % 2][1]);
+		close(pipe_array[process_index % 2][0]);
+		close(pipe_array[process_index % 2][1]);
+	}
+	else
+	{
+		close(pipe_array[(process_index - 1) % 2][0]);
+		close(pipe_array[(process_index - 1) % 2][1]);
+	}
 }

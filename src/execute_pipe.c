@@ -22,10 +22,9 @@ void	execute_pipe(t_command *cmd, t_shell *shell)
 	int	cmd_count;
 
 	cmd_count = count_commands(cmd);
-	shell->pipe_array = arena_alloc_pipe_arr(shell, cmd_count);
 	shell->pipe_pids
 		= arena_alloc(shell->command_arena, sizeof(int) * cmd_count);
-	if (!shell->pipe_pids || !shell->pipe_array)
+	if (!shell->pipe_pids)
 	{
 		ft_fprintf(STDERR_FILENO,
 			"minishell: execute_pipe: error initializing pipes\n");
@@ -33,7 +32,6 @@ void	execute_pipe(t_command *cmd, t_shell *shell)
 		return ;
 	}
 	execute_pipeline(shell, cmd, cmd_count);
-	close_unused_fds(shell->pipe_array, cmd_count, -1);
 	wait_pipeline_to_finish(shell, cmd_count);
 }
 
@@ -45,11 +43,12 @@ static void	execute_pipeline(t_shell *shell, t_command *cmd, int cmd_count)
 	while (++i < cmd_count)
 	{
 		if (cmd->next)
-			pipe(shell->pipe_array[i]);
+			pipe(shell->pipe_array[i % 2]);
 		shell->pipe_pids[i] = create_fork(shell);
 		if (shell->pipe_pids[i] == 0)
 			execute_child_process(i, cmd_count, cmd, shell);
 		cmd = cmd->next;
+		close_unused_fds(shell->pipe_array, cmd_count, i, true);
 	}
 }
 
@@ -80,15 +79,9 @@ static void	execute_child_process(
 {
 	setup_child_signals();
 	if (i < cmd_count - 1)
-	{
-		close(STDOUT_FILENO);
-		dup(shell->pipe_array[i][1]);
-	}
+		dup2(shell->pipe_array[i % 2][1], STDOUT_FILENO);
 	if (i != 0)
-	{
-		close(STDIN_FILENO);
-		dup(shell->pipe_array[i - 1][0]);
-	}
-	close_unused_fds(shell->pipe_array, cmd_count, i);
+		dup2(shell->pipe_array[(i - 1) % 2][0], STDIN_FILENO);
+	close_unused_fds(shell->pipe_array, cmd_count, i, false);
 	choose_execution_type(cmd, shell);
 }

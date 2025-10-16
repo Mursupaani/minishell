@@ -75,7 +75,8 @@ static int	count_input_segments(char *input)
 		{
 			input++;
 			segments++;
-			while (ft_isprint(*input) && *input != ' ' && *input != '$' && *input != '\"' && *input != '\'')
+			while (ft_isprint(*input) && *input != ' ' && *input != '$'
+				&& *input != '\"' && *input != '\'')
 				input++;
 		}
 	}
@@ -99,7 +100,8 @@ static int	get_segment_size(char *input)
 	{
 		input++;
 		segment_size++;
-		while (ft_isprint(*input) && *input != ' ' && *input != '$' && *input != '\"' && *input != '\'')
+		while (ft_isprint(*input) && *input != ' ' && *input != '$'
+			&& *input != '\"' && *input != '\'')
 		{
 			input++;
 			segment_size++;

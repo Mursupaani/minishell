@@ -109,7 +109,7 @@ bool	check_file_type_and_permissions(char *filepath, t_shell *shell)
 static bool	is_file_path(char *arg)
 {
 	if (!arg)
-		return false;
+		return (false);
 	if (arg[0] == '.' || arg[0] == '/')
 		return (true);
 	while (*arg)
