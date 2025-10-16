@@ -23,6 +23,7 @@ int	create_fork(t_shell *shell)
 			"minishell: creat_fork: Fork failed\n");
 		error_exit_and_free_memory(shell);
 	}
+	// This is already in execute child process
 	if (pid == 0)
 	{
 		signal(SIGINT, SIG_DFL);

@@ -153,7 +153,7 @@ typedef struct s_shell
 	int							stdin_fd;
 	int							stdout_fd;
 	int							child_pid;
-	int							**pipe_array;
+	int							pipe_array[2][2];
 	int							*pipe_pids;
 
 	// Heredoc management
@@ -211,10 +211,10 @@ void			find_non_empty_argument(t_command *cmd);
 
 // Pipe
 void			execute_pipe(t_command *cmd, t_shell *shell);
-int				**arena_alloc_pipe_arr(t_shell *shell, int cmd_count);
+int				**arena_alloc_pipe_arr(t_shell *shell);
 int				count_commands(t_command *cmd);
-int				close_unused_fds(
-					int **pipe_array, int cmd_count, int process_index);
+void			close_unused_fds(
+					int pipe_array[2][2], int cmd_count, int process_index);
 
 // Redirection
 int				check_input_redirection(t_redir *redir, t_shell *shell);
