@@ -190,7 +190,7 @@ t_shell			*shell_init(char **env);
 int				cleanup_after_execution(t_shell *shell, t_command *cmd);
 void			update_prompt(t_shell *shell);
 void			update_shell_lvl(t_shell *shell);
-int				error_exit_and_free_memory(t_shell *shell);
+int				error_exit_and_free_memory(t_shell *shell, t_command *cmd);
 void			free_memory_at_exit(t_shell *shell);
 
 // Environment

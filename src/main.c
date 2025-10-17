@@ -51,7 +51,10 @@ int	cleanup_after_execution(t_shell *shell, t_command *cmd)
 		cmd = cmd->next;
 	}
 	if (shell->input)
+	{
 		free(shell->input);
+		shell->input = NULL;
+	}
 	arena_reset(shell->command_arena);
 	return (0);
 }
