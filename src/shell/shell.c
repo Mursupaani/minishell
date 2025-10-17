@@ -185,6 +185,7 @@ static t_shell	*shell_static_init(void)
 	shell->env_table = NULL;
 	shell->env_array = NULL;
 	shell->path_dirs = NULL;
+	shell->input = NULL;
 	return (shell);
 }
 

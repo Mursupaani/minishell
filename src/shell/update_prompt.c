@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "minishell.h"
 
 static void	update_prompt_colors(char *cwd, t_shell *shell);
@@ -27,7 +26,7 @@ void	update_prompt(t_shell *shell)
 		write_pwd_to_cwd(cwd, shell);
 	if (cwd[0] == '\0')
 	{
-		update_prompt_colors("minishell (path unavailable)\n% ", shell);
+		update_prompt_colors("minishell (path unavailable)", shell);
 		return ;
 	}
 	cwd_ptr = &cwd[0];
