@@ -32,6 +32,7 @@ SRC = main.c \
 	  builtins/env.c \
 	  builtins/exit.c \
 	  builtins/export.c \
+	  builtins/export_utils.c \
 	  builtins/print_working_directory.c \
 	  builtins/unset.c \
 	  debug/debug.c \
