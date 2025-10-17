@@ -56,6 +56,7 @@ static int	process_input(t_shell *shell)
 	{
 		ft_fprintf(STDERR_FILENO, "minishell: syntax error\n");
 		shell->last_exit_status = 2;
+		free(shell->input);
 		arena_reset(shell->command_arena);
 		return (0);
 	}
