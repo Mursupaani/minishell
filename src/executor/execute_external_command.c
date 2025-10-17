@@ -33,14 +33,15 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 	else
 		executable_path = find_file_from_path(cmd->argv[0], shell);
 	if (!executable_path)
-		exit(shell->last_exit_status);
+		error_exit_and_free_memory(shell, cmd);
 	if (!check_file_type_and_permissions(executable_path, shell))
-		exit(shell->last_exit_status);
+		error_exit_and_free_memory(shell, cmd);
 	if (execve(executable_path, cmd->argv, shell->env_array))
 	{
 		shell->last_exit_status = 127;
 		ft_fprintf(STDERR_FILENO,
 			"minishell: %s: %s\n", strerror(errno), cmd->argv[0]);
+		cleanup_after_execution(shell, cmd);
 	}
 	exit(shell->last_exit_status);
 }

@@ -21,7 +21,7 @@ int	create_fork(t_shell *shell)
 	{
 		ft_fprintf(STDERR_FILENO,
 			"minishell: creat_fork: Fork failed\n");
-		error_exit_and_free_memory(shell);
+		error_exit_and_free_memory(shell, NULL);
 	}
 	return (pid);
 }

@@ -48,12 +48,17 @@ void	free_memory_at_exit(t_shell *shell)
 	free(shell);
 }
 
-int	error_exit_and_free_memory(t_shell *shell)
+int	error_exit_and_free_memory(t_shell *shell, t_command *cmd)
 {
+	int	exit_status;
+
 	if (!shell)
 		exit(EXIT_FAILURE);
+	if (cmd)
+		cleanup_after_execution(shell, cmd);
+	exit_status = shell->last_exit_status;
 	free_memory_at_exit(shell);
-	exit(EXIT_FAILURE);
+	exit(exit_status);
 }
 
 static int	get_exit_val_from_args(t_command *cmd, t_shell *shell, int *val)
