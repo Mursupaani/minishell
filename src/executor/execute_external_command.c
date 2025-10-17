@@ -21,29 +21,23 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 	char	*executable_path;
 
 	if (!shell || !cmd)
-		exit(EXIT_FAILURE);
-	if (cmd->redirections)
-	{
-		if (execute_redirection(cmd->redirections, cmd, shell) != 0)
-			exit(shell->last_exit_status);
-	}
+		error_exit_and_free_memory(shell, cmd);
+	if (execute_redirection(cmd->redirections, cmd, shell) != 0)
+		error_exit_and_free_memory(shell, cmd);
 	find_non_empty_argument(cmd);
 	if (is_file_path(cmd->argv[0]))
 		executable_path = cmd->argv[0];
 	else
 		executable_path = find_file_from_path(cmd->argv[0], shell);
 	if (!executable_path)
-		error_exit_and_free_memory(shell, cmd);
-	if (!check_file_type_and_permissions(executable_path, shell))
-		error_exit_and_free_memory(shell, cmd);
+		executable_path = cmd->argv[0];
 	if (execve(executable_path, cmd->argv, shell->env_array))
 	{
 		shell->last_exit_status = 127;
 		ft_fprintf(STDERR_FILENO,
 			"minishell: %s: %s\n", strerror(errno), cmd->argv[0]);
-		cleanup_after_execution(shell, cmd);
 	}
-	exit(shell->last_exit_status);
+	error_exit_and_free_memory(shell, cmd);
 }
 
 char	*find_file_from_path(char *filename, t_shell *shell)

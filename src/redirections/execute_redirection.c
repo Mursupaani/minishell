@@ -18,6 +18,10 @@ static int	execute_heredoc(t_redir *redir, t_command *cmd, t_shell *shell);
 
 int	execute_redirection(t_redir *redir, t_command *cmd, t_shell *shell)
 {
+	if (!cmd || !shell)
+		return (-1);
+	if (!redir)
+		return (0);
 	if (redir->type == REDIR_INPUT)
 	{
 		if (execute_input_redirection(redir, shell) != 0)
