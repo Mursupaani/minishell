@@ -26,7 +26,7 @@ void	update_prompt(t_shell *shell)
 		write_pwd_to_cwd(cwd, shell);
 	if (cwd[0] == '\0')
 	{
-		update_prompt_colors("minishell (path unavailable)", shell);
+		update_prompt_colors("minishell", shell);
 		return ;
 	}
 	cwd_ptr = &cwd[0];

@@ -40,7 +40,6 @@ char	*get_current_directory(t_shell *shell)
 		pwd = hash_table_get(shell->env_table, "PWD");
 		if (pwd)
 			return (pwd);
-		shell->last_exit_status = 1;
 		return (NULL);
 	}
 	return (pwd);
