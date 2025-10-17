@@ -6,22 +6,21 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/24 17:23:17 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/11 17:45:36 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/16 18:16:34 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 static int	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell);
-static char	*get_entry_key(char *entry, t_arena *arena);
-static char	*get_entry_value(char *entry, t_arena *arena);
-static bool	valid_format(char *key);
+static int	handle_export(t_command *cmd, int i, bool append, t_shell *shell);
+static bool	check_for_variable_append(char *argument);
 
 void	export_environment_variable(t_command *cmd, t_shell *shell)
 {
 	char	**temp;
 	int		i;
-	//FIXME: += should append to the variable. Out of scope?
+
 	if (!shell || !cmd)
 		return ;
 	if (!cmd->argv[1])
@@ -38,103 +37,62 @@ void	export_environment_variable(t_command *cmd, t_shell *shell)
 
 static int	get_and_set_entries_to_hashtable(t_command *cmd, t_shell *shell)
 {
-	t_env_entry	t;
 	int			i;
+	bool		append;
 
 	i = 0;
 	while (cmd->argv[++i])
 	{
-		t.key = get_entry_key(cmd->argv[i], shell->command_arena);
-		if (!t.key)
-		{
-			shell->last_exit_status = 1;
-			return (1);
-		}
-		t.value = ft_strchr(cmd->argv[i], '=');
-		if (t.value)
-		{
-			t.value = get_entry_value(t.value + 1, shell->command_arena);
-			if (!t.value)
-			{
-				shell->last_exit_status = 1;
-				return (1);
-			}
-		}
-		hash_table_set(shell->env_table, t.key, t.value, shell->session_arena);
+		append = check_for_variable_append(cmd->argv[i]);
+		handle_export(cmd, i, append, shell);
 	}
 	return (0);
 }
 
-static char	*get_entry_key(char *entry, t_arena *arena)
+static int	handle_export(t_command *cmd, int i, bool append, t_shell *shell)
 {
-	int		i;
-	char	*key;
+	t_env_entry	t;
+	char		*prev_val;
 
-	if (!entry || !arena)
-		return (NULL);
-	if (!valid_format(entry))
-		return (NULL);
-	i = 0;
-	while (entry[i] && entry[i] != '=')
-		i++;
-	key = arena_alloc(arena, i + 1);
-	if (!key)
-		return (NULL);
-	i = 0;
-	while (entry[i] && entry[i] != '=')
+	t.key = get_entry_key(cmd->argv[i], shell->command_arena);
+	if (!t.key)
 	{
-		key[i] = entry[i];
-		i++;
+		shell->last_exit_status = 1;
+		return (1);
 	}
-	key[i] = '\0';
-	return (key);
-}
-
-static char	*get_entry_value(char *entry, t_arena *arena)
-{
-	int		i;
-	char	*value;
-
-	if (!entry || !arena)
-		return (NULL);
-	value = arena_alloc(arena, ft_strlen(entry) + 1);
-	if (!value)
+	t.value = ft_strchr(cmd->argv[i], '=');
+	if (t.value)
 	{
-		ft_fprintf(STDERR_FILENO, "Failed to export variable\n");
-		return (NULL);
-	}
-	i = 0;
-	while (entry[i])
-	{
-		value[i] = entry[i];
-		i++;
-	}
-	value[i] = '\0';
-	return (value);
-}
-
-static bool	valid_format(char *key)
-{
-	int	i;
-
-	if (!key)
-		return (false);
-	i = 0;
-	if (!ft_isalpha(key[i]) && key[i] != '_')
-	{
-		ft_fprintf(STDERR_FILENO,
-			"minishell: export: `%s': not a valid identifier\n", key);
-		return (false);
-	}
-	while (key[i] && key[i] != '=')
-	{
-		if (!ft_isalnum(key[i]) && key[i] != '_')
+		t.value = get_entry_value(t.value + 1, shell->command_arena);
+		if (!t.value)
 		{
-			ft_fprintf(STDERR_FILENO,
-				"minishell: export: `%s': not a valid identifier\n", key);
+			shell->last_exit_status = 1;
+			return (1);
+		}
+		prev_val = hash_table_get(shell->env_table, t.key);
+		if (append && prev_val)
+			t.value = ft_strjoin_arena(prev_val, t.value, shell->command_arena);
+	}
+	hash_table_set(shell->env_table, t.key, t.value, shell->session_arena);
+	return (0);
+}
+
+static bool	check_for_variable_append(char *argument)
+{
+	if (!argument)
+		return (false);
+	while (*argument)
+	{
+		if (*argument == '+')
+		{
+			argument++;
+			if (*argument == '=')
+				return (true);
 			return (false);
 		}
-		i++;
+		if (*argument == '=')
+			return (false);
+		argument++;
 	}
-	return (true);
+	return (false);
 }

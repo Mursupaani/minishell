@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/15 10:39:45 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/16 17:59:01 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,6 +197,8 @@ void			free_memory_at_exit(t_shell *shell);
 t_hash_table	*populate_env_from_envp(char **envp, t_arena *arena);
 char			**env_array_from_hashtable(t_shell *shell);
 void			update_env_table_and_arr(t_shell *shell);
+char			*get_entry_key(char *entry, t_arena *arena);
+char			*get_entry_value(char *entry, t_arena *arena);
 
 // Shell modes
 int				interactive_shell(t_shell *shell);
