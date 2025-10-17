@@ -248,7 +248,7 @@ void			hash_table_set(t_hash_table *table,
 void			prepare_cmd(t_command *cmd, t_shell *shell);
 void			expand_cmd(t_command *cmd, t_shell *shell);
 char			*expand_var(char *str, t_shell *shell, t_arena *arena);
-char			*process_var_expand(char *str, t_shell *shell, t_arena *arena);
+char			*strip_quotes(char *str, t_arena *arena);
 void			hash_table_delete(t_hash_table *table, char *key);
 char			**copy_env_array(t_shell *shell, t_arena *arena, int *count);
 

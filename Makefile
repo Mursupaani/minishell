@@ -6,7 +6,7 @@
 #    By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/24 11:49:18 by magebreh          #+#    #+#              #
-#    Updated: 2025/10/16 17:51:50 by anpollan         ###   ########.fr        #
+#    Updated: 2025/10/16 17:22:44 by magebreh         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,29 +19,54 @@ LIBFT		= ./libft/libft.a
 
 RM = rm -f
 
-# Object directory
 OBJ_DIR = obj
 SRC_DIR = src
 INCL_DIR = incl
 
-# Header
 HEADER = ./incl/minishell.h
 LFT_HEADER = ./libft/libft.h
 
-# Core libft sources
-SRC = main.c print_working_directory.c change_directory.c execute_command.c \
-	  interactive_shell.c non_interactive_shell.c parsing.c shell.c \
-	  utils.c echo.c token.c fork.c execute_pipe.c execute_redirection.c \
-	  strjoin_arena.c environment_variables_execution.c \
-	  handle_heredocs.c env_array_from_hashtable.c export.c unset.c \
-	  environment_utils.c exit.c execute_external_command.c \
-	  execute_command_utils.c check_redirections.c env.c heredoc_utils.c \
-	  pipe_utils.c quick_sort_string_array.c expand_variables_from_input.c \
-	  update_prompt.c parent_signals.c child_signals.c heredoc_signals.c \
-	  update_shell_lvl.c print_environment_variables.c \
-	  arena_expand_variables.c export_utils.c debug.c
+SRC = main.c \
+	  builtins/change_directory.c \
+	  builtins/echo.c \
+	  builtins/env.c \
+	  builtins/exit.c \
+	  builtins/export.c \
+	  builtins/print_working_directory.c \
+	  builtins/unset.c \
+	  debug/debug.c \
+	  debug/print_environment_variables.c \
+	  environment/env_array_from_hashtable.c \
+	  environment/environment_utils.c \
+	  environment/env_expand.c \
+	  environment/env_expand_cmd.c \
+	  executor/execute_command.c \
+	  executor/execute_command_utils.c \
+	  executor/execute_external_command.c \
+	  executor/execute_pipe.c \
+	  executor/pipe_utils.c \
+	  heredoc/arena_expand_variables.c \
+	  heredoc/expand_variables_from_input.c \
+	  heredoc/handle_heredocs.c \
+	  heredoc/heredoc_signals.c \
+	  heredoc/heredoc_utils.c \
+	  parser/parsing.c \
+	  redirections/check_redirections.c \
+	  redirections/execute_redirection.c \
+	  shell/interactive_shell.c \
+	  shell/non_interactive_shell.c \
+	  shell/shell.c \
+	  shell/update_prompt.c \
+	  shell/update_shell_lvl.c \
+	  signals/child_signals.c \
+	  signals/parent_signals.c \
+	  tokenizer/token.c \
+	  utils/fork.c \
+	  utils/quick_sort_string_array.c \
+	  utils/strjoin_arena.c \
+	  utils/utils.c
 
-# Combined sources
+
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
 
 all: $(NAME)
