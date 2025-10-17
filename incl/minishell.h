@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/16 17:59:01 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/17 10:29:17 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,6 +282,7 @@ char			*arena_strdup(const char *s, t_arena *arena);
 void			quick_sort_string_array(char **str_arr, int start, int end);
 bool			check_file_type_and_permissions(char *filepath, t_shell *shell);
 char			*arena_expand_variables(char *input, t_shell *shell);
+int				is_whitespace_only(char *str);
 
 // Error handling fork wrapper
 int				create_fork(t_shell *shell);
