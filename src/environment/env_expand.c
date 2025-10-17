@@ -22,6 +22,7 @@ static char	*expand_single_variable(char **src, t_shell *shell, char *dst)
 	(*src)++;
 	if (**src == '?')
 	{
+		//FIXME: Not allowed to use sprintf
 		dst += sprintf(dst, "%d", shell->last_exit_status);
 		(*src)++;
 	}
@@ -36,10 +37,12 @@ static char	*expand_single_variable(char **src, t_shell *shell, char *dst)
 			*dst++ = '$';
 		else
 		{
+			//FIXME: Not allowed to use strncpy
 			strncpy(var_name, var_start, var_len);
 			var_name[var_len] = '\0';
 			value = hash_table_get(shell->env_table, var_name);
 			if (value)
+				//FIXME: Not allowed to use sprintf
 				dst += sprintf(dst, "%s", value);
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/11 13:02:31 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/11 13:03:57 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/17 10:30:27 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,6 @@
 static char	*join_argv_to_single_input(char **argv, t_arena *arena);
 static int	count_args(char **argv);
 static char	*read_line_from_stdin(t_arena *arena);
-
-static int	is_whitespace_only(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i] && (str[i] == ' ' || str[i] == '\t'))
-		i++;
-	return (str[i] == '\0');
-}
 
 static int	process_input_line(char *input, t_shell *shell)
 {
@@ -67,10 +57,12 @@ int	non_interactve_shell(t_shell *shell, char **argv)
 	else
 	{
 		status = EXIT_SUCCESS;
-		while ((input = read_line_from_stdin(shell->command_arena)) != NULL)
+		input = read_line_from_stdin(shell->command_arena);
+		while (input)
 		{
 			status = process_input_line(input, shell);
 			arena_reset(shell->command_arena);
+			input = read_line_from_stdin(shell->command_arena);
 		}
 		return (status);
 	}

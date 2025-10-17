@@ -6,7 +6,7 @@
 #    By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/24 11:49:18 by magebreh          #+#    #+#              #
-#    Updated: 2025/10/16 17:22:44 by magebreh         ###   ########.fr        #
+#    Updated: 2025/10/17 10:29:42 by anpollan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,7 +65,8 @@ SRC = main.c \
 	  utils/fork.c \
 	  utils/quick_sort_string_array.c \
 	  utils/strjoin_arena.c \
-	  utils/utils.c
+	  utils/utils.c \
+	  utils/utils2.c
 
 
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
