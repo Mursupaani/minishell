@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 11:45:53 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/04 18:04:09 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/10/16 20:52:35 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,7 @@ static int	process_token(t_command **head, t_command **current,
 	else if (is_redir(*token))
 	{
 		ensure_command_exists(head, current, shell->command_arena);
-		*token = handle_redir(*current, *token, shell->command_arena,
-				&redir_error);
+		*token = handle_redir(*current, *token, shell, &redir_error);
 		if (redir_error)
 			return (0);
 		return (1);
@@ -84,11 +83,16 @@ t_command	*parse_pipeline(t_token *tokens, t_shell *shell)
 	head = NULL;
 	current = NULL;
 	token = tokens;
+	shell->heredoc_counter = 0;
 	while (token)
 	{
 		if (!process_token(&head, &current, &token, shell))
+		{
+			shell->heredoc_counter = 0;
 			return (NULL);
+		}
 	}
+	shell->heredoc_counter = 0;
 	return (head);
 }
 
@@ -136,7 +140,7 @@ static t_redir	*create_redir(t_token *token, t_token *target, t_arena *arena)
 	return (redir);
 }
 
-t_token	*handle_redir(t_command *current, t_token *token, t_arena *arena,
+t_token	*handle_redir(t_command *current, t_token *token, t_shell *shell,
 		int *error)
 {
 	t_redir	*redir;
@@ -149,7 +153,7 @@ t_token	*handle_redir(t_command *current, t_token *token, t_arena *arena,
 		*error = 1;
 		return (NULL);
 	}
-	redir = create_redir(token, target, arena);
+	redir = create_redir(token, target, shell->command_arena);
 	if (!redir)
 	{
 		*error = 1;
@@ -157,8 +161,19 @@ t_token	*handle_redir(t_command *current, t_token *token, t_arena *arena,
 	}
 	if (redir->type == REDIR_HEREDOC)
 	{
-		if (attach_heredoc_filename_to_command(current, arena) != 0)
+		if (++shell->heredoc_counter > 16)
+		{
+			write(2, "minishell: maximum here-document count exceeded\n", 48);
+			*error = 1;
+			shell->heredoc_counter = 0;
 			return (NULL);
+		}
+		if (attach_heredoc_filename_to_command(current,
+				shell->command_arena) != 0)
+		{
+			shell->heredoc_counter = 0;
+			return (NULL);
+		}
 	}
 	attach_redir(current, redir);
 	return (target->next);
