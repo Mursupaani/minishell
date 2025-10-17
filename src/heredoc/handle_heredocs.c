@@ -95,6 +95,22 @@ static int	generate_heredoc_file(
 	return (0);
 }
 
+static char	*get_heredoc_line(t_shell *shell)
+{
+	char	*line;
+	size_t	len;
+
+	if (shell->is_a_tty)
+		return (readline("> "));
+	line = get_next_line(STDIN_FILENO);
+	if (!line)
+		return (NULL);
+	len = ft_strlen(line);
+	if (len > 0 && line[len - 1] == '\n')
+		line[len - 1] = '\0';
+	return (line);
+}
+
 static int	get_user_input_to_heredoc(
 				t_redir *redirection, int fd, t_shell *shell)
 {
@@ -103,7 +119,7 @@ static int	get_user_input_to_heredoc(
 
 	while (g_signal_received != SIGINT)
 	{
-		input = readline("> ");
+		input = get_heredoc_line(shell);
 		if (!input)
 			return (1);
 		status = handle_heredoc_input(&input, redirection, fd, shell);
