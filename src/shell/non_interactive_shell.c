@@ -33,8 +33,6 @@ static int	process_input_line(char *input, t_shell *shell)
 
 	if (!input || input[0] == '\0' || is_whitespace_only(input))
 		return (EXIT_SUCCESS);
-	if (!input || input[0] == '\0' || is_whitespace_only(input))
-		return (EXIT_SUCCESS);
 	tokens = tokenize(input, shell->command_arena);
 	if (!tokens)
 	{
