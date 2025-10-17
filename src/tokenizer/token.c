@@ -54,6 +54,11 @@ t_token	*tokenize(char *input, t_arena *arena)
 
 static t_token	*create_next_token(char **pos, t_arena *arena)
 {
+	if (**pos == ';')
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `;'\n", 2);
+		return (NULL);
+	}
 	if (**pos == '|')
 		return (tokenize_pipe(pos, arena));
 	else if (**pos == '<')

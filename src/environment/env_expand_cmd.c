@@ -67,12 +67,89 @@ void	prepare_cmd(t_command *cmd, t_shell *shell)
 				redir->target = strip_quotes(redir->target,
 						shell->command_arena);
 			else
-				redir->target = arena_expand_variables(redir->target, shell);
+			{
+				redir->target = expand_var(redir->target, shell,
+						shell->command_arena);
+				redir->target = strip_quotes(redir->target,
+						shell->command_arena);
+			}
 			redir = redir->next;
 		}
 		expand_cmd(current, shell);
 		current = current->next;
 	}
+}
+
+static int	count_quote_aware_words(char *str)
+{
+	int		count;
+	char	in_quote;
+	bool	in_word;
+
+	count = 0;
+	in_quote = 0;
+	in_word = false;
+	while (*str)
+	{
+		if ((*str == '"' || *str == '\'') && !in_quote)
+			in_quote = *str;
+		else if (*str == in_quote)
+			in_quote = 0;
+		if (!ft_isspace(*str) && !in_word)
+		{
+			in_word = true;
+			count++;
+		}
+		else if (ft_isspace(*str) && !in_quote && in_word)
+			in_word = false;
+		str++;
+	}
+	return (count);
+}
+
+static char	*extract_word(char *str, char **end)
+{
+	char	*start;
+	char	in_quote;
+	int		len;
+
+	start = str;
+	in_quote = 0;
+	while (*str && (in_quote || !ft_isspace(*str)))
+	{
+		if ((*str == '"' || *str == '\'') && !in_quote)
+			in_quote = *str;
+		else if (*str == in_quote)
+			in_quote = 0;
+		str++;
+	}
+	len = str - start;
+	*end = str;
+	return (ft_substr(start, 0, len));
+}
+
+static char	**quote_aware_split(char *str)
+{
+	char	**result;
+	int		count;
+	int		i;
+
+	if (!str)
+		return (NULL);
+	count = count_quote_aware_words(str);
+	result = malloc(sizeof(char *) * (count + 1));
+	if (!result)
+		return (NULL);
+	i = 0;
+	while (*str && i < count)
+	{
+		while (ft_isspace(*str))
+			str++;
+		if (*str)
+			result[i++] = extract_word(str, &str);
+	}
+	result[i] = NULL;
+	return (result);
 }
 
 static int	handle_split_expansion(t_command *cmd, t_shell *shell,
@@ -85,7 +162,7 @@ static int	handle_split_expansion(t_command *cmd, t_shell *shell,
 	int		total_args;
 	int		k;
 
-	split_result = ft_split(expanded, ' ');
+	split_result = quote_aware_split(expanded);
 	if (!split_result || !split_result[0])
 		return (0);
 	split_count = 0;
@@ -121,7 +198,7 @@ static bool	should_split(char *original, char *expanded)
 {
 	return (expanded && ft_strchr(expanded, ' ')
 		&& ft_strchr(original, '$')
-		&& original[0] != '"' && original[0] != '\'');
+		&& !ft_strchr(original, '"') && !ft_strchr(original, '\''));
 }
 
 static void	handle_arg_expansion(t_command *cmd, t_shell *shell, int *i)
