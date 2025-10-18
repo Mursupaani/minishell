@@ -96,3 +96,26 @@ static bool	check_for_variable_append(char *argument)
 	}
 	return (false);
 }
+
+void	update_last_argument(t_command *cmd, t_shell *shell)
+{
+	int	i;
+
+	if (!shell)
+		return ;
+	if (!cmd || !cmd->argv || cmd->next)
+	{
+		hash_table_set(shell->env_table, "_", "]", shell->session_arena);
+		return ;
+	}
+	i = 0;
+	while (cmd->argv[i])
+		i++;
+	if (i != 0)
+	{
+		i--;
+		hash_table_set(
+			shell->env_table, "_", cmd->argv[i], shell->session_arena);
+	}
+	update_env_table_and_arr(shell);
+}

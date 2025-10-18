@@ -22,6 +22,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 
 	prepare_cmd(cmd, shell);
 	classify_commands(cmd);
+	update_last_argument(cmd, shell);
 	heredoc_status = handle_heredocs(cmd, shell);
 	if (heredoc_status != 0)
 	{
