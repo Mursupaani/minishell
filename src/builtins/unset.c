@@ -57,5 +57,5 @@ static void	exit_if_env_array_fails(t_shell *shell)
 {
 	ft_fprintf(STDERR_FILENO,
 		"minishell: export: failed to update environment variables\n");
-	error_exit_and_free_memory(shell, NULL);
+	exit_and_free_memory(EXIT_LAST_STATUS, shell, NULL);
 }

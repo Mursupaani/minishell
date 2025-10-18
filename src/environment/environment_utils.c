@@ -23,7 +23,7 @@ void	update_env_table_and_arr(t_shell *shell)
 	{
 		ft_fprintf(STDERR_FILENO, "minishell: failed to update environment\n");
 		shell->last_exit_status = 1;
-		error_exit_and_free_memory(shell, NULL);
+		exit_and_free_memory(EXIT_LAST_STATUS, shell, NULL);
 	}
 	temp_env_arr = copy_env_array(shell, shell->command_arena, NULL);
 	if (!temp_env_arr)
