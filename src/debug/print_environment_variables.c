@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <unistd.h>
 
 static void	print_env_array(char **env_array, bool export);
 static void	print_in_format(char *str, bool export, bool has_equals);

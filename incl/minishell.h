@@ -206,6 +206,7 @@ char			**env_array_from_hashtable(t_shell *shell);
 void			update_env_table_and_arr(t_shell *shell);
 char			*get_entry_key(char *entry, t_arena *arena);
 char			*get_entry_value(char *entry, t_arena *arena);
+void			update_last_argument(t_command *cmd, t_shell *shell);
 
 // Shell modes
 int				interactive_shell(t_shell *shell);

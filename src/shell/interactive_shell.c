@@ -62,7 +62,7 @@ static int	process_input(t_shell *shell)
 	}
 	execute_commands(commands, shell);
 	if (cleanup_after_execution(shell, commands))
-		return (EXIT_FAILURE);
+		exit_and_free_memory(EXIT_FAILURE, shell, commands);
 	return (0);
 }
 
