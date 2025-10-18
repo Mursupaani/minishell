@@ -22,7 +22,6 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 
 	prepare_cmd(cmd, shell);
 	classify_commands(cmd);
-	update_last_argument(cmd, shell);
 	heredoc_status = handle_heredocs(cmd, shell);
 	if (heredoc_status != 0)
 	{
@@ -40,6 +39,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 
 void	execute_builtin_command(t_command *cmd, t_shell *shell)
 {
+	update_last_argument(cmd, shell);
 	if (cmd->redirections)
 	{
 		if (execute_builtin_redirections(cmd, shell) != 0)

@@ -30,7 +30,6 @@ int	main(int argc, char **argv, char **envp)
 		return (EXIT_FAILURE);
 	}
 	update_shell_lvl(shell);
-	update_last_argument(NULL, shell);
 	shell->is_a_tty = isatty(STDIN_FILENO);
 	if (shell->is_a_tty)
 		exit_code = interactive_shell(shell);
@@ -48,6 +47,7 @@ int	cleanup_after_execution(t_shell *shell, t_command *cmd)
 		{
 			if (unlink(cmd->heredoc_filename))
 				perror(strerror(errno));
+			cmd->heredoc_filename = NULL;
 		}
 		cmd = cmd->next;
 	}

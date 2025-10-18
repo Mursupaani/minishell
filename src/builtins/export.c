@@ -103,9 +103,10 @@ void	update_last_argument(t_command *cmd, t_shell *shell)
 
 	if (!shell)
 		return ;
-	if (!cmd || !cmd->argv || cmd->next)
+	if (!cmd || !cmd->argv)
 	{
 		hash_table_set(shell->env_table, "_", "]", shell->session_arena);
+		update_env_table_and_arr(shell);
 		return ;
 	}
 	i = 0;
