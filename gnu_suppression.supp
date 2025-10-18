@@ -7,6 +7,18 @@
 }
 
 {
+   ignore_readline_internal
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:xmalloc
+   fun:readline_internal_teardown
+   fun:readline
+   fun:interactive_shell
+   fun:main
+}
+
+{
 	ignore_add_history_leaks
 	Memcheck:Leak
 	match-leak-kinds: reachable
