@@ -74,10 +74,20 @@ int	interactive_shell(t_shell *shell)
 	{
 		setup_parent_signals();
 		if (g_signal_received == SIGINT)
-			shell->last_exit_status = 127;
-		g_signal_received = 0;
+		{
+			shell->last_exit_status = 130;
+			g_signal_received = 0;
+		}
 		update_prompt(shell);
 		shell->input = readline(shell->prompt);
+		if (g_signal_received == SIGINT)
+		{
+			shell->last_exit_status = 130;
+			g_signal_received = 0;
+			if (shell->input)
+				free(shell->input);
+			continue ;
+		}
 		if (handle_input_validation(shell))
 			continue ;
 		result = process_input(shell);

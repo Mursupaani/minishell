@@ -56,6 +56,7 @@ static void	wait_pipeline_to_finish(t_shell *shell, int cmd_count)
 {
 	int	i;
 
+	setup_execution_signals();
 	i = 0;
 	while (i < cmd_count)
 	{
@@ -72,6 +73,7 @@ static void	wait_pipeline_to_finish(t_shell *shell, int cmd_count)
 		}
 		i++;
 	}
+	setup_parent_signals();
 }
 
 static void	execute_child_process(
