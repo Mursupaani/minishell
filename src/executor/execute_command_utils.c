@@ -32,7 +32,10 @@ void	find_non_empty_argument(t_command *cmd, t_shell *shell)
 		cmd->argv++;
 	}
 	if (!*cmd->argv)
-		exit_and_free_memory(EXIT_SUCCESS, shell, cmd);
+	{
+		ft_fprintf(STDERR_FILENO, "Command '' not found\n");
+		exit_and_free_memory(127, shell, cmd);
+	}
 }
 
 static bool	has_append(t_command *cmd)
