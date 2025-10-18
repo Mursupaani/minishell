@@ -14,7 +14,6 @@
 
 static int	get_exit_val_from_args(t_command *cmd, t_shell *shell, int *val);
 
-//NOTE: OK!
 void	exit_builtin(t_command *cmd, t_shell *shell)
 {
 	int	val;
@@ -30,6 +29,7 @@ void	exit_builtin(t_command *cmd, t_shell *shell)
 	}
 	else
 		val = shell->last_exit_status;
+	// printf("exit\n");
 	exit_and_free_memory((uint8_t)val, shell, cmd);
 }
 
