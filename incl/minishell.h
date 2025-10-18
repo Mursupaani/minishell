@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/17 10:29:17 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/18 18:13:25 by anpollan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,6 +232,7 @@ int				check_append_redirection(t_redir *redir, t_shell *shell);
 int				execute_redirection(
 					t_redir *redir, t_command *cmd, t_shell *shell);
 int				handle_heredocs(t_command *cmd, t_shell *shell);
+int				process_heredocs(t_command *cmd, t_shell *shell);
 char			*expand_variables_from_input(char *input, t_shell *shell);
 char			**split_input(char *input, t_shell *shell);
 

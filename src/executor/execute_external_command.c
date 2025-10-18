@@ -37,7 +37,7 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 		ft_fprintf(STDERR_FILENO,
 			"minishell: %s: %s\n", strerror(errno), cmd->argv[0]);
 	}
-	exit_and_free_memory(EXIT_LAST_STATUS, shell, NULL);
+	exit_and_free_memory(EXIT_LAST_STATUS, shell, cmd);
 }
 
 char	*find_file_from_path(char *filename, t_shell *shell)

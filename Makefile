@@ -6,7 +6,7 @@
 #    By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/24 11:49:18 by magebreh          #+#    #+#              #
-#    Updated: 2025/10/17 10:29:42 by anpollan         ###   ########.fr        #
+#    Updated: 2025/10/18 18:12:57 by anpollan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,6 +51,7 @@ SRC = main.c \
 	  heredoc/handle_heredocs.c \
 	  heredoc/heredoc_signals.c \
 	  heredoc/heredoc_utils.c \
+	  heredoc/heredoc_utils2.c \
 	  parser/parsing.c \
 	  redirections/check_redirections.c \
 	  redirections/execute_redirection.c \

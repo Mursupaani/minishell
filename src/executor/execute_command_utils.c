@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static bool	has_append(t_command *cmd);
+static bool	has_output_redir(t_command *cmd);
 
 void	find_non_empty_argument(t_command *cmd, t_shell *shell)
 {
@@ -20,7 +20,7 @@ void	find_non_empty_argument(t_command *cmd, t_shell *shell)
 		exit_and_free_memory(EXIT_FAILURE, shell, cmd);
 	if (!cmd->argv)
 	{
-		if (has_append(cmd))
+		if (has_output_redir(cmd))
 			exit_and_free_memory(EXIT_SUCCESS, shell, cmd);
 		else
 			exit_and_free_memory(EXIT_FAILURE, shell, cmd);
@@ -32,17 +32,20 @@ void	find_non_empty_argument(t_command *cmd, t_shell *shell)
 		cmd->argv++;
 	}
 	if (!*cmd->argv)
-		exit_and_free_memory(EXIT_SUCCESS, shell, cmd);
+	{
+		ft_fprintf(STDERR_FILENO, "Command '' not found\n");
+		exit_and_free_memory(127, shell, cmd);
+	}
 }
 
-static bool	has_append(t_command *cmd)
+static bool	has_output_redir(t_command *cmd)
 {
 	t_redir	*redir;
 
 	redir = cmd->redirections;
 	while (redir)
 	{
-		if (redir->type == REDIR_APPEND)
+		if (redir->type == REDIR_APPEND || redir->type == REDIR_OUTPUT)
 			return (true);
 		redir = redir->next;
 	}
