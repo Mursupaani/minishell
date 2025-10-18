@@ -66,6 +66,12 @@ static int	execute_output_redirection(t_redir *redir, t_shell *shell)
 {
 	if (!redir || !shell)
 		return (-1);
+	if (redir->target[0] == '\0')
+	{
+		ft_fprintf(STDERR_FILENO, "minishell: ambiguous redirect\n");
+		shell->last_exit_status = 1;
+		return (-1);
+	}
 	if (redir->type == REDIR_OUTPUT)
 		redir->fd = open(redir->target, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 	else if (redir->type == REDIR_APPEND)
