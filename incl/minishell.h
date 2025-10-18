@@ -187,6 +187,7 @@ void			print_str_array(char **str_array);
 
 // Signal handling
 void			setup_parent_signals(void);
+void			setup_execution_signals(void);
 void			setup_child_signals(void);
 void			setup_heredoc_signals(void);
 
