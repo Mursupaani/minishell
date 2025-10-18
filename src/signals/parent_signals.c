@@ -16,10 +16,7 @@
 static int	check_parent_sigint(void)
 {
 	if (g_signal_received == SIGINT)
-	{
-		write(STDOUT_FILENO, "\n", 1);
 		rl_done = 1;
-	}
 	return (0);
 }
 
