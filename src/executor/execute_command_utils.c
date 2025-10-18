@@ -14,16 +14,16 @@
 
 static bool	has_append(t_command *cmd);
 
-void	find_non_empty_argument(t_command *cmd)
+void	find_non_empty_argument(t_command *cmd, t_shell *shell)
 {
 	if (!cmd)
-		exit(EXIT_FAILURE);
+		exit_and_free_memory(EXIT_FAILURE, shell, cmd);
 	if (!cmd->argv)
 	{
 		if (has_append(cmd))
-			exit(EXIT_SUCCESS);
+			exit_and_free_memory(EXIT_SUCCESS, shell, cmd);
 		else
-			exit(EXIT_FAILURE);
+			exit_and_free_memory(EXIT_FAILURE, shell, cmd);
 	}
 	while (*cmd->argv)
 	{
@@ -32,7 +32,7 @@ void	find_non_empty_argument(t_command *cmd)
 		cmd->argv++;
 	}
 	if (!*cmd->argv)
-		exit(EXIT_SUCCESS);
+		exit_and_free_memory(EXIT_SUCCESS, shell, cmd);
 }
 
 static bool	has_append(t_command *cmd)

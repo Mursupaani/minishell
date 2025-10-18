@@ -17,14 +17,10 @@ static void	close_unused_child_fds(
 
 void	choose_execution_type(t_command *cmd, t_shell *shell)
 {
-	int	exit_status;
-
 	if (cmd->cmd_type == CMD_BUILTIN_CHILD)
 	{
 		execute_builtin_command(cmd, shell);
-		exit_status = shell->last_exit_status;
-		free_memory_at_exit(shell);
-		exit(exit_status);
+		exit_and_free_memory(EXIT_LAST_STATUS, shell, cmd);
 	}
 	else if (cmd->cmd_type == CMD_EXTERNAL)
 		execute_external_command(cmd, shell);

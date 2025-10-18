@@ -14,13 +14,13 @@
 
 void	parent_sigint_handler(int sig, siginfo_t *info, void *context)
 {
-	(void)sig;
 	(void)info;
 	(void)context;
+	g_signal_received = sig;
 	write(STDOUT_FILENO, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
-	rl_redisplay();
+	// rl_redisplay();
 }
 
 void	setup_parent_signals(void)

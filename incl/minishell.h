@@ -82,6 +82,11 @@ typedef struct s_token
 // ============================================================================
 // COMMAND STRUCTURES (same as before)
 // ============================================================================
+enum e_exit_status
+{
+	EXIT_LAST_STATUS = -1
+}	;
+
 typedef enum e_cmd_type
 {
 	CMD_BUILTIN_PARENT,
@@ -190,7 +195,8 @@ t_shell			*shell_init(char **env);
 int				cleanup_after_execution(t_shell *shell, t_command *cmd);
 void			update_prompt(t_shell *shell);
 void			update_shell_lvl(t_shell *shell);
-int				error_exit_and_free_memory(t_shell *shell, t_command *cmd);
+int				exit_and_free_memory(
+					int exit_status, t_shell *shell, t_command *cmd);
 void			free_memory_at_exit(t_shell *shell);
 
 // Environment
@@ -209,7 +215,7 @@ void			execute_commands(t_command *cmd, t_shell *shell);
 void			choose_execution_type(t_command *cmd, t_shell *shell);
 void			execute_builtin_command(t_command *cmd, t_shell *shell);
 void			execute_external_command(t_command *cmd, t_shell *shell);
-void			find_non_empty_argument(t_command *cmd);
+void			find_non_empty_argument(t_command *cmd, t_shell *shell);
 
 // Pipe
 void			execute_pipe(t_command *cmd, t_shell *shell);
