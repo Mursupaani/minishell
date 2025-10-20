@@ -181,6 +181,9 @@ typedef struct s_shell
 void			print_tokens(t_token *tokens);
 void			print_commands(t_command *commands);
 
+// FIXME: not used anymore?
+void			find_non_empty_argument(t_command *cmd, t_shell *shell);
+
 // FIXME: Not using these:
 int				is_parent_only_builtin(char *cmd_name);
 void			print_str_array(char **str_array);
@@ -217,7 +220,6 @@ void			execute_commands(t_command *cmd, t_shell *shell);
 void			choose_execution_type(t_command *cmd, t_shell *shell);
 void			execute_builtin_command(t_command *cmd, t_shell *shell);
 void			execute_external_command(t_command *cmd, t_shell *shell);
-void			find_non_empty_argument(t_command *cmd, t_shell *shell);
 
 // Pipe
 void			execute_pipe(t_command *cmd, t_shell *shell);
