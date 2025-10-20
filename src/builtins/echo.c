@@ -16,7 +16,6 @@ static int	print_argv(char **argv);
 static int	check_flags(char **argv, bool *print_new_line);
 static bool	arg_is_valid_flag(char *arg);
 
-// NOTE: OK!
 void	ft_echo(t_command *cmd, t_shell *shell)
 {
 	bool	print_new_line;
