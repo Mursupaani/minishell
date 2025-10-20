@@ -42,7 +42,6 @@ char	*get_entry_key(char *entry, t_arena *arena)
 char	*get_entry_value(char *entry, t_arena *arena)
 {
 	int		i;
-	int		j;
 	char	*value;
 
 	if (!entry || !arena)
@@ -53,16 +52,13 @@ char	*get_entry_value(char *entry, t_arena *arena)
 		ft_fprintf(STDERR_FILENO, "Failed to export variable\n");
 		return (NULL);
 	}
-	j = 0;
 	i = 0;
 	while (entry[i])
 	{
-		while (entry[i] == ' ' && entry[i + 1] == ' ')
-			i++;
-		value[j++] = entry[i];
+		value[i] = entry[i];
 		i++;
 	}
-	value[j] = '\0';
+	value[i] = '\0';
 	return (value);
 }
 
