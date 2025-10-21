@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_pipe.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 16:06:25 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/11 12:56:01 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/21 11:39:31 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ static void	wait_pipeline_to_finish(t_shell *shell, int cmd_count)
 		}
 		i++;
 	}
+	g_signal_received = 0;
 	setup_parent_signals();
 }
 

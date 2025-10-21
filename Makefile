@@ -6,7 +6,7 @@
 #    By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/24 11:49:18 by magebreh          #+#    #+#              #
-#    Updated: 2025/10/18 18:12:57 by anpollan         ###   ########.fr        #
+#    Updated: 2025/10/20 15:27:39 by magebreh         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,12 +35,13 @@ SRC = main.c \
 	  builtins/export_utils.c \
 	  builtins/print_working_directory.c \
 	  builtins/unset.c \
-	  debug/debug.c \
-	  debug/print_environment_variables.c \
 	  environment/env_array_from_hashtable.c \
-	  environment/environment_utils.c \
 	  environment/env_expand.c \
 	  environment/env_expand_cmd.c \
+	  environment/env_expand_split.c \
+	  environment/env_hashtable.c \
+	  environment/env_init.c \
+	  environment/environment_utils.c \
 	  executor/execute_command.c \
 	  executor/execute_command_utils.c \
 	  executor/execute_external_command.c \
@@ -52,9 +53,13 @@ SRC = main.c \
 	  heredoc/heredoc_signals.c \
 	  heredoc/heredoc_utils.c \
 	  heredoc/heredoc_utils2.c \
-	  parser/parsing.c \
+	  parser/parse_command.c \
+	  parser/parse_redir.c \
+	  parser/parse_utils.c \
+	  parser/parsing_pipeline.c \
 	  redirections/check_redirections.c \
 	  redirections/execute_redirection.c \
+	  shell/cleanup.c \
 	  shell/interactive_shell.c \
 	  shell/non_interactive_shell.c \
 	  shell/shell.c \
@@ -63,11 +68,15 @@ SRC = main.c \
 	  signals/child_signals.c \
 	  signals/parent_signals.c \
 	  tokenizer/token.c \
+	  tokenizer/token_word.c \
+	  tokenizer/toke_quote.c \
 	  utils/fork.c \
+	  utils/print_utils.c \
 	  utils/quick_sort_string_array.c \
+	  utils/split_arena.c \
+	  utils/string_utils.c \
 	  utils/strjoin_arena.c \
-	  utils/utils.c \
-	  utils/utils2.c
+	  utils/utils.c
 
 
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)

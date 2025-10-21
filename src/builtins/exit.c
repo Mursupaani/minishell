@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/29 11:29:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/16 17:27:01 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/10/20 23:06:55 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void	exit_builtin(t_command *cmd, t_shell *shell)
 	}
 	else
 		val = shell->last_exit_status;
-	// printf("exit\n");
 	exit_and_free_memory((uint8_t)val, shell, cmd);
 }
 
