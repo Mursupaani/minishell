@@ -250,6 +250,7 @@ void			print_environment_variables(
 					char **env, t_shell *shell, bool export);
 void			export_environment_variable(t_command *cmd, t_shell *shell);
 void			unset_environment_variable(t_command *cmd, t_shell *shell);
+void			update_last_argument(t_command *cmd, t_shell *shell);
 char			*get_current_directory(t_shell *shell);
 void			exit_builtin(t_command *cmd, t_shell *shell);
 
