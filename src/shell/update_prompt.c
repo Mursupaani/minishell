@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdlib.h>
 
 static void	update_prompt_colors(char *cwd, t_shell *shell);
 static void	write_pwd_to_cwd(char *cwd, t_shell *shell);

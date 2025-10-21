@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <stdlib.h>
 
 static char	*join_argv_to_single_input(char **argv, t_arena *arena);
 static int	count_args(char **argv);
@@ -40,7 +41,7 @@ static int	process_input_line(char *input, t_shell *shell)
 	}
 	execute_commands(commands, shell);
 	if (cleanup_after_execution(shell, commands))
-		return (EXIT_FAILURE);
+		exit_and_free_memory(EXIT_FAILURE, shell, commands);
 	return (shell->last_exit_status);
 }
 

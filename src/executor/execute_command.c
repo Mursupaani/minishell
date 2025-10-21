@@ -39,6 +39,7 @@ void	execute_commands(t_command *cmd, t_shell *shell)
 
 void	execute_builtin_command(t_command *cmd, t_shell *shell)
 {
+	update_last_argument(cmd, shell);
 	if (cmd->redirections)
 	{
 		if (execute_builtin_redirections(cmd, shell) != 0)

@@ -22,6 +22,7 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 
 	if (!shell || !cmd)
 		exit_and_free_memory(EXIT_FAILURE, shell, NULL);
+	update_last_argument(cmd, shell);
 	if (execute_redirection(cmd->redirections, cmd, shell) != 0)
 		exit_and_free_memory(EXIT_LAST_STATUS, shell, NULL);
 	find_non_empty_argument(cmd, shell);
