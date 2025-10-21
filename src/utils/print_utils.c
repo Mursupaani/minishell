@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_environment_variables.c                      :+:      :+:    :+:   */
+/*   print_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/14 12:45:07 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/14 12:56:05 by anpollan         ###   ########.fr       */
+/*   Created: 2025/10/17 10:28:21 by anpollan          #+#    #+#             */
+/*   Updated: 2025/10/20 19:09:23 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,17 @@
 
 static void	print_env_array(char **env_array, bool export);
 static void	print_in_format(char *str, bool export, bool has_equals);
+
+void	print_str_array(char **str_array)
+{
+	int	i;
+
+	if (!str_array)
+		return ;
+	i = 0;
+	while (str_array[i])
+		printf("%s\n", str_array[i++]);
+}
 
 void	print_environment_variables(char **env, t_shell *shell, bool export)
 {

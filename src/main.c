@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/17 09:56:58 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/17 09:57:00 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/21 21:18:32 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,25 +37,4 @@ int	main(int argc, char **argv, char **envp)
 		exit_code = non_interactve_shell(shell, argv);
 	free_memory_at_exit(shell);
 	return (exit_code);
-}
-
-int	cleanup_after_execution(t_shell *shell, t_command *cmd)
-{
-	while (cmd)
-	{
-		if (cmd->heredoc_filename != NULL)
-		{
-			if (unlink(cmd->heredoc_filename))
-				perror(strerror(errno));
-			cmd->heredoc_filename = NULL;
-		}
-		cmd = cmd->next;
-	}
-	if (shell->input)
-	{
-		free(shell->input);
-		shell->input = NULL;
-	}
-	arena_reset(shell->command_arena);
-	return (0);
 }

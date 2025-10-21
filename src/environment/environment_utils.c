@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   environment_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anpollan <anpollan@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/26 09:30:04 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/14 12:45:33 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/20 15:18:05 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,4 +66,14 @@ char	**copy_env_array(t_shell *shell, t_arena *arena, int *count)
 	if (count)
 		*count = i;
 	return (temp_env_arr);
+}
+
+int	count_array(char **arr)
+{
+	int	count;
+
+	count = 0;
+	while (arr[count])
+		count++;
+	return (count);
 }

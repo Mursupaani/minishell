@@ -6,51 +6,11 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/16 00:00:00 by magebreh          #+#    #+#             */
-/*   Updated: 2025/10/16 00:00:00 by magebreh         ###   ########.fr       */
+/*   Updated: 2025/10/20 15:14:54 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-char	*strip_quotes(char *str, t_arena *arena)
-{
-	char	*res;
-	char	*src;
-	char	*dst;
-	char	in_quote;
-
-	if (!str)
-		return (NULL);
-	res = arena_alloc(arena, ft_strlen(str) + 1);
-	if (!res)
-		return (NULL);
-	src = str;
-	dst = res;
-	in_quote = 0;
-	while (*src)
-	{
-		if (*src == '"' && in_quote != '\'')
-		{
-			if (in_quote == '"')
-				in_quote = 0;
-			else if (!in_quote)
-				in_quote = '"';
-			src++;
-		}
-		else if (*src == '\'' && in_quote != '"')
-		{
-			if (in_quote == '\'')
-				in_quote = 0;
-			else if (!in_quote)
-				in_quote = '\'';
-			src++;
-		}
-		else
-			*dst++ = *src++;
-	}
-	*dst = '\0';
-	return (res);
-}
 
 void	prepare_cmd(t_command *cmd, t_shell *shell)
 {
@@ -80,76 +40,20 @@ void	prepare_cmd(t_command *cmd, t_shell *shell)
 	}
 }
 
-static int	count_quote_aware_words(char *str)
+static void	copy_split_to_argv(char **dst_argv, bool *dst_exp,
+				char **split_result, t_arena *arena)
 {
-	int		count;
-	char	in_quote;
-	bool	in_word;
+	int	k;
 
-	count = 0;
-	in_quote = 0;
-	in_word = false;
-	while (*str)
+	k = 0;
+	while (split_result[k])
 	{
-		if ((*str == '"' || *str == '\'') && !in_quote)
-			in_quote = *str;
-		else if (*str == in_quote)
-			in_quote = 0;
-		if (!ft_isspace(*str) && !in_word)
-		{
-			in_word = true;
-			count++;
-		}
-		else if (ft_isspace(*str) && !in_quote && in_word)
-			in_word = false;
-		str++;
+		dst_argv[k] = arena_strdup(split_result[k], arena);
+		dst_exp[k] = false;
+		free(split_result[k]);
+		k++;
 	}
-	return (count);
-}
-
-static char	*extract_word(char *str, char **end)
-{
-	char	*start;
-	char	in_quote;
-	int		len;
-
-	start = str;
-	in_quote = 0;
-	while (*str && (in_quote || !ft_isspace(*str)))
-	{
-		if ((*str == '"' || *str == '\'') && !in_quote)
-			in_quote = *str;
-		else if (*str == in_quote)
-			in_quote = 0;
-		str++;
-	}
-	len = str - start;
-	*end = str;
-	return (ft_substr(start, 0, len));
-}
-
-static char	**quote_aware_split(char *str)
-{
-	char	**result;
-	int		count;
-	int		i;
-
-	if (!str)
-		return (NULL);
-	count = count_quote_aware_words(str);
-	result = malloc(sizeof(char *) * (count + 1));
-	if (!result)
-		return (NULL);
-	i = 0;
-	while (*str && i < count)
-	{
-		while (ft_isspace(*str))
-			str++;
-		if (*str)
-			result[i++] = extract_word(str, &str);
-	}
-	result[i] = NULL;
-	return (result);
+	free(split_result);
 }
 
 static int	handle_split_expansion(t_command *cmd, t_shell *shell,
@@ -158,55 +62,39 @@ static int	handle_split_expansion(t_command *cmd, t_shell *shell,
 	char	**split_result;
 	char	**new_argv;
 	bool	*new_expandable;
-	int		split_count;
-	int		total_args;
-	int		k;
+	int		counts[2];
 
 	split_result = quote_aware_split(expanded);
 	if (!split_result || !split_result[0])
 		return (0);
-	split_count = 0;
-	while (split_result[split_count])
-		split_count++;
-	total_args = 0;
-	while (cmd->argv[total_args])
-		total_args++;
+	counts[0] = count_array(split_result);
+	counts[1] = count_array(cmd->argv);
 	new_argv = arena_alloc(shell->command_arena,
-			sizeof(char *) * (total_args + split_count));
+			sizeof(char *) * (counts[1] + counts[0]));
 	new_expandable = arena_alloc(shell->command_arena,
-			sizeof(bool) * (total_args + split_count));
+			sizeof(bool) * (counts[1] + counts[0]));
 	ft_memcpy(new_argv, cmd->argv, sizeof(char *) * i);
 	ft_memcpy(new_expandable, cmd->argv_expandable, sizeof(bool) * i);
-	k = -1;
-	while (++k < split_count)
-	{
-		new_argv[i + k] = arena_strdup(split_result[k], shell->command_arena);
-		new_expandable[i + k] = false;
-		free(split_result[k]);
-	}
-	free(split_result);
-	ft_memcpy(new_argv + i + split_count, cmd->argv + i + 1,
-		sizeof(char *) * (total_args - i));
-	ft_memcpy(new_expandable + i + split_count, cmd->argv_expandable + i + 1,
-		sizeof(bool) * (total_args - i));
+	copy_split_to_argv(new_argv + i, new_expandable + i, split_result,
+		shell->command_arena);
+	ft_memcpy(new_argv + i + counts[0], cmd->argv + i + 1,
+		sizeof(char *) * (counts[1] - i));
+	ft_memcpy(new_expandable + i + counts[0], cmd->argv_expandable + i + 1,
+		sizeof(bool) * (counts[1] - i));
 	cmd->argv = new_argv;
 	cmd->argv_expandable = new_expandable;
-	return (split_count);
-}
-
-static bool	should_split(char *original, char *expanded)
-{
-	return (expanded && ft_strchr(expanded, ' ')
-		&& ft_strchr(original, '$')
-		&& !ft_strchr(original, '"') && !ft_strchr(original, '\''));
+	return (counts[0]);
 }
 
 static void	handle_arg_expansion(t_command *cmd, t_shell *shell, int *i)
 {
 	char	*expanded;
+	char	*original;
 
-	expanded = expand_var(cmd->argv[*i], shell, shell->command_arena);
-	if (should_split(cmd->argv[*i], expanded))
+	original = cmd->argv[*i];
+	expanded = expand_var(original, shell, shell->command_arena);
+	if (expanded && ft_strchr(expanded, ' ') && ft_strchr(original, '$')
+		&& !ft_strchr(original, '"') && !ft_strchr(original, '\''))
 	{
 		*i += handle_split_expansion(cmd, shell, *i, expanded);
 		(*i)--;

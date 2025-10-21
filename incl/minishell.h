@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 14:54:57 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/18 18:13:25 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/21 21:19:13 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,9 @@ char			**env_array_from_hashtable(t_shell *shell);
 void			update_env_table_and_arr(t_shell *shell);
 char			*get_entry_key(char *entry, t_arena *arena);
 char			*get_entry_value(char *entry, t_arena *arena);
-void			update_last_argument(t_command *cmd, t_shell *shell);
+char			**quote_aware_split(char *str);
+int				count_array(char **arr);
+char			*extract_word(char *str, char **end);
 
 // Shell modes
 int				interactive_shell(t_shell *shell);
@@ -262,11 +264,19 @@ char			*expand_var(char *str, t_shell *shell, t_arena *arena);
 char			*strip_quotes(char *str, t_arena *arena);
 void			hash_table_delete(t_hash_table *table, char *key);
 char			**copy_env_array(t_shell *shell, t_arena *arena, int *count);
+int				count_array(char **arr);
+char			**quote_aware_split(char *str);
+t_env_entry		*find_entry(t_hash_table *table, char *key,
+					unsigned int index);
 
 // Parsing
 t_command		*parse_pipeline(t_token *tokens, t_shell *shell);
 t_command		*create_command(t_arena *arena);
 int				is_redir(t_token *token);
+int				attach_heredoc_filename_to_command(t_command *cmd,
+					t_arena *arena);
+int				process_heredoc_redir(t_command *cmd, t_shell *shell,
+					int *error);
 t_token			*handle_redir(t_command *current, t_token *token,
 					t_shell *shell, int *error);
 void			add_word_cmd(t_command *cmd, t_token *word, t_arena *arena);
@@ -277,6 +287,11 @@ int				calculate_new_capacity(int current_count);
 
 // Tokenizer functions (token.c)
 t_token			*tokenize(char *input, t_arena *arena);
+t_token			*tokenize_word(char **pos, t_arena *arena);
+int				is_quote(char c);
+void			set_token_quote_flags(t_token *token, char *start,
+					size_t word_len);
+char			*ft_strchr_range(char *str, char c, size_t len);
 
 // Utility functions for tokenizer (utils.c)
 char			*skip_whitespace(char *pos);

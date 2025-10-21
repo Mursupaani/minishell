@@ -6,7 +6,7 @@
 /*   By: magebreh <magebreh@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 16:40:56 by anpollan          #+#    #+#             */
-/*   Updated: 2025/10/15 10:55:48 by anpollan         ###   ########.fr       */
+/*   Updated: 2025/10/21 11:40:31 by magebreh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ static void	execute_single_external_command(t_command *cmd, t_shell *shell)
 	}
 	setup_execution_signals();
 	waitpid(shell->child_pid, &shell->last_exit_status, 0);
+	g_signal_received = 0;
 	setup_parent_signals();
 	if (WIFEXITED(shell->last_exit_status))
 		shell->last_exit_status = WEXITSTATUS(shell->last_exit_status);
