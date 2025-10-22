@@ -95,7 +95,11 @@ static void	execute_single_external_command(t_command *cmd, t_shell *shell)
 		execute_external_command(cmd, shell);
 	}
 	setup_execution_signals();
-	waitpid(shell->child_pid, &shell->last_exit_status, 0);
+	while (waitpid(shell->child_pid, &shell->last_exit_status, 0) == -1)
+	{
+		if (errno != EINTR)
+			break ;
+	}
 	if (WIFEXITED(shell->last_exit_status))
 		shell->last_exit_status = WEXITSTATUS(shell->last_exit_status);
 	else if (WIFSIGNALED(shell->last_exit_status))
