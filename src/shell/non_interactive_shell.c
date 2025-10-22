@@ -11,10 +11,8 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdlib.h>
 
 static char	*join_argv_to_single_input(char **argv, t_arena *arena);
-static int	count_args(char **argv);
 static char	*read_line_from_stdin(t_arena *arena);
 
 static int	process_input_line(char *input, t_shell *shell)
@@ -45,14 +43,14 @@ static int	process_input_line(char *input, t_shell *shell)
 	return (shell->last_exit_status);
 }
 
-int	non_interactve_shell(t_shell *shell, char **argv)
+int	non_interactve_shell(t_shell *shell, char **argv, int argc)
 {
 	char	*input;
 	int		status;
 
-	if (count_args(argv) > 2 && strcmp(argv[1], "-c") == 0)
+	if (argc > 1) 
 	{
-		input = join_argv_to_single_input(argv + 2, shell->command_arena);
+		input = join_argv_to_single_input(argv, shell->command_arena);
 		return (process_input_line(input, shell));
 	}
 	else
@@ -67,16 +65,6 @@ int	non_interactve_shell(t_shell *shell, char **argv)
 		}
 		return (status);
 	}
-}
-
-static int	count_args(char **argv)
-{
-	int	count;
-
-	count = 0;
-	while (argv[count])
-		count++;
-	return (count);
 }
 
 static char	*read_line_from_stdin(t_arena *arena)

@@ -173,7 +173,7 @@ char			*extract_word(char *str, char **end);
 
 // Shell modes
 int				interactive_shell(t_shell *shell);
-int				non_interactve_shell(t_shell *shell, char **argv);
+int				non_interactve_shell(t_shell *shell, char **argv, int argc);
 
 // Execution
 void			execute_commands(t_command *cmd, t_shell *shell);

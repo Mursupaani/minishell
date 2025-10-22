@@ -22,7 +22,6 @@ int	main(int argc, char **argv, char **envp)
 	t_shell	*shell;
 	int		exit_code;
 
-	(void)argc;
 	shell = shell_init(envp);
 	if (!shell)
 	{
@@ -31,10 +30,12 @@ int	main(int argc, char **argv, char **envp)
 	}
 	update_shell_lvl(shell);
 	shell->is_a_tty = isatty(STDIN_FILENO);
-	if (shell->is_a_tty)
+	if (shell->is_a_tty && argc > 1)
+		exit_code = non_interactve_shell(shell, argv, argc);
+	else if (shell->is_a_tty)
 		exit_code = interactive_shell(shell);
 	else
-		exit_code = non_interactve_shell(shell, argv);
+		exit_code = non_interactve_shell(shell, argv, argc);
 	free_memory_at_exit(shell);
 	return (exit_code);
 }
