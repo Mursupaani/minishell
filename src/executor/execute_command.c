@@ -71,8 +71,7 @@ static int	execute_builtin_redirections(t_command *cmd, t_shell *shell)
 	shell->stdout_fd = dup(STDOUT_FILENO);
 	if (execute_redirection(cmd->redirections, cmd, shell) != 0)
 	{
-		close(shell->stdin_fd);
-		close(shell->stdout_fd);
+		reset_std_fds(shell);
 		return (-1);
 	}
 	return (0);
