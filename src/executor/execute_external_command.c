@@ -45,11 +45,7 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 char	*find_file_from_path(char *filename, t_shell *shell)
 {
 	if (!filename || *filename == '\0')
-	{
-		// ft_fprintf(STDERR_FILENO, "minishell: command '' not found\n");
-		// shell->last_exit_status = 127;
 		return (NULL);
-	}
 	shell->path_dirs = ft_split_arena(hash_table_get(
 				shell->env_table, "PATH"), ':', shell->command_arena);
 	if (!shell->path_dirs)
