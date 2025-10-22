@@ -63,8 +63,10 @@ static char	*expand_single_variable(char **src, t_shell *shell, char *dst)
 	return (dst);
 }
 
-static void	toggle_quote(char **src, char *in_quote, char quote_char)
+static void	toggle_quote(
+		char **src, char *in_quote, char quote_char, t_command *cmd)
 {
+	cmd->has_quotes = true;
 	if (*in_quote == quote_char)
 		*in_quote = 0;
 	else if (!*in_quote)
@@ -89,7 +91,7 @@ static char	*process_char(char **src, char *dst, char in_quote, t_shell *shell)
 	return (dst);
 }
 
-char	*expand_var(char *str, t_shell *shell, t_arena *arena)
+char	*expand_var(char *str, t_shell *shell, t_arena *arena, t_command *cmd)
 {
 	char	*res;
 	char	*src;
@@ -105,9 +107,9 @@ char	*expand_var(char *str, t_shell *shell, t_arena *arena)
 	while (*src)
 	{
 		if (*src == '"' && in_quote != '\'')
-			toggle_quote(&src, &in_quote, '"');
+			toggle_quote(&src, &in_quote, '"', cmd);
 		else if (*src == '\'' && in_quote != '"')
-			toggle_quote(&src, &in_quote, '\'');
+			toggle_quote(&src, &in_quote, '\'', cmd);
 		else
 			dst = process_char(&src, dst, in_quote, shell);
 	}

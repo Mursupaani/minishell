@@ -25,19 +25,21 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 	update_last_argument(cmd, shell);
 	if (execute_redirection(cmd->redirections, cmd, shell) != 0)
 		exit_and_free_memory(EXIT_LAST_STATUS, shell, NULL);
+	find_non_empty_argument(cmd, shell);
+	if (!cmd->has_quotes && argv_is_empty(cmd->argv))
+		exit_and_free_memory(EXIT_SUCCESS, shell, cmd);
 	if (is_file_path(cmd->argv[0]))
 		executable_path = cmd->argv[0];
 	else
 		executable_path = find_file_from_path(cmd->argv[0], shell);
 	if (!executable_path)
 		executable_path = cmd->argv[0];
+	if (!check_file_type_and_permissions(executable_path, shell))
+		exit_and_free_memory(EXIT_LAST_STATUS, shell, NULL);
 	if (execve(executable_path, cmd->argv, shell->env_array))
 	{
 		shell->last_exit_status = 127;
-		if (*executable_path == '\0')
-			ft_fprintf(STDERR_FILENO, "Command '' not found\n");
-		else
-			ft_fprintf(STDERR_FILENO, "%s: command not found\n", executable_path);
+		ft_fprintf(STDERR_FILENO, "%s: command not found\n", executable_path);
 	}
 	exit_and_free_memory(EXIT_LAST_STATUS, shell, cmd);
 }
@@ -45,11 +47,7 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 char	*find_file_from_path(char *filename, t_shell *shell)
 {
 	if (!filename || *filename == '\0')
-	{
-		// ft_fprintf(STDERR_FILENO, "minishell: command '' not found\n");
-		// shell->last_exit_status = 127;
 		return (NULL);
-	}
 	shell->path_dirs = ft_split_arena(hash_table_get(
 				shell->env_table, "PATH"), ':', shell->command_arena);
 	if (!shell->path_dirs)

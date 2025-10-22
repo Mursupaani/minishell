@@ -29,7 +29,7 @@ void	prepare_cmd(t_command *cmd, t_shell *shell)
 			else
 			{
 				redir->target = expand_var(redir->target, shell,
-						shell->command_arena);
+						shell->command_arena, cmd);
 				redir->target = strip_quotes(redir->target,
 						shell->command_arena);
 			}
@@ -92,7 +92,7 @@ static void	handle_arg_expansion(t_command *cmd, t_shell *shell, int *i)
 	char	*original;
 
 	original = cmd->argv[*i];
-	expanded = expand_var(original, shell, shell->command_arena);
+	expanded = expand_var(original, shell, shell->command_arena, cmd);
 	if (expanded && ft_strchr(expanded, ' ') && ft_strchr(original, '$')
 		&& !ft_strchr(original, '"') && !ft_strchr(original, '\''))
 	{
@@ -116,7 +116,7 @@ void	expand_cmd(t_command *cmd, t_shell *shell)
 			handle_arg_expansion(cmd, shell, &i);
 		else
 			cmd->argv[i] = expand_var(cmd->argv[i], shell,
-					shell->command_arena);
+					shell->command_arena, cmd);
 		i++;
 	}
 }

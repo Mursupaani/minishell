@@ -25,6 +25,7 @@ void	change_directory(t_command *cmd, t_shell *shell)
 		shell->last_exit_status = 1;
 		return ;
 	}
+	shell->last_exit_status = 0;
 	status = try_to_change_directory(cmd, shell);
 	if (status == 0)
 	{

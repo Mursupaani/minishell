@@ -15,7 +15,6 @@
 
 # include <errno.h>
 # include <curses.h>
-# include <dirent.h>
 # include <fcntl.h>
 # include <readline/history.h>
 # include <readline/readline.h>
@@ -23,14 +22,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/wait.h>
-# include <sys/time.h>
 # include <sys/stat.h>
-# include <sys/ioctl.h>
-# include <sys/types.h>
-# include <sys/resource.h>
-# include <term.h>
-# include <termios.h>
-# include <unistd.h>
 # include <../libft/libft.h>
 
 # define COMMAND_ARENA_SIZE 4096
@@ -40,9 +32,6 @@
 
 extern volatile sig_atomic_t	g_signal_received;
 typedef struct s_command		t_command;
-// ============================================================================
-// HASH TABLE FOR ENVIRONMENT (Simple implementation)
-// ============================================================================
 
 typedef struct s_env_entry
 {
@@ -80,7 +69,7 @@ typedef struct s_token
 }	t_token;
 
 // ============================================================================
-// COMMAND STRUCTURES (same as before)
+// COMMAND STRUCTURES
 // ============================================================================
 enum e_exit_status
 {
@@ -119,23 +108,9 @@ typedef struct s_command
 	t_cmd_type					cmd_type;
 	t_redir						*redirections;
 	char						*heredoc_filename;
+	bool						has_quotes;
 	struct s_command			*next;
 }	t_command;
-
-// ============================================================================
-// SIMPLE PARSER STATE (no AST for mandatory)
-// ============================================================================
-// FIXME: Not using this
-// typedef struct s_parser
-// {
-// 	t_token				*tokens;
-// 	t_token				*current;
-// 	t_command			*cmd_head;
-// 	t_command			*cmd_current;
-// 	char				**current_argv;
-// 	int				arg_num;
-// 	int				argv_capacity;
-// }	t_parser;
 
 typedef struct s_shell
 {
@@ -153,8 +128,6 @@ typedef struct s_shell
 	int							last_exit_status;
 
 	// Terminal context
-	//FIXME: Not using original_termios. What is it?
-	struct termios				original_termios;
 	int							stdin_fd;
 	int							stdout_fd;
 	int							child_pid;
@@ -162,9 +135,6 @@ typedef struct s_shell
 	int							*pipe_pids;
 
 	// Heredoc management
-	//FIXME: Not using tmp_dir. Thinking about using.
-	char						*tmp_dir;
-	//FIXME: Not using heredoc counder. Need this to check max heredocs.
 	int							heredoc_counter;
 
 	// Memory management
@@ -175,18 +145,6 @@ typedef struct s_shell
 // ============================================================================
 // FUNCTION PROTOTYPES
 // ============================================================================
-
-// FIXME: Debug. Can be deleted from final:
-// also debug.c
-void			print_tokens(t_token *tokens);
-void			print_commands(t_command *commands);
-
-// FIXME: not used anymore?
-void			find_non_empty_argument(t_command *cmd, t_shell *shell);
-
-// FIXME: Not using these:
-int				is_parent_only_builtin(char *cmd_name);
-void			print_str_array(char **str_array);
 
 // Signal handling
 void			setup_parent_signals(void);
@@ -261,7 +219,8 @@ void			hash_table_set(t_hash_table *table,
 					char *key, char *value, t_arena *arena);
 void			prepare_cmd(t_command *cmd, t_shell *shell);
 void			expand_cmd(t_command *cmd, t_shell *shell);
-char			*expand_var(char *str, t_shell *shell, t_arena *arena);
+char			*expand_var(
+					char *str, t_shell *shell, t_arena *arena, t_command *cmd);
 char			*strip_quotes(char *str, t_arena *arena);
 void			hash_table_delete(t_hash_table *table, char *key);
 char			**copy_env_array(t_shell *shell, t_arena *arena, int *count);
@@ -269,6 +228,7 @@ int				count_array(char **arr);
 char			**quote_aware_split(char *str);
 t_env_entry		*find_entry(t_hash_table *table, char *key,
 					unsigned int index);
+void			find_non_empty_argument(t_command *cmd, t_shell *shell);
 
 // Parsing
 t_command		*parse_pipeline(t_token *tokens, t_shell *shell);
@@ -310,6 +270,7 @@ void			quick_sort_string_array(char **str_arr, int start, int end);
 bool			check_file_type_and_permissions(char *filepath, t_shell *shell);
 char			*arena_expand_variables(char *input, t_shell *shell);
 int				is_whitespace_only(char *str);
+bool			argv_is_empty(char **argv);
 
 // Error handling fork wrapper
 int				create_fork(t_shell *shell);

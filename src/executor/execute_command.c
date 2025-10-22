@@ -71,8 +71,7 @@ static int	execute_builtin_redirections(t_command *cmd, t_shell *shell)
 	shell->stdout_fd = dup(STDOUT_FILENO);
 	if (execute_redirection(cmd->redirections, cmd, shell) != 0)
 	{
-		close(shell->stdin_fd);
-		close(shell->stdout_fd);
+		reset_std_fds(shell);
 		return (-1);
 	}
 	return (0);
@@ -97,12 +96,12 @@ static void	execute_single_external_command(t_command *cmd, t_shell *shell)
 	}
 	setup_execution_signals();
 	waitpid(shell->child_pid, &shell->last_exit_status, 0);
-	g_signal_received = 0;
-	setup_parent_signals();
 	if (WIFEXITED(shell->last_exit_status))
 		shell->last_exit_status = WEXITSTATUS(shell->last_exit_status);
 	else if (WIFSIGNALED(shell->last_exit_status))
 		shell->last_exit_status = 128 + WTERMSIG(shell->last_exit_status);
 	else
 		shell->last_exit_status = 1;
+	g_signal_received = 0;
+	setup_parent_signals();
 }
