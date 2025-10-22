@@ -34,6 +34,8 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 		executable_path = find_file_from_path(cmd->argv[0], shell);
 	if (!executable_path)
 		executable_path = cmd->argv[0];
+	if (!check_file_type_and_permissions(executable_path, shell))
+		exit_and_free_memory(EXIT_LAST_STATUS, shell, NULL);
 	if (execve(executable_path, cmd->argv, shell->env_array))
 	{
 		shell->last_exit_status = 127;
