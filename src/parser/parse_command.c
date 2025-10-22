@@ -24,6 +24,7 @@ t_command	*create_command(t_arena *arena)
 	cmd->cmd_type = CMD_EXTERNAL;
 	cmd->redirections = NULL;
 	cmd->heredoc_filename = NULL;
+	cmd->has_quotes = false;
 	cmd->next = NULL;
 	return (cmd);
 }

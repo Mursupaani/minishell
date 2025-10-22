@@ -32,3 +32,16 @@ int	is_parent_only_builtin(char *cmd_name)
 			7) == 0 || ft_strncmp(cmd_name, "unset", 6) == 0
 		|| ft_strncmp(cmd_name, "exit", 5) == 0);
 }
+
+bool	argv_is_empty(char **argv)
+{
+	if (!argv)
+		return (true);
+	while (*argv)
+	{
+		if (**argv != '\0')
+			return (false);
+		argv++;
+	}
+	return (true);
+}

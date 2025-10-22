@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <stdlib.h>
 
 static char	*find_file_from_path(char *filename, t_shell *shell);
 static char	*try_paths(char *filename, char **path_dirs, t_shell *shell);
@@ -25,6 +26,9 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 	update_last_argument(cmd, shell);
 	if (execute_redirection(cmd->redirections, cmd, shell) != 0)
 		exit_and_free_memory(EXIT_LAST_STATUS, shell, NULL);
+	find_non_empty_argument(cmd, shell);
+	if (!cmd->has_quotes && argv_is_empty(cmd->argv))
+		exit_and_free_memory(EXIT_SUCCESS, shell, cmd);
 	if (is_file_path(cmd->argv[0]))
 		executable_path = cmd->argv[0];
 	else
@@ -34,10 +38,7 @@ void	execute_external_command(t_command *cmd, t_shell *shell)
 	if (execve(executable_path, cmd->argv, shell->env_array))
 	{
 		shell->last_exit_status = 127;
-		if (*executable_path == '\0')
-			ft_fprintf(STDERR_FILENO, "Command '' not found\n");
-		else
-			ft_fprintf(STDERR_FILENO, "%s: command not found\n", executable_path);
+		ft_fprintf(STDERR_FILENO, "%s: command not found\n", executable_path);
 	}
 	exit_and_free_memory(EXIT_LAST_STATUS, shell, cmd);
 }

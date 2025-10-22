@@ -119,6 +119,7 @@ typedef struct s_command
 	t_cmd_type					cmd_type;
 	t_redir						*redirections;
 	char						*heredoc_filename;
+	bool						has_quotes;
 	struct s_command			*next;
 }	t_command;
 
@@ -261,7 +262,8 @@ void			hash_table_set(t_hash_table *table,
 					char *key, char *value, t_arena *arena);
 void			prepare_cmd(t_command *cmd, t_shell *shell);
 void			expand_cmd(t_command *cmd, t_shell *shell);
-char			*expand_var(char *str, t_shell *shell, t_arena *arena);
+char			*expand_var(
+					char *str, t_shell *shell, t_arena *arena, t_command *cmd);
 char			*strip_quotes(char *str, t_arena *arena);
 void			hash_table_delete(t_hash_table *table, char *key);
 char			**copy_env_array(t_shell *shell, t_arena *arena, int *count);
@@ -310,6 +312,7 @@ void			quick_sort_string_array(char **str_arr, int start, int end);
 bool			check_file_type_and_permissions(char *filepath, t_shell *shell);
 char			*arena_expand_variables(char *input, t_shell *shell);
 int				is_whitespace_only(char *str);
+bool			argv_is_empty(char **argv);
 
 // Error handling fork wrapper
 int				create_fork(t_shell *shell);
