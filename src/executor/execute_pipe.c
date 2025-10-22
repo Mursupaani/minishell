@@ -60,7 +60,11 @@ static void	wait_pipeline_to_finish(t_shell *shell, int cmd_count)
 	i = 0;
 	while (i < cmd_count)
 	{
-		waitpid(shell->pipe_pids[i], &shell->last_exit_status, 0);
+		while (waitpid(shell->pipe_pids[i], &shell->last_exit_status, 0) == -1)
+		{
+			if (errno != EINTR)
+				break ;
+		}
 		if (i == cmd_count - 1)
 		{
 			if (WIFEXITED(shell->last_exit_status))
