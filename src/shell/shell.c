@@ -23,7 +23,6 @@ static t_shell	*shell_static_init(void)
 	shell->heredoc_counter = 0;
 	shell->stdin_fd = STDIN_FILENO;
 	shell->stdout_fd = STDOUT_FILENO;
-	shell->tmp_dir = "/tmp";
 	shell->env_table = NULL;
 	shell->env_array = NULL;
 	shell->path_dirs = NULL;

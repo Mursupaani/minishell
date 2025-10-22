@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdlib.h>
 
 static char	*find_file_from_path(char *filename, t_shell *shell);
 static char	*try_paths(char *filename, char **path_dirs, t_shell *shell);
