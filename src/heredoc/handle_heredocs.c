@@ -26,6 +26,7 @@ int	handle_heredocs(t_command *cmd, t_shell *shell)
 	if (g_signal_received == SIGINT)
 	{
 		shell->last_exit_status = 130;
+		g_signal_received = 0;
 		return (130);
 	}
 	return (status);

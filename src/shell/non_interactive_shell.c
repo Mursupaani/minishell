@@ -48,7 +48,7 @@ int	non_interactve_shell(t_shell *shell, char **argv, int argc)
 	char	*input;
 	int		status;
 
-	if (argc > 1) 
+	if (argc > 1)
 	{
 		input = join_argv_to_single_input(argv, shell->command_arena);
 		return (process_input_line(input, shell));
