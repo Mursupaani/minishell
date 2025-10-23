@@ -21,6 +21,7 @@ void	exit_builtin(t_command *cmd, t_shell *shell)
 
 	if (!shell)
 		return ;
+	printf("exit\n");
 	if (cmd && cmd->argv[1])
 	{
 		error = get_exit_val_from_args(cmd, shell, &val);
